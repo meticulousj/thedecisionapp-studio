@@ -499,95 +499,145 @@ function DecisionClarity() {
 // TOOL: ASSUMPTION AUDIT
 // ─────────────────────────────────────────
 const AA_CSS = `
-.aa-app{min-height:100%;background:#0a0a0a;font-family:'DM Sans',sans-serif;color:#f0f0f0;display:flex;flex-direction:column;align-items:center;padding:48px 20px 100px;position:relative;}
-.aa-app::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.012) 2px,rgba(255,255,255,.012) 4px);pointer-events:none;z-index:0;}
-.aa-app>*{position:relative;z-index:1;}
-.aa-hdr{width:100%;max-width:680px;margin-bottom:48px;border-bottom:1px solid #2e2e2e;padding-bottom:28px;}
-.aa-hdr-meta{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
-.aa-tag{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#e63946;background:rgba(230,57,70,.12);border:1px solid rgba(230,57,70,.25);padding:4px 10px;}
-.aa-suite{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#555;}
-.aa-title{font-family:'Syne',sans-serif;font-size:clamp(32px,6vw,56px);font-weight:800;line-height:.95;letter-spacing:-2px;margin-bottom:14px;}
-.aa-title em{font-style:normal;color:#e63946;}
-.aa-sub{font-size:13px;color:#888;line-height:1.6;font-weight:300;max-width:460px;border-left:2px solid #e63946;padding-left:14px;}
-.aa-phases{width:100%;max-width:680px;display:flex;gap:4px;margin-bottom:36px;}
-.aa-ph{flex:1;height:3px;background:#222;border-radius:1px;transition:background .4s;}
-.aa-ph.active{background:#e63946;}.aa-ph.done{background:#444;}
-.aa-ph-lbls{width:100%;max-width:680px;display:flex;justify-content:space-between;margin-bottom:28px;}
-.aa-phl{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#444;transition:color .3s;}
-.aa-phl.active{color:#e63946;}.aa-phl.done{color:#444;}
-.aa-panel{width:100%;max-width:680px;background:#111;border:1px solid #2e2e2e;padding:36px;margin-bottom:14px;position:relative;animation:aaIn .3s ease;}
-@keyframes aaIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-.aa-notch{position:absolute;top:0;right:36px;width:36px;height:3px;background:#e63946;}
-.aa-pt{font-family:'Syne',sans-serif;font-size:19px;font-weight:700;margin-bottom:6px;letter-spacing:-.5px;}
-.aa-pd{font-size:12px;color:#888;line-height:1.65;margin-bottom:24px;font-weight:300;}
-.aa-fl{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#444;display:block;margin-bottom:9px;}
-.aa-ta,.aa-in{width:100%;background:#0a0a0a;border:1px solid #2e2e2e;padding:13px 15px;font-family:'DM Sans',sans-serif;font-size:13px;color:#f0f0f0;outline:none;transition:border-color .2s;resize:none;}
-.aa-ta:focus,.aa-in:focus{border-color:#e63946;}
-.aa-ta::placeholder,.aa-in::placeholder{color:#444;font-style:italic;}
-.aa-add-row{display:flex;gap:8px;margin-top:14px;}
-.aa-add-row .aa-in{flex:1;}
-.aa-hint{font-family:'Azeret Mono',monospace;font-size:9px;color:#444;margin-top:8px;line-height:1.6;}
-.aa-item{border:1px solid #2e2e2e;background:#0a0a0a;border-left:3px solid #2e2e2e;padding:17px 18px;margin-bottom:8px;animation:aaSlide .25s ease;transition:border-left-color .3s;}
-@keyframes aaSlide{from{opacity:0;transform:translateX(-5px);}to{opacity:1;transform:translateX(0);}}
-.aa-item.blind-spot{border-left-color:#e63946;}.aa-item.caution{border-left-color:#f4a261;}.aa-item.solid{border-left-color:#52b788;}
-.aa-ih{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px;}
-.aa-it{font-size:13px;color:#f0f0f0;line-height:1.5;flex:1;}
-.aa-ics{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.aa-cg{}
-.aa-ct{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;}
-.aa-cv{font-family:'Azeret Mono',monospace;font-size:10px;font-weight:600;}
-.aa-rt{display:flex;gap:3px;}
-.aa-rp{flex:1;height:5px;background:#2e2e2e;cursor:pointer;transition:background .15s;border-radius:1px;}
-.aa-rp.ef{background:#60a5fa;}.aa-rp.wf{background:#f4a261;}
-.aa-ev-lbls{display:flex;justify-content:space-between;margin-top:3px;}
-.aa-el{font-family:'Azeret Mono',monospace;font-size:8px;color:#444;}
-.aa-flag{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;border-radius:1px;}
-.flag-blind{background:rgba(230,57,70,.12);color:#e63946;border:1px solid rgba(230,57,70,.3);}
-.flag-caution{background:rgba(244,162,97,.12);color:#f4a261;border:1px solid rgba(244,162,97,.3);}
-.flag-solid{background:rgba(82,183,136,.12);color:#52b788;border:1px solid rgba(82,183,136,.3);}
-.flag-untested{background:rgba(96,165,250,.1);color:#60a5fa;border:1px solid rgba(96,165,250,.2);}
-.aa-divider{height:1px;background:#2e2e2e;margin:18px 0;}
-.aa-del{background:none;border:none;cursor:pointer;color:#444;font-size:17px;line-height:1;padding:2px 5px;transition:color .15s;}
-.aa-del:hover{color:#e63946;}
-.aa-nav{width:100%;max-width:680px;display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
-.aa-btn{font-family:'Azeret Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:11px 22px;border:1px solid #2e2e2e;background:#f0f0f0;color:#0a0a0a;cursor:pointer;transition:all .2s;}
-.aa-btn:hover{background:#e63946;border-color:#e63946;color:#fff;}
-.aa-btn:disabled{opacity:.3;cursor:not-allowed;}
-.aa-btn:disabled:hover{background:#f0f0f0;color:#0a0a0a;border-color:#2e2e2e;}
-.aa-btn-g{background:transparent;color:#888;border-color:#2e2e2e;}
-.aa-btn-g:hover{background:#1a1a1a;color:#f0f0f0;border-color:#555;}
-.aa-res-hdr{width:100%;max-width:680px;margin-bottom:20px;}
-.aa-res-hl{font-family:'Syne',sans-serif;font-size:clamp(26px,5vw,44px);font-weight:800;line-height:1;letter-spacing:-1px;margin-bottom:6px;}
-.aa-res-ctx{font-size:12px;color:#888;font-weight:300;}
-.aa-res-strat{font-family:'Azeret Mono',monospace;font-size:10px;color:#444;border-left:2px solid #2e2e2e;padding-left:10px;margin-top:10px;line-height:1.6;}
-.aa-stats{width:100%;max-width:680px;display:flex;gap:8px;margin-bottom:20px;}
-.aa-stat{flex:1;background:#111;border:1px solid #2e2e2e;padding:18px;text-align:center;}
-.aa-snum{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;line-height:1;margin-bottom:4px;}
-.aa-slbl{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#444;}
-.aa-ins{width:100%;max-width:680px;border-left:3px solid #e63946;background:rgba(230,57,70,.08);padding:18px 22px;margin-bottom:20px;}
-.aa-ins-lbl{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#e63946;margin-bottom:7px;}
-.aa-ins-txt{font-size:12px;color:#888;line-height:1.7;font-weight:300;}
-.aa-mx{width:100%;max-width:680px;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
-.aa-mc{background:#111;border:1px solid #2e2e2e;padding:18px;min-height:100px;}
-.aa-mct{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
-.aa-mcd{width:7px;height:7px;border-radius:50%;}
-.aa-blind .aa-mct{color:#e63946;}.aa-blind .aa-mcd{background:#e63946;}
-.aa-caution .aa-mct{color:#f4a261;}.aa-caution .aa-mcd{background:#f4a261;}
-.aa-solid .aa-mct{color:#52b788;}.aa-solid .aa-mcd{background:#52b788;}
-.aa-low .aa-mct{color:#444;}.aa-low .aa-mcd{background:#2e2e2e;}
-.aa-ma{font-size:11px;color:#888;line-height:1.5;padding:5px 0;border-bottom:1px solid #1a1a1a;}
-.aa-ma:last-child{border-bottom:none;}
-.aa-atbl{width:100%;max-width:680px;background:#111;border:1px solid #2e2e2e;margin-bottom:20px;}
-.aa-atbl-hdr{padding:12px 22px;border-bottom:1px solid #2e2e2e;display:grid;grid-template-columns:1fr 70px 70px 90px;gap:10px;}
-.aa-ath{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#444;text-align:center;}
-.aa-ath:first-child{text-align:left;}
-.aa-arow{padding:12px 22px;border-bottom:1px solid #1a1a1a;display:grid;grid-template-columns:1fr 70px 70px 90px;gap:10px;align-items:center;}
-.aa-arow:last-child{border-bottom:none;}.aa-arow:hover{background:#1a1a1a;}
-.aa-at{font-size:12px;color:#f0f0f0;line-height:1.4;}
-.aa-av{font-family:'Azeret Mono',monospace;font-size:11px;text-align:center;}
-.aa-af{display:flex;justify-content:center;}
-.aa-rst-row{display:flex;justify-content:center;gap:10px;margin-top:16px;}
-.aa-empty{font-size:11px;color:#444;font-style:italic;padding:8px 0;}
+.aa-app{min-height:100%;font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;align-items:center;padding:48px 20px 100px;position:relative;}
+.theme-light .aa-app{background:var(--aa-bg,#fafafa);color:var(--aa-fg,#1a1a2e);}
+.theme-dark .aa-app,.aa-app{background:var(--aa-bg,#0a0a0f);color:var(--aa-fg,#f0f0f0);}
+:root,.theme-dark{--aa-bg:#0a0a0f;--aa-fg:#f0f0f0;--aa-card:#111118;--aa-card2:#0d0d14;--aa-border:#1e1e2e;--aa-border2:#2a2a3a;--aa-muted:#666;--aa-muted2:#444;--aa-accent:#e63946;--aa-accent-dim:rgba(230,57,70,.1);--aa-blue:#60a5fa;--aa-orange:#f4a261;--aa-green:#52b788;--aa-blue-dim:rgba(96,165,250,.1);--aa-orange-dim:rgba(244,162,97,.1);--aa-green-dim:rgba(82,183,136,.1);}
+.theme-light{--aa-bg:#fafafa;--aa-fg:#1a1a2e;--aa-card:#ffffff;--aa-card2:#f5f5f8;--aa-border:#e2e2ea;--aa-border2:#d0d0da;--aa-muted:#777;--aa-muted2:#999;--aa-accent:#d62839;--aa-accent-dim:rgba(214,40,57,.08);--aa-blue:#3b82f6;--aa-orange:#e8913a;--aa-green:#3a9d6e;--aa-blue-dim:rgba(59,130,246,.08);--aa-orange-dim:rgba(232,145,58,.08);--aa-green-dim:rgba(58,157,110,.08);}
+
+/* Header */
+.aa-hero{width:100%;max-width:720px;margin-bottom:44px;display:flex;flex-direction:column;gap:16px;}
+.aa-hero-top{display:flex;align-items:center;gap:12px;}
+.aa-badge{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--aa-accent);background:var(--aa-accent-dim);border:1px solid rgba(230,57,70,.2);padding:5px 12px;border-radius:2px;}
+.aa-suite-tag{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--aa-muted2);}
+.aa-hero-title{font-family:'Syne',sans-serif;font-size:clamp(36px,6vw,58px);font-weight:800;line-height:.92;letter-spacing:-2px;}
+.aa-hero-title em{font-style:normal;color:var(--aa-accent);}
+.aa-hero-desc{font-size:14px;color:var(--aa-muted);line-height:1.7;max-width:480px;border-left:2px solid var(--aa-accent);padding-left:16px;}
+
+/* Stepper */
+.aa-stepper{width:100%;max-width:720px;display:flex;align-items:center;gap:0;margin-bottom:40px;}
+.aa-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;cursor:default;}
+.aa-step-dot{width:36px;height:36px;border-radius:50%;border:2px solid var(--aa-border2);background:var(--aa-card);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--aa-muted2);transition:all .35s;z-index:2;}
+.aa-step.active .aa-step-dot{border-color:var(--aa-accent);color:var(--aa-accent);box-shadow:0 0 20px var(--aa-accent-dim),0 0 0 4px var(--aa-accent-dim);}
+.aa-step.done .aa-step-dot{border-color:var(--aa-green);background:var(--aa-green);color:#fff;}
+.aa-step-label{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--aa-muted2);transition:color .3s;}
+.aa-step.active .aa-step-label{color:var(--aa-accent);}
+.aa-step.done .aa-step-label{color:var(--aa-green);}
+.aa-step-line{position:absolute;top:18px;left:calc(50% + 22px);right:calc(-50% + 22px);height:2px;background:var(--aa-border);z-index:1;}
+.aa-step.done .aa-step-line{background:var(--aa-green);}
+.aa-step:last-child .aa-step-line{display:none;}
+
+/* Panels */
+.aa-panel{width:100%;max-width:720px;background:var(--aa-card);border:1px solid var(--aa-border);border-radius:12px;padding:36px;margin-bottom:16px;animation:aaFadeIn .35s ease;position:relative;overflow:hidden;}
+.aa-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--aa-accent),transparent 60%);}
+@keyframes aaFadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.aa-panel-title{font-family:'Syne',sans-serif;font-size:21px;font-weight:700;letter-spacing:-.5px;margin-bottom:6px;}
+.aa-panel-desc{font-size:13px;color:var(--aa-muted);line-height:1.65;margin-bottom:24px;}
+
+/* Inputs */
+.aa-label{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--aa-muted2);display:block;margin-bottom:9px;}
+.aa-textarea,.aa-input{width:100%;background:var(--aa-card2);border:1px solid var(--aa-border);border-radius:8px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--aa-fg);outline:none;transition:border-color .2s,box-shadow .2s;resize:none;}
+.aa-textarea:focus,.aa-input:focus{border-color:var(--aa-accent);box-shadow:0 0 0 3px var(--aa-accent-dim);}
+.aa-textarea::placeholder,.aa-input::placeholder{color:var(--aa-muted2);font-style:italic;}
+
+/* Add Row */
+.aa-add-row{display:flex;gap:10px;margin-top:16px;}
+.aa-add-row .aa-input{flex:1;}
+.aa-hint{font-family:'Azeret Mono',monospace;font-size:9px;color:var(--aa-muted2);margin-top:10px;line-height:1.6;}
+.aa-strategy-quote{font-size:13px;color:var(--aa-muted);border-left:3px solid var(--aa-accent);padding:10px 16px;background:var(--aa-accent-dim);border-radius:0 8px 8px 0;margin-bottom:20px;line-height:1.6;font-style:italic;}
+
+/* Assumption Items */
+.aa-items{margin-top:20px;display:flex;flex-direction:column;gap:10px;}
+.aa-card{background:var(--aa-card2);border:1px solid var(--aa-border);border-radius:10px;padding:20px;transition:border-color .3s,box-shadow .3s;position:relative;overflow:hidden;}
+.aa-card::after{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:4px 0 0 4px;transition:background .3s;}
+.aa-card.blind-spot::after{background:var(--aa-accent);}
+.aa-card.caution::after{background:var(--aa-orange);}
+.aa-card.solid::after{background:var(--aa-green);}
+.aa-card.untested::after{background:var(--aa-blue);}
+.aa-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:16px;}
+.aa-card-text{font-size:14px;line-height:1.5;flex:1;}
+.aa-card-del{background:none;border:none;cursor:pointer;color:var(--aa-muted2);font-size:18px;line-height:1;padding:2px 6px;border-radius:4px;transition:all .15s;}
+.aa-card-del:hover{color:var(--aa-accent);background:var(--aa-accent-dim);}
+
+/* Rating Controls */
+.aa-rating-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.aa-rating-group{}
+.aa-rating-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.aa-rating-label{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--aa-muted2);}
+.aa-rating-value{font-family:'Azeret Mono',monospace;font-size:11px;font-weight:600;}
+.aa-rating-bar{display:flex;gap:4px;}
+.aa-pip{flex:1;height:8px;background:var(--aa-border);cursor:pointer;border-radius:4px;transition:background .15s,transform .1s;}
+.aa-pip:hover{transform:scaleY(1.4);}
+.aa-pip.ev-on{background:var(--aa-blue);}
+.aa-pip.wt-on{background:var(--aa-orange);}
+.aa-rating-labels{display:flex;justify-content:space-between;margin-top:4px;}
+.aa-rating-labels span{font-family:'Azeret Mono',monospace;font-size:8px;color:var(--aa-muted2);}
+
+/* Flag badge */
+.aa-flag{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:20px;}
+.flag-blind{background:var(--aa-accent-dim);color:var(--aa-accent);border:1px solid rgba(230,57,70,.25);}
+.flag-caution{background:var(--aa-orange-dim);color:var(--aa-orange);border:1px solid rgba(244,162,97,.25);}
+.flag-solid{background:var(--aa-green-dim);color:var(--aa-green);border:1px solid rgba(82,183,136,.25);}
+.flag-untested{background:var(--aa-blue-dim);color:var(--aa-blue);border:1px solid rgba(96,165,250,.2);}
+
+/* Empty state */
+.aa-empty{font-size:13px;color:var(--aa-muted2);font-style:italic;text-align:center;padding:24px 0;}
+
+/* Navigation */
+.aa-nav{width:100%;max-width:720px;display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
+.aa-btn{font-family:'Azeret Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;transition:all .2s;font-weight:600;}
+.aa-btn-primary{background:var(--aa-accent);color:#fff;box-shadow:0 4px 14px var(--aa-accent-dim);}
+.aa-btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 6px 20px var(--aa-accent-dim);}
+.aa-btn-primary:disabled{opacity:.35;cursor:not-allowed;transform:none;filter:none;}
+.aa-btn-ghost{background:transparent;color:var(--aa-muted);border:1px solid var(--aa-border);}
+.aa-btn-ghost:hover{background:var(--aa-card);color:var(--aa-fg);border-color:var(--aa-border2);}
+.aa-btn-ghost:disabled{opacity:.3;cursor:not-allowed;}
+
+/* Results */
+.aa-results-hero{width:100%;max-width:720px;text-align:center;margin-bottom:32px;}
+.aa-results-headline{font-family:'Syne',sans-serif;font-size:clamp(30px,5vw,48px);font-weight:800;line-height:1;letter-spacing:-1px;margin-bottom:8px;}
+.aa-results-sub{font-size:13px;color:var(--aa-muted);}
+.aa-results-strategy{font-size:12px;color:var(--aa-muted2);border-left:2px solid var(--aa-border2);padding-left:12px;margin-top:12px;line-height:1.6;text-align:left;display:inline-block;}
+
+/* Stats Grid */
+.aa-stats-grid{width:100%;max-width:720px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;}
+.aa-stat-card{background:var(--aa-card);border:1px solid var(--aa-border);border-radius:10px;padding:20px;text-align:center;transition:transform .2s;}
+.aa-stat-card:hover{transform:translateY(-2px);}
+.aa-stat-num{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;line-height:1;margin-bottom:6px;}
+.aa-stat-label{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--aa-muted2);}
+
+/* Insight banner */
+.aa-insight{width:100%;max-width:720px;border-radius:10px;border-left:4px solid var(--aa-accent);background:var(--aa-accent-dim);padding:20px 24px;margin-bottom:24px;}
+.aa-insight-tag{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--aa-accent);margin-bottom:8px;}
+.aa-insight-text{font-size:13px;color:var(--aa-muted);line-height:1.7;}
+
+/* Category Matrix */
+.aa-matrix{width:100%;max-width:720px;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
+.aa-matrix-card{background:var(--aa-card);border:1px solid var(--aa-border);border-radius:10px;padding:20px;min-height:90px;}
+.aa-matrix-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.aa-matrix-dot{width:8px;height:8px;border-radius:50%;}
+.aa-matrix-title{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;}
+.aa-matrix-item{font-size:12px;color:var(--aa-muted);line-height:1.5;padding:6px 0;border-bottom:1px solid var(--aa-border);}
+.aa-matrix-item:last-child{border-bottom:none;}
+.aa-cat-blind .aa-matrix-title{color:var(--aa-accent);}.aa-cat-blind .aa-matrix-dot{background:var(--aa-accent);}
+.aa-cat-caution .aa-matrix-title{color:var(--aa-orange);}.aa-cat-caution .aa-matrix-dot{background:var(--aa-orange);}
+.aa-cat-solid .aa-matrix-title{color:var(--aa-green);}.aa-cat-solid .aa-matrix-dot{background:var(--aa-green);}
+.aa-cat-low .aa-matrix-title{color:var(--aa-muted2);}.aa-cat-low .aa-matrix-dot{background:var(--aa-border2);}
+
+/* Full Table */
+.aa-table{width:100%;max-width:720px;background:var(--aa-card);border:1px solid var(--aa-border);border-radius:10px;overflow:hidden;margin-bottom:24px;}
+.aa-table-hdr{padding:14px 24px;border-bottom:1px solid var(--aa-border);display:grid;grid-template-columns:1fr 80px 80px 100px;gap:10px;background:var(--aa-card2);}
+.aa-table-th{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--aa-muted2);text-align:center;}
+.aa-table-th:first-child{text-align:left;}
+.aa-table-row{padding:14px 24px;border-bottom:1px solid var(--aa-border);display:grid;grid-template-columns:1fr 80px 80px 100px;gap:10px;align-items:center;transition:background .15s;}
+.aa-table-row:last-child{border-bottom:none;}
+.aa-table-row:hover{background:var(--aa-card2);}
+.aa-table-cell{font-size:13px;line-height:1.4;}
+.aa-table-val{font-family:'Azeret Mono',monospace;font-size:12px;text-align:center;}
+.aa-table-flag{display:flex;justify-content:center;}
+
+/* Reset Row */
+.aa-actions{display:flex;justify-content:center;gap:12px;margin-top:12px;}
 `;
 
 const EVLBLS=["Gut feel","Anecdote","Proxy data","Validated","Verified"];
@@ -627,86 +677,129 @@ function AssumptionAudit(){
 
   return(<div className="aa-app">
     <style>{AA_CSS}</style>
-    <div className="aa-hdr">
-      <div className="aa-hdr-meta"><span className="aa-tag">Audit Tool</span><span className="aa-suite">Decision Suite · 01 of 03</span></div>
-      <div className="aa-title">Assumption<br/><em>Audit</em></div>
-      <div className="aa-sub">Surface hidden beliefs. Rate each on evidence quality and load-bearing weight. Find blind spots before they find you.</div>
+
+    {/* Hero Header */}
+    <div className="aa-hero">
+      <div className="aa-hero-top"><span className="aa-badge">Audit Tool</span><span className="aa-suite-tag">Decision Suite · 01</span></div>
+      <div className="aa-hero-title">Assumption<br/><em>Audit</em></div>
+      <div className="aa-hero-desc">Surface hidden beliefs. Rate each on evidence quality and load-bearing weight. Find blind spots before they find you.</div>
     </div>
-    <div className="aa-phases">{PHASES.map((_,i)=><div key={i} className={`aa-ph${phase===i?" active":phase>i?" done":""}`}/>)}</div>
-    <div className="aa-ph-lbls">{PHASES.map((p,i)=><span key={i} className={`aa-phl${phase===i?" active":phase>i?" done":""}`}>{p}</span>)}</div>
 
-    {phase===0&&(<div className="aa-panel"><div className="aa-notch"/>
-      <div className="aa-pt">State your strategy</div>
-      <div className="aa-pd">Enter the plan or belief you want to examine.</div>
-      <label className="aa-fl">Strategy / Plan / Belief</label>
-      <textarea className="aa-ta" rows={4} placeholder={`e.g. "Hiring a VP of Sales will fix our pipeline problem"`} value={strategy} onChange={e=>setStrategy(e.target.value)}/>
+    {/* Stepper */}
+    <div className="aa-stepper">
+      {PHASES.map((p,i)=>(
+        <div key={i} className={`aa-step${phase===i?" active":phase>i?" done":""}`}>
+          <div className="aa-step-dot">{phase>i?"✓":i+1}</div>
+          <span className="aa-step-label">{p}</span>
+          <div className="aa-step-line"/>
+        </div>
+      ))}
+    </div>
+
+    {/* Phase 0: Strategy */}
+    {phase===0&&(<div className="aa-panel">
+      <div className="aa-panel-title">State your strategy</div>
+      <div className="aa-panel-desc">Enter the plan, strategy, or belief you want to stress-test for hidden assumptions.</div>
+      <label className="aa-label">Strategy / Plan / Belief</label>
+      <textarea className="aa-textarea" rows={4} placeholder={`e.g. "Hiring a VP of Sales will fix our pipeline problem"`} value={strategy} onChange={e=>setStrategy(e.target.value)}/>
     </div>)}
 
-    {phase===1&&(<div className="aa-panel"><div className="aa-notch"/>
-      <div className="aa-pt">Extract the assumptions</div>
-      <div className="aa-pd">What must be true for this strategy to work?</div>
-      <div className="aa-res-strat">"{strategy}"</div>
-      <div className="aa-divider"/>
-      <label className="aa-fl">Add assumption</label>
-      <div className="aa-add-row"><input className="aa-in" type="text" placeholder='"Our target customers have budget now"' value={aInp} onChange={e=>setAInp(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addA()}/><button className="aa-btn" onClick={addA}>Add</button></div>
-      <div className="aa-hint">// Press Enter to add. Aim for 5–10 assumptions.</div>
-      <div style={{marginTop:18}}>{assumptions.length===0&&<div className="aa-empty">No assumptions added yet.</div>}{assumptions.map((a,i)=><div className="aa-item" key={i}><div className="aa-ih"><div className="aa-it">{a.text}</div><button className="aa-del" onClick={()=>remA(i)}>×</button></div></div>)}</div>
-    </div>)}
-
-    {phase===2&&(<div className="aa-panel"><div className="aa-notch"/>
-      <div className="aa-pt">Rate each assumption</div>
-      <div className="aa-pd">Set evidence quality and load-bearing weight for each.</div>
-      {assumptions.map((a,i)=>{
-        const flag=aaFlag(a.evidence,a.weight);
-        return(<div className={`aa-item ${flag==="blind-spot"?"blind-spot":flag==="caution"?"caution":flag==="solid"?"solid":""}`} key={i}>
-          <div className="aa-ih"><div className="aa-it">{a.text}</div><AAFlag flag={flag}/></div>
-          <div className="aa-ics">
-            <div className="aa-cg">
-              <div className="aa-ct"><span>Evidence quality</span><span className="aa-cv" style={{color:"#60a5fa"}}>{EVLBLS[a.evidence-1]}</span></div>
-              <div className="aa-rt">{[1,2,3,4,5].map(j=><div key={j} className={`aa-rp${a.evidence>j-1?" ef":""}`} onClick={()=>updA(i,"evidence",j)}/>)}</div>
-              <div className="aa-ev-lbls"><span className="aa-el">Gut feel</span><span className="aa-el">Verified</span></div>
-            </div>
-            <div className="aa-cg">
-              <div className="aa-ct"><span>Load-bearing</span><span className="aa-cv" style={{color:"#f4a261"}}>{WLBLS[a.weight-1]}</span></div>
-              <div className="aa-rt">{[1,2,3,4,5].map(j=><div key={j} className={`aa-rp${a.weight>j-1?" wf":""}`} onClick={()=>updA(i,"weight",j)}/>)}</div>
-              <div className="aa-ev-lbls"><span className="aa-el">Trivial</span><span className="aa-el">Critical</span></div>
+    {/* Phase 1: Extract assumptions */}
+    {phase===1&&(<div className="aa-panel">
+      <div className="aa-panel-title">Extract the assumptions</div>
+      <div className="aa-panel-desc">What must be true for this strategy to work? List every belief baked into the plan.</div>
+      <div className="aa-strategy-quote">"{strategy}"</div>
+      <label className="aa-label">Add assumption</label>
+      <div className="aa-add-row">
+        <input className="aa-input" type="text" placeholder='"Our target customers have budget now"' value={aInp} onChange={e=>setAInp(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addA()}/>
+        <button className="aa-btn aa-btn-primary" onClick={addA}>Add</button>
+      </div>
+      <div className="aa-hint">Press Enter to add · Aim for 5–10 assumptions</div>
+      <div className="aa-items">
+        {assumptions.length===0&&<div className="aa-empty">No assumptions added yet. Start typing above.</div>}
+        {assumptions.map((a,i)=>(
+          <div className="aa-card untested" key={i}>
+            <div className="aa-card-head">
+              <div className="aa-card-text">{a.text}</div>
+              <button className="aa-card-del" onClick={()=>remA(i)}>×</button>
             </div>
           </div>
-        </div>);
-      })}
+        ))}
+      </div>
     </div>)}
 
-    {phase===3&&(<>
-      <div className="aa-res-hdr">
-        <div className="aa-res-hl">{blindSpots.length===0?"Defensible.":blindSpots.length<=2?"Manageable risk.":"High exposure."}</div>
-        <div className="aa-res-ctx">Audit complete · {assumptions.length} assumptions examined</div>
-        <div className="aa-res-strat">"{strategy}"</div>
-      </div>
-      <div className="aa-stats">
-        <div className="aa-stat"><div className="aa-snum" style={{color:"#e63946"}}>{blindSpots.length}</div><div className="aa-slbl">Blind Spots</div></div>
-        <div className="aa-stat"><div className="aa-snum" style={{color:"#f4a261"}}>{cautions.length}</div><div className="aa-slbl">Caution</div></div>
-        <div className="aa-stat"><div className="aa-snum" style={{color:"#52b788"}}>{solids.length}</div><div className="aa-slbl">Solid</div></div>
-        <div className="aa-stat"><div className="aa-snum" style={{color:"#888"}}>{untested.length}</div><div className="aa-slbl">Untested</div></div>
-      </div>
-      {genInsight()&&<div className="aa-ins"><div className="aa-ins-lbl">Audit Verdict</div><div className="aa-ins-txt">{genInsight()}</div></div>}
-      <div className="aa-mx">
-        {(["Blind Spots","Caution","Solid","Untested"] as const).map((label,idx)=>{
-          const flags=["blind-spot","caution","solid","untested"];
-          const classes=["aa-blind","aa-caution","aa-solid","aa-low"];
-          const flag=flags[idx];
-          const cls=classes[idx];
-          const items=assumptions.filter(a=>aaFlag(a.evidence,a.weight)===flag);
-          return(<div className={`aa-mc ${cls}`} key={flag}><div className="aa-mct"><div className="aa-mcd"/>{label}</div>{items.length===0?<div className="aa-empty">None identified.</div>:items.map((a,i)=><div className="aa-ma" key={i}>{a.text}</div>)}</div>);
+    {/* Phase 2: Rate */}
+    {phase===2&&(<div className="aa-panel">
+      <div className="aa-panel-title">Rate each assumption</div>
+      <div className="aa-panel-desc">Set evidence quality and load-bearing weight. Watch classifications update in real-time.</div>
+      <div className="aa-items">
+        {assumptions.map((a,i)=>{
+          const flag=aaFlag(a.evidence,a.weight);
+          return(<div className={`aa-card ${flag}`} key={i}>
+            <div className="aa-card-head">
+              <div className="aa-card-text">{a.text}</div>
+              <AAFlag flag={flag}/>
+            </div>
+            <div className="aa-rating-grid">
+              <div className="aa-rating-group">
+                <div className="aa-rating-header">
+                  <span className="aa-rating-label">Evidence</span>
+                  <span className="aa-rating-value" style={{color:"var(--aa-blue)"}}>{EVLBLS[a.evidence-1]}</span>
+                </div>
+                <div className="aa-rating-bar">{[1,2,3,4,5].map(j=><div key={j} className={`aa-pip${a.evidence>=j?" ev-on":""}`} onClick={()=>updA(i,"evidence",j)}/>)}</div>
+                <div className="aa-rating-labels"><span>Gut feel</span><span>Verified</span></div>
+              </div>
+              <div className="aa-rating-group">
+                <div className="aa-rating-header">
+                  <span className="aa-rating-label">Weight</span>
+                  <span className="aa-rating-value" style={{color:"var(--aa-orange)"}}>{WLBLS[a.weight-1]}</span>
+                </div>
+                <div className="aa-rating-bar">{[1,2,3,4,5].map(j=><div key={j} className={`aa-pip${a.weight>=j?" wt-on":""}`} onClick={()=>updA(i,"weight",j)}/>)}</div>
+                <div className="aa-rating-labels"><span>Trivial</span><span>Critical</span></div>
+              </div>
+            </div>
+          </div>);
         })}
       </div>
-      <div className="aa-atbl">
-        <div className="aa-atbl-hdr"><span className="aa-ath">Assumption</span><span className="aa-ath">Evidence</span><span className="aa-ath">Weight</span><span className="aa-ath">Status</span></div>
-        {assumptions.map((a,i)=><div className="aa-arow" key={i}><div className="aa-at">{a.text}</div><div className="aa-av" style={{color:"#60a5fa"}}>{a.evidence}/5</div><div className="aa-av" style={{color:"#f4a261"}}>{a.weight}/5</div><div className="aa-af"><AAFlag flag={aaFlag(a.evidence,a.weight)}/></div></div>)}
+    </div>)}
+
+    {/* Phase 3: Results */}
+    {phase===3&&(<>
+      <div className="aa-results-hero">
+        <div className="aa-results-headline">{blindSpots.length===0?"Defensible.":blindSpots.length<=2?"Manageable risk.":"High exposure."}</div>
+        <div className="aa-results-sub">Audit complete · {assumptions.length} assumptions examined</div>
+        <div className="aa-results-strategy">"{strategy}"</div>
       </div>
-      <div className="aa-rst-row"><button className="aa-btn aa-btn-g" onClick={reset}>↺ New Audit</button><button className="aa-btn aa-btn-g" onClick={()=>setPhase(2)}>← Revise</button></div>
+
+      <div className="aa-stats-grid">
+        <div className="aa-stat-card"><div className="aa-stat-num" style={{color:"var(--aa-accent)"}}>{blindSpots.length}</div><div className="aa-stat-label">Blind Spots</div></div>
+        <div className="aa-stat-card"><div className="aa-stat-num" style={{color:"var(--aa-orange)"}}>{cautions.length}</div><div className="aa-stat-label">Caution</div></div>
+        <div className="aa-stat-card"><div className="aa-stat-num" style={{color:"var(--aa-green)"}}>{solids.length}</div><div className="aa-stat-label">Solid</div></div>
+        <div className="aa-stat-card"><div className="aa-stat-num" style={{color:"var(--aa-muted)"}}>{untested.length}</div><div className="aa-stat-label">Untested</div></div>
+      </div>
+
+      {genInsight()&&<div className="aa-insight"><div className="aa-insight-tag">Audit Verdict</div><div className="aa-insight-text">{genInsight()}</div></div>}
+
+      <div className="aa-matrix">
+        {(["Blind Spots","Caution","Solid","Untested"] as const).map((label,idx)=>{
+          const flags=["blind-spot","caution","solid","untested"];
+          const classes=["aa-cat-blind","aa-cat-caution","aa-cat-solid","aa-cat-low"];
+          const flag=flags[idx];const cls=classes[idx];
+          const items=assumptions.filter(a=>aaFlag(a.evidence,a.weight)===flag);
+          return(<div className={`aa-matrix-card ${cls}`} key={flag}><div className="aa-matrix-head"><div className="aa-matrix-dot"/><span className="aa-matrix-title">{label}</span></div>{items.length===0?<div className="aa-empty">None identified.</div>:items.map((a,i)=><div className="aa-matrix-item" key={i}>{a.text}</div>)}</div>);
+        })}
+      </div>
+
+      <div className="aa-table">
+        <div className="aa-table-hdr"><span className="aa-table-th">Assumption</span><span className="aa-table-th">Evidence</span><span className="aa-table-th">Weight</span><span className="aa-table-th">Status</span></div>
+        {assumptions.map((a,i)=><div className="aa-table-row" key={i}><div className="aa-table-cell">{a.text}</div><div className="aa-table-val" style={{color:"var(--aa-blue)"}}>{a.evidence}/5</div><div className="aa-table-val" style={{color:"var(--aa-orange)"}}>{a.weight}/5</div><div className="aa-table-flag"><AAFlag flag={aaFlag(a.evidence,a.weight)}/></div></div>)}
+      </div>
+
+      <div className="aa-actions"><button className="aa-btn aa-btn-ghost" onClick={reset}>↺ New Audit</button><button className="aa-btn aa-btn-ghost" onClick={()=>setPhase(2)}>← Revise</button></div>
     </>)}
 
-    {phase<3&&<div className="aa-nav"><button className="aa-btn aa-btn-g" onClick={()=>setPhase(p=>p-1)} disabled={phase===0}>← Back</button><button className="aa-btn" onClick={()=>setPhase(p=>p+1)} disabled={!canNext()}>{phase===2?"Generate Audit →":"Continue →"}</button></div>}
+    {/* Navigation */}
+    {phase<3&&<div className="aa-nav"><button className="aa-btn aa-btn-ghost" onClick={()=>setPhase(p=>p-1)} disabled={phase===0}>← Back</button><button className="aa-btn aa-btn-primary" onClick={()=>setPhase(p=>p+1)} disabled={!canNext()}>{phase===2?"Generate Audit →":"Continue →"}</button></div>}
   </div>);
 }
 
