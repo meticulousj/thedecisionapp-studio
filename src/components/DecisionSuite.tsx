@@ -1501,6 +1501,14 @@ const NAV_ITEMS = [
 export default function DecisionSuiteApp() {
   const [active, setActive] = useState("home");
   const [ledgerEntries, setLedgerEntries] = useState<CLEntry[]>([]);
+  const [theme, setTheme] = useState<"dark"|"light">(() => {
+    try { return (localStorage.getItem("ds-theme") as "dark"|"light") || "dark"; } catch { return "dark"; }
+  });
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    try { localStorage.setItem("ds-theme", next); } catch {}
+  };
 
   useEffect(() => {
     function loadLedger() {
