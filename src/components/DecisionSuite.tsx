@@ -1564,8 +1564,11 @@ export default function DecisionSuiteApp() {
               <span className="path-sep">/</span>
               <span className="path-active">{currentLabel}</span>
             </div>
-            <div className="topbar-right">
-              {intPct !== null ? `Integrity: ${intPct}%` : ""}
+            <div className="topbar-right" style={{display:"flex",alignItems:"center",gap:16}}>
+              {intPct !== null ? <span>{`Integrity: ${intPct}%`}</span> : null}
+              <button onClick={toggleTheme} style={{background:"var(--bg3)",border:"1px solid var(--border2)",borderRadius:6,width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:16,color:"var(--text)",transition:"all .15s"}} title={`Switch to ${theme==="dark"?"light":"dark"} mode`}>
+                {theme==="dark"?"☀️":"🌙"}
+              </button>
             </div>
           </div>
           <div className="tool-frame">
