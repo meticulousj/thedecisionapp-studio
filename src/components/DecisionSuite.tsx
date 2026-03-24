@@ -1214,114 +1214,165 @@ function CommitmentLedger(){
 // TOOL: ONE-PAGE OS
 // ─────────────────────────────────────────
 const OS_CSS=`
-.os-app{min-height:100%;background:#ffffff;font-family:'DM Sans',sans-serif;color:#000;display:flex;flex-direction:column;align-items:center;padding-bottom:80px;}
-.os-rail{width:100%;background:#000;height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:50;}
-.os-rail-mark{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#fff;}
-.os-rail-r{display:flex;gap:5px;}
-.os-rbtn{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:5px 14px;border:1px solid rgba(255,255,255,.25);background:transparent;color:rgba(255,255,255,.6);cursor:pointer;transition:all .2s;}
-.os-rbtn:hover{background:rgba(255,255,255,.1);color:#fff;}
-.os-rbtn.active{background:#fff;color:#000;border-color:#fff;}
-.os-hdr{width:100%;max-width:860px;padding:44px 36px 32px;display:grid;grid-template-columns:1fr auto;gap:28px;align-items:end;border-bottom:2px solid #000;margin-bottom:0;}
-.os-ey{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#666;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
-.os-ey-line{display:block;width:24px;height:1px;background:#666;}
-.os-ht{font-family:'Syne',sans-serif;font-size:clamp(36px,6vw,64px);font-weight:700;line-height:.95;letter-spacing:-2px;}
-.os-ht span{display:block;font-family:'Newsreader',serif;font-style:italic;font-weight:400;letter-spacing:-1px;}
-.os-hr{text-align:right;}
-.os-hv{font-family:'Azeret Mono',monospace;font-size:10px;color:#aaa;line-height:2.1;}
-.os-hde{font-family:'Azeret Mono',monospace;font-size:10px;background:none;border:none;border-bottom:1px solid #ddd;outline:none;text-align:right;cursor:text;padding:2px 3px;width:160px;color:#666;}
-.os-prog{width:100%;max-width:860px;padding:14px 36px 0;display:flex;align-items:center;gap:14px;}
-.os-pt{flex:1;height:3px;background:#f0f0f0;overflow:hidden;}
-.os-pf{height:100%;background:#000;transition:width .5s ease;}
-.os-plbl{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;white-space:nowrap;}
-.os-edit{width:100%;max-width:860px;padding:0 36px;}
-.os-sb{border-bottom:1px solid #f0f0f0;padding:36px 0;display:grid;grid-template-columns:200px 1fr;gap:36px;animation:osFU .3s ease both;}
+.os-app{min-height:100%;background:var(--bg2);font-family:'DM Sans',sans-serif;color:var(--text);display:flex;flex-direction:column;padding-bottom:80px;}
+
+/* Top bar */
+.os-topbar{width:100%;background:var(--bg);border-bottom:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.os-topbar-left{display:flex;align-items:center;gap:14px;}
+.os-topbar-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text);}
+.os-topbar-title span{color:var(--gold);}
+.os-topbar-sub{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--text3);}
+.os-topbar-right{display:flex;gap:6px;align-items:center;}
+.os-mode-btn{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:6px 16px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .2s;border-radius:4px;}
+.os-mode-btn:hover{background:var(--bg3);color:var(--text);}
+.os-mode-btn.active{background:var(--gold);color:#000;border-color:var(--gold);}
+
+/* Progress */
+.os-progress-wrap{max-width:900px;width:100%;margin:20px auto 0;padding:0 32px;}
+.os-progress-bar{display:flex;align-items:center;gap:12px;}
+.os-progress-track{flex:1;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.os-progress-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .5s ease;}
+.os-progress-label{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);white-space:nowrap;}
+
+/* Identity banner */
+.os-identity{max-width:900px;width:100%;margin:24px auto 0;padding:0 32px;}
+.os-identity-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:24px 28px;display:flex;align-items:center;gap:20px;}
+.os-avatar{width:48px;height:48px;border-radius:50%;background:var(--gold-d);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--gold);flex-shrink:0;}
+.os-identity-info{flex:1;}
+.os-identity-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);}
+.os-identity-input{background:transparent;border:none;border-bottom:1px dashed var(--border2);font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);outline:none;width:100%;padding:2px 0;}
+.os-identity-input::placeholder{color:var(--text3);}
+.os-identity-meta{display:flex;gap:16px;margin-top:4px;}
+.os-identity-meta span{font-family:'Azeret Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:1px;}
+
+/* Main grid */
+.os-grid{max-width:900px;width:100%;margin:20px auto 0;padding:0 32px;display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.os-grid .full{grid-column:1/-1;}
+
+/* Card */
+.os-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:0;overflow:hidden;transition:border-color .2s;}
+.os-card:hover{border-color:var(--border2);}
+.os-card-header{padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.os-card-num{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--gold);margin-right:10px;}
+.os-card-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;}
+.os-card-hint{font-family:'Newsreader',serif;font-style:italic;font-size:11px;color:var(--text2);}
+.os-card-body{padding:16px 20px 20px;}
+
+/* Priority */
+.os-priority-input{width:100%;background:transparent;border:none;border-bottom:2px solid var(--gold);padding:10px 0;font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);outline:none;letter-spacing:-.3px;}
+.os-priority-input::placeholder{color:var(--text3);font-weight:400;}
+.os-tf-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
+.os-tf-input{font-family:'Azeret Mono',monospace;font-size:10px;background:transparent;border:none;border-bottom:1px solid var(--border);outline:none;color:var(--text2);padding:3px 0;width:120px;}
+.os-char-count{font-family:'Azeret Mono',monospace;font-size:9px;color:var(--text3);}
+
+/* List items */
+.os-list-item{display:flex;align-items:center;gap:8px;margin-bottom:6px;animation:osFU .2s ease;}
+.os-list-marker{font-family:'Azeret Mono',monospace;font-size:10px;color:var(--text3);flex-shrink:0;width:16px;text-align:center;}
+.os-list-input{flex:1;background:transparent;border:none;border-bottom:1px solid var(--border);padding:8px 0;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s;}
+.os-list-input:focus{border-color:var(--gold);}
+.os-list-input::placeholder{color:var(--text3);font-style:italic;}
+.os-list-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;line-height:1;padding:2px 4px;transition:color .15s;flex-shrink:0;border-radius:3px;}
+.os-list-del:hover{color:var(--red);background:var(--red-d);}
+.os-add-btn{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);background:none;border:1px dashed var(--border);cursor:pointer;padding:8px 14px;transition:all .15s;border-radius:4px;margin-top:8px;width:100%;text-align:center;}
+.os-add-btn:hover{color:var(--gold);border-color:var(--gold);}
+
+/* Rules */
+.os-rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.os-rule{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:12px;position:relative;}
+.os-rule-type{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.os-rule-type.yes{color:var(--green);}.os-rule-type.no{color:var(--red);}
+.os-rule-dot{width:6px;height:6px;border-radius:50%;}
+.os-rule-type.yes .os-rule-dot{background:var(--green);}.os-rule-type.no .os-rule-dot{background:var(--red);}
+.os-rule-textarea{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border);padding:6px 0;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);outline:none;resize:none;transition:border-color .2s;}
+.os-rule-textarea:focus{border-color:var(--gold);}
+.os-rule-textarea::placeholder{color:var(--text3);font-style:italic;}
+.os-rule-del{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;transition:color .15s;}
+.os-rule-del:hover{color:var(--red);}
+.os-rules-actions{display:flex;gap:8px;margin-top:10px;}
+
+/* Cadence */
+.os-cadence-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.os-cadence-item{border:1px solid var(--border);padding:10px 12px;background:var(--bg2);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:8px;border-radius:6px;}
+.os-cadence-item.active{border-color:var(--gold);background:var(--gold-d);}
+.os-cadence-check{width:14px;height:14px;border:1.5px solid var(--border2);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.os-cadence-item.active .os-cadence-check{border-color:var(--gold);background:var(--gold);}
+.os-cadence-dot{width:6px;height:6px;border-radius:50%;background:var(--bg);}
+.os-cadence-label{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--text);}
+
+/* Goals / Milestones */
+.os-goal-item{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;transition:all .15s;}
+.os-goal-item.done{opacity:0.6;}
+.os-goal-check{width:18px;height:18px;border:1.5px solid var(--border2);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;}
+.os-goal-check.checked{border-color:var(--green);background:var(--green);}
+.os-goal-check-mark{color:#fff;font-size:11px;font-weight:700;}
+.os-goal-input{flex:1;background:transparent;border:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;}
+.os-goal-input::placeholder{color:var(--text3);font-style:italic;}
+.os-goal-input.done-text{text-decoration:line-through;color:var(--text3);}
+
+/* Energy tracker */
+.os-energy-row{display:flex;gap:8px;flex-wrap:wrap;}
+.os-energy-item{padding:8px 16px;border:1px solid var(--border);border-radius:20px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text2);}
+.os-energy-item.active{border-color:var(--gold);background:var(--gold-d);color:var(--text);}
+.os-energy-note{width:100%;background:transparent;border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);outline:none;resize:none;margin-top:10px;transition:border-color .2s;}
+.os-energy-note:focus{border-color:var(--gold);}
+.os-energy-note::placeholder{color:var(--text3);font-style:italic;}
+
+/* Notes */
+.os-notes-area{width:100%;background:transparent;border:1px solid var(--border);border-radius:6px;padding:12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;resize:vertical;min-height:80px;transition:border-color .2s;}
+.os-notes-area:focus{border-color:var(--gold);}
+.os-notes-area::placeholder{color:var(--text3);font-style:italic;}
+
+/* Action row */
+.os-action-row{max-width:900px;width:100%;margin:20px auto 0;padding:0 32px;display:flex;justify-content:flex-end;gap:8px;}
+.os-action-btn{font-family:'Azeret Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:11px 22px;border:1.5px solid var(--gold);background:var(--gold);color:#000;cursor:pointer;transition:all .2s;border-radius:4px;font-weight:600;}
+.os-action-btn:hover{background:transparent;color:var(--gold);}
+.os-action-btn.ghost{background:transparent;color:var(--text2);border-color:var(--border);}
+.os-action-btn.ghost:hover{background:var(--bg3);color:var(--text);border-color:var(--border2);}
+
+/* View mode */
+.os-view-container{max-width:900px;width:100%;margin:24px auto 0;padding:0 32px;}
+.os-view-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.os-view-header{padding:28px 32px 24px;border-bottom:2px solid var(--gold);display:flex;justify-content:space-between;align-items:flex-end;}
+.os-view-header-left{}
+.os-view-doc-label{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
+.os-view-owner{font-family:'Syne',sans-serif;font-size:clamp(24px,4vw,36px);font-weight:700;line-height:.95;letter-spacing:-1px;color:var(--text);}
+.os-view-owner em{font-family:'Newsreader',serif;font-style:italic;font-weight:400;}
+.os-view-meta{text-align:right;}
+.os-view-meta div{font-family:'Azeret Mono',monospace;font-size:9px;color:var(--text3);line-height:2.1;}
+.os-view-meta strong{color:var(--text2);font-weight:500;}
+.os-view-body{display:grid;grid-template-columns:1fr 1fr;}
+.os-view-cell{padding:24px 28px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);min-height:160px;}
+.os-view-cell:nth-child(2n){border-right:none;}
+.os-view-cell.full{grid-column:1/-1;border-right:none;}
+.os-view-cell-header{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;padding-bottom:8px;border-bottom:1.5px solid var(--gold);}
+.os-view-cell-num{font-family:'Azeret Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:1px;}
+.os-view-cell-title{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text);}
+.os-view-priority{font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);line-height:1.3;letter-spacing:-.3px;}
+.os-view-empty{font-family:'Newsreader',serif;font-style:italic;font-size:13px;color:var(--text3);}
+.os-view-list{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.os-view-list-item{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--text);line-height:1.5;}
+.os-view-list-marker{font-family:'Azeret Mono',monospace;font-size:10px;color:var(--text3);flex-shrink:0;margin-top:2px;}
+.os-view-rules{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.os-view-rule{padding:10px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg2);}
+.os-view-rule-label{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+.os-view-rule-label.yes{color:var(--green);}.os-view-rule-label.no{color:var(--red);}
+.os-view-rule-text{font-size:12px;color:var(--text);line-height:1.5;}
+.os-view-cadence-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--text);}
+.os-view-cadence-item:last-child{border-bottom:none;}
+.os-view-cadence-freq{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--text3);width:54px;flex-shrink:0;}
+.os-view-footer{border-top:2px solid var(--gold);padding:14px 32px;display:flex;justify-content:space-between;align-items:center;}
+.os-view-footer-left{font-family:'Azeret Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;}
+.os-view-footer-right{font-family:'Newsreader',serif;font-style:italic;font-size:11px;color:var(--text2);}
+.os-incomplete-banner{max-width:900px;width:100%;margin:16px auto 0;padding:0 32px;}
+.os-incomplete-inner{background:var(--gold-d);border:1px solid var(--gold);border-radius:6px;padding:12px 18px;font-family:'Azeret Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:1px;text-align:center;}
+
 @keyframes osFU{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:translateY(0);}}
-.os-sb:nth-child(2){animation-delay:.04s;}.os-sb:nth-child(3){animation-delay:.08s;}.os-sb:nth-child(4){animation-delay:.12s;}.os-sb:nth-child(5){animation-delay:.16s;}
-.os-snum{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;color:#aaa;margin-bottom:7px;}
-.os-sname{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#000;line-height:1.2;margin-bottom:8px;}
-.os-shint{font-family:'Newsreader',serif;font-style:italic;font-size:12px;color:#666;line-height:1.7;}
-.os-swhy{font-family:'Azeret Mono',monospace;font-size:9px;color:#aaa;line-height:1.7;margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0;}
-.os-pi{width:100%;background:transparent;border:none;border-bottom:2px solid #000;padding:10px 0;font-family:'Syne',sans-serif;font-size:20px;font-weight:600;color:#000;outline:none;transition:border-color .2s;letter-spacing:-.5px;}
-.os-pi::placeholder{color:#ccc;font-weight:400;}
-.os-pi:focus{border-color:#000;}
-.os-cc{font-family:'Azeret Mono',monospace;font-size:9px;color:#aaa;text-align:right;margin-top:5px;}
-.os-li{display:flex;align-items:center;gap:8px;margin-bottom:5px;animation:osSlide .2s ease;}
-@keyframes osSlide{from{opacity:0;transform:translateX(-3px);}to{opacity:1;transform:translateX(0);}}
-.os-lm{font-family:'Azeret Mono',monospace;font-size:10px;color:#aaa;flex-shrink:0;width:18px;}
-.os-liin{flex:1;background:transparent;border:none;border-bottom:1px solid #f0f0f0;padding:7px 0;font-family:'DM Sans',sans-serif;font-size:13px;color:#000;outline:none;transition:border-color .2s;}
-.os-liin:focus{border-color:#000;}
-.os-liin::placeholder{color:#ccc;font-style:italic;}
-.os-ldel{background:none;border:none;color:#ccc;cursor:pointer;font-size:15px;line-height:1;padding:2px 4px;transition:color .15s;flex-shrink:0;}
-.os-ldel:hover{color:#c0392b;}
-.os-add-lnk{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#aaa;background:none;border:none;cursor:pointer;padding:7px 0;transition:color .15s;display:flex;align-items:center;gap:5px;margin-top:3px;}
-.os-add-lnk:hover{color:#000;}
-.os-rg{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.os-ri{background:#f8f8f8;border:1px solid #f0f0f0;padding:10px 12px;position:relative;}
-.os-rtype{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
-.os-rtype.yes{color:#000;}.os-rtype.no{color:#666;}
-.os-rin{width:100%;background:transparent;border:none;border-bottom:1px solid #f0f0f0;padding:5px 0;font-family:'DM Sans',sans-serif;font-size:12px;color:#000;outline:none;resize:none;transition:border-color .2s;}
-.os-rin:focus{border-color:#000;}
-.os-rin::placeholder{color:#ccc;font-style:italic;}
-.os-rdel{position:absolute;top:7px;right:7px;background:none;border:none;color:#ccc;cursor:pointer;font-size:12px;line-height:1;transition:color .15s;}
-.os-rdel:hover{color:#c0392b;}
-.os-ra-row{display:flex;gap:8px;margin-top:7px;}
-.os-cd-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:14px;}
-.os-cdi{border:1px solid #f0f0f0;padding:10px;background:#f8f8f8;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:7px;}
-.os-cdi.active{border-color:#000;background:#fff;box-shadow:2px 2px 0 #f0f0f0;}
-.os-cdchk{width:13px;height:13px;border:1.5px solid #ccc;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-.os-cdi.active .os-cdchk{border-color:#000;background:#000;}
-.os-cdd{width:5px;height:5px;border-radius:50%;background:#fff;}
-.os-cdl{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;color:#000;}
-.os-act-row{width:100%;max-width:860px;padding:0 36px;display:flex;justify-content:flex-end;gap:7px;margin-top:14px;}
-.os-btn{font-family:'Azeret Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:500;padding:11px 22px;border:1.5px solid #000;background:#000;color:#fff;cursor:pointer;transition:all .2s;}
-.os-btn:hover{background:#fff;color:#000;}
-.os-btn-g{background:transparent;color:#666;border-color:#e0e0e0;}
-.os-btn-g:hover{background:#f8f8f8;color:#000;border-color:#aaa;}
-.os-hint{font-family:'Azeret Mono',monospace;font-size:9px;color:#aaa;margin-top:7px;line-height:1.6;}
-.os-inc{background:#f8f8f8;border:1px solid #e0e0e0;border-left:3px solid #aaa;padding:12px 18px;font-family:'Azeret Mono',monospace;font-size:9px;color:#aaa;letter-spacing:1px;text-align:center;margin:0 36px 0;width:calc(100% - 72px);max-width:860px;}
-.os-pg{width:100%;max-width:860px;background:#fff;border:1px solid #e0e0e0;box-shadow:0 6px 32px rgba(0,0,0,.07);margin:28px 36px;position:relative;overflow:hidden;animation:osFU .4s ease;}
-.os-rm{position:absolute;width:18px;height:18px;}.os-rm::before,.os-rm::after{content:'';position:absolute;background:#aaa;}
-.os-rm::before{width:1px;height:18px;}.os-rm::after{width:18px;height:1px;}
-.os-rm.tl{top:10px;left:10px;}.os-rm.tr{top:10px;right:10px;}.os-rm.tr::before{right:0;}.os-rm.tr::after{right:0;}
-.os-rm.bl{bottom:10px;left:10px;}.os-rm.bl::before{bottom:0;}.os-rm.bl::after{bottom:0;}
-.os-rm.br{bottom:10px;right:10px;}.os-rm.br::before{right:0;bottom:0;}.os-rm.br::after{right:0;bottom:0;}
-.os-phdr{border-bottom:3px solid #000;padding:28px 44px 24px;display:grid;grid-template-columns:1fr auto;align-items:end;gap:18px;}
-.os-pdoc{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#666;margin-bottom:8px;}
-.os-powner{font-family:'Syne',sans-serif;font-size:clamp(24px,4vw,40px);font-weight:700;line-height:.95;letter-spacing:-1px;}
-.os-powner em{font-family:'Newsreader',serif;font-style:italic;font-weight:400;}
-.os-phdr-r{text-align:right;}
-.os-pmeta{font-family:'Azeret Mono',monospace;font-size:9px;color:#aaa;line-height:2.1;}
-.os-pmeta strong{color:#666;font-weight:500;}
-.os-pbody{display:grid;grid-template-columns:1fr 1fr;}
-.os-pcell{padding:28px 32px;border-right:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0;min-height:180px;}
-.os-pcell:nth-child(2n){border-right:none;}
-.os-pcell:nth-last-child(-n+2){border-bottom:none;}
-.os-pcell.full{grid-column:1/-1;border-right:none;}
-.os-pch{display:flex;align-items:baseline;gap:10px;margin-bottom:16px;padding-bottom:10px;border-bottom:1.5px solid #000;}
-.os-pcnum{font-family:'Azeret Mono',monospace;font-size:9px;color:#aaa;letter-spacing:1px;}
-.os-pctitle{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#000;}
-.os-ptxt{font-family:'Syne',sans-serif;font-size:19px;font-weight:600;color:#000;line-height:1.3;letter-spacing:-.5px;}
-.os-pempty{font-family:'Newsreader',serif;font-style:italic;font-size:14px;color:#ccc;}
-.os-ptf{font-family:'Azeret Mono',monospace;font-size:9px;color:#666;margin-top:10px;}
-.os-plist{list-style:none;display:flex;flex-direction:column;gap:8px;}
-.os-pli{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#333;line-height:1.5;}
-.os-plm{font-family:'Azeret Mono',monospace;font-size:9px;color:#aaa;flex-shrink:0;margin-top:2px;width:14px;}
-.os-prg{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.os-pr{padding:8px 10px;border:1px solid #f0f0f0;}
-.os-prl{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;}
-.os-prl.yes{color:#000;}.os-prl.no{color:#666;}
-.os-prt{font-size:12px;color:#333;line-height:1.5;}
-.os-pci{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f8f8f8;font-size:12px;color:#333;}
-.os-pci:last-child{border-bottom:none;}
-.os-pcf{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:1px;color:#aaa;width:48px;flex-shrink:0;}
-.os-pftr{border-top:3px solid #000;padding:14px 44px;display:flex;justify-content:space-between;align-items:center;}
-.os-pftr-l{font-family:'Azeret Mono',monospace;font-size:9px;color:#aaa;letter-spacing:2px;text-transform:uppercase;}
-.os-pftr-r{font-family:'Newsreader',serif;font-style:italic;font-size:11px;color:#666;}
 `;
 
 const OS_CADENCE=["Daily standup","Daily shutdown","Weekly review","Weekly plan","Monthly review","Quarterly reset"];
 const YES_PH=["Directly serves my 90-day priority","Generates revenue or reduces risk","Someone I deeply respect asks me personally","It's reversible and low-cost to try"];
 const NO_PH=["Feels urgent but isn't important","I can't say yes wholeheartedly","It fragments my focus for more than a day","Someone else can do this 80% as well"];
+const ENERGY_LEVELS=["🔥 Peak","⚡ High","☀️ Steady","🌤️ Moderate","🌧️ Low","🪫 Drained"];
 
 function useOSState<T>(key:string,init:T):[T,React.Dispatch<React.SetStateAction<T>>,boolean]{
   const [v,setV]=useState<T>(init);const [loaded,setLoaded]=useState(false);
@@ -1345,7 +1396,11 @@ function OnePageOS(){
   const [cadence,setCadence,l6]=useOSState<string[]>("opos-cadence",[]);
   const [reviewDate,setReviewDate,l7]=useOSState("opos-review-date","");
   const [version,setVersion,l8]=useOSState("opos-version","1.0");
-  const allLoaded=l0&&l1&&l2&&l3&&l4&&l5&&l6&&l7&&l8;
+  const [goals,setGoals,l9]=useOSState<{text:string;done:boolean}[]>("opos-goals",[{text:"",done:false}]);
+  const [energy,setEnergy,l10]=useOSState("opos-energy","");
+  const [energyNote,setEnergyNote,l11]=useOSState("opos-energy-note","");
+  const [notes,setNotes,l12]=useOSState("opos-notes","");
+  const allLoaded=l0&&l1&&l2&&l3&&l4&&l5&&l6&&l7&&l8&&l9&&l10&&l11&&l12;
 
   const togCadence=(item:string)=>setCadence(cadence.includes(item)?cadence.filter(c=>c!==item):[...cadence,item]);
   const addListItem=(list:string[],setList:React.Dispatch<React.SetStateAction<string[]>>)=>setList([...list,""]);
@@ -1354,64 +1409,219 @@ function OnePageOS(){
   const addRule=(type:string)=>setRules([...rules,{type,text:""}]);
   const updRule=(i:number,v:string)=>setRules(rules.map((r,j)=>j===i?{...r,text:v}:r));
   const remRule=(i:number)=>setRules(rules.filter((_,j)=>j!==i));
+  const addGoal=()=>setGoals([...goals,{text:"",done:false}]);
+  const updGoal=(i:number,text:string)=>setGoals(goals.map((g,j)=>j===i?{...g,text}:g));
+  const togGoal=(i:number)=>setGoals(goals.map((g,j)=>j===i?{...g,done:!g.done}:g));
+  const remGoal=(i:number)=>setGoals(goals.filter((_,j)=>j!==i));
 
   const filled=[priority.trim().length>5,weekly.some(w=>w.trim().length>3),daily.some(d=>d.trim().length>3),rules.some(r=>r.text.trim().length>3)];
   const completePct=Math.round((filled.filter(Boolean).length/filled.length)*100);
   const today=new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
+  const initials=name.trim()?name.trim().split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2):"?";
 
-  if(!allLoaded)return<div className="os-app" style={{justifyContent:"center",alignItems:"center",minHeight:"60vh",display:"flex"}}><span style={{fontFamily:"'Azeret Mono',monospace",fontSize:9,letterSpacing:3,textTransform:"uppercase",color:"#aaa"}}>Loading…</span></div>;
+  if(!allLoaded)return<div className="os-app" style={{justifyContent:"center",alignItems:"center",minHeight:"60vh",display:"flex"}}><span style={{fontFamily:"'Azeret Mono',monospace",fontSize:9,letterSpacing:3,textTransform:"uppercase",color:"var(--text3)"}}>Loading…</span></div>;
 
   return(<div className="os-app">
     <style>{OS_CSS}</style>
-    <div className="os-rail"><div style={{display:"flex",alignItems:"center",gap:16}}><span className="os-rail-mark">One-Page OS</span><span style={{width:1,height:14,background:"rgba(255,255,255,.2)",display:"block"}}/><span style={{fontFamily:"'Azeret Mono',monospace",fontSize:9,letterSpacing:2,textTransform:"uppercase",color:"rgba(255,255,255,.35)"}}>Decision Suite · Companion</span></div><div className="os-rail-r"><button className={`os-rbtn${mode==="edit"?" active":""}`} onClick={()=>setMode("edit")}>Edit</button><button className={`os-rbtn${mode==="view"?" active":""}`} onClick={()=>setMode("view")}>View OS</button></div></div>
-    <div className="os-hdr"><div><div className="os-ey"><span className="os-ey-line"/>Personal Operating System</div><div className="os-ht">One Page.<span>One System.</span></div></div>
-      <div className="os-hr"><div className="os-hv"><div>Version <input style={{fontFamily:"'Azeret Mono',monospace",fontSize:9,background:"none",border:"none",borderBottom:"1px solid #ddd",outline:"none",textAlign:"right",width:36,color:"#aaa"}} value={version} onChange={e=>setVersion(e.target.value)}/></div><div>Updated {today}</div><div>Review <input className="os-hde" type="text" value={reviewDate} placeholder="Set date" onChange={e=>setReviewDate(e.target.value)}/></div></div></div>
+
+    {/* Top bar */}
+    <div className="os-topbar">
+      <div className="os-topbar-left">
+        <div className="os-topbar-title">One-Page <span>OS</span></div>
+        <span className="os-topbar-sub">Personal Operating System</span>
+      </div>
+      <div className="os-topbar-right">
+        <button className={`os-mode-btn${mode==="edit"?" active":""}`} onClick={()=>setMode("edit")}>Edit</button>
+        <button className={`os-mode-btn${mode==="view"?" active":""}`} onClick={()=>setMode("view")}>View</button>
+      </div>
     </div>
 
     {mode==="edit"&&(<>
-      <div className="os-prog"><span className="os-plbl">Complete</span><div className="os-pt"><div className="os-pf" style={{width:`${completePct}%`}}/></div><span className="os-plbl">{completePct}%</span></div>
-      <div className="os-edit">
-        <div className="os-sb"><div><div className="os-snum">00</div><div className="os-sname">Identity</div></div><div><input className="os-pi" style={{fontSize:15}} type="text" placeholder="Your name or role" value={name} onChange={e=>setName(e.target.value)}/></div></div>
-        <div className="os-sb"><div><div className="os-snum">01</div><div className="os-sname">The One Priority</div><div className="os-shint">One objective. One timeframe.</div><div className="os-swhy">If you have more than one priority, you have none.</div></div>
-          <div><input className="os-pi" type="text" maxLength={120} placeholder="e.g. Close $500K ARR before Q2" value={priority} onChange={e=>setPriority(e.target.value)}/><div style={{display:"flex",justifyContent:"space-between",marginTop:7}}><input style={{fontFamily:"'Azeret Mono',monospace",fontSize:9,background:"none",border:"none",borderBottom:"1px solid #eee",outline:"none",color:"#aaa",width:130,padding:"3px 0"}} placeholder="Timeframe" value={tf} onChange={e=>setTf(e.target.value)}/><span className="os-cc">{priority.length}/120</span></div></div>
-        </div>
-        <div className="os-sb"><div><div className="os-snum">02</div><div className="os-sname">Weekly Non-Negotiables</div><div className="os-shint">What must happen every week?</div></div>
-          <div>{weekly.map((w,i)=><div className="os-li" key={i}><span className="os-lm">—</span><input className="os-liin" type="text" value={w} placeholder={["Deep work block, Mon–Thu mornings","Weekly team sync, Tue 9am","Friday shutdown review","Strategic peer conversation"][i]||`Item ${i+1}`} onChange={e=>updListItem(weekly,setWeekly,i,e.target.value)}/>{weekly.length>1&&<button className="os-ldel" onClick={()=>remListItem(weekly,setWeekly,i)}>×</button>}</div>)}
-          {weekly.length<6&&<button className="os-add-lnk" onClick={()=>addListItem(weekly,setWeekly)}>+ Add item</button>}</div>
-        </div>
-        <div className="os-sb"><div><div className="os-snum">03</div><div className="os-sname">Daily Defaults</div><div className="os-shint">What does a good day look like?</div></div>
-          <div>{daily.map((d,i)=><div className="os-li" key={i}><span className="os-lm">·</span><input className="os-liin" type="text" value={d} placeholder={["First 90 min: no email, no Slack","Daily intention: one sentence goal","End-of-day: identify tomorrow's MIT","No meetings before 10am"][i]||`Default ${i+1}`} onChange={e=>updListItem(daily,setDaily,i,e.target.value)}/>{daily.length>1&&<button className="os-ldel" onClick={()=>remListItem(daily,setDaily,i)}>×</button>}</div>)}
-          {daily.length<6&&<button className="os-add-lnk" onClick={()=>addListItem(daily,setDaily)}>+ Add item</button>}</div>
-        </div>
-        <div className="os-sb"><div><div className="os-snum">04</div><div className="os-sname">Decision Rules</div><div className="os-shint">Pre-committed yes/no criteria.</div><div className="os-swhy">Rules eliminate in-the-moment deliberation.</div></div>
-          <div><div className="os-rg">{rules.map((r,i)=><div className="os-ri" key={i}><div className={`os-rtype ${r.type}`}>{r.type==="yes"?"✓ Say Yes when":"✗ Say No when"}</div><textarea className="os-rin" rows={2} value={r.text} placeholder={r.type==="yes"?YES_PH[rules.filter(x=>x.type==="yes").indexOf(r)%YES_PH.length]:NO_PH[rules.filter(x=>x.type==="no").indexOf(r)%NO_PH.length]} onChange={e=>updRule(i,e.target.value)}/><button className="os-rdel" onClick={()=>remRule(i)}>×</button></div>)}</div>
-          <div className="os-ra-row">{rules.filter(r=>r.type==="yes").length<4&&<button className="os-add-lnk" onClick={()=>addRule("yes")}>+ Yes rule</button>}{rules.filter(r=>r.type==="no").length<4&&<button className="os-add-lnk" onClick={()=>addRule("no")}>+ No rule</button>}</div></div>
-        </div>
-        <div className="os-sb"><div><div className="os-snum">05</div><div className="os-sname">Operating Cadence</div><div className="os-shint">Which rhythms does your system run on?</div></div>
-          <div><div className="os-cd-grid">{OS_CADENCE.map(c=><div key={c} className={`os-cdi${cadence.includes(c)?" active":""}`} onClick={()=>togCadence(c)}><div className="os-cdchk">{cadence.includes(c)&&<div className="os-cdd"/>}</div><span className="os-cdl">{c}</span></div>)}</div></div>
+      {/* Progress */}
+      <div className="os-progress-wrap">
+        <div className="os-progress-bar">
+          <span className="os-progress-label">Complete</span>
+          <div className="os-progress-track"><div className="os-progress-fill" style={{width:`${completePct}%`}}/></div>
+          <span className="os-progress-label">{completePct}%</span>
         </div>
       </div>
-      <div className="os-act-row"><button className="os-btn" onClick={()=>setMode("view")}>View My OS →</button></div>
+
+      {/* Identity */}
+      <div className="os-identity">
+        <div className="os-identity-card">
+          <div className="os-avatar">{initials}</div>
+          <div className="os-identity-info">
+            <input className="os-identity-input" type="text" placeholder="Your name or role" value={name} onChange={e=>setName(e.target.value)}/>
+            <div className="os-identity-meta">
+              <span>v<input style={{fontFamily:"inherit",fontSize:"inherit",background:"none",border:"none",borderBottom:"1px dashed var(--border2)",outline:"none",width:28,color:"var(--text3)",padding:0}} value={version} onChange={e=>setVersion(e.target.value)}/></span>
+              <span>{today}</span>
+              <span>Review: <input style={{fontFamily:"inherit",fontSize:"inherit",background:"none",border:"none",borderBottom:"1px dashed var(--border2)",outline:"none",width:80,color:"var(--text3)",padding:0}} value={reviewDate} placeholder="Set date" onChange={e=>setReviewDate(e.target.value)}/></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main grid */}
+      <div className="os-grid">
+        {/* Priority — full width */}
+        <div className="os-card full">
+          <div className="os-card-header"><div className="os-card-title"><span className="os-card-num">01</span>The One Priority</div><span className="os-card-hint">One objective. One timeframe.</span></div>
+          <div className="os-card-body">
+            <input className="os-priority-input" type="text" maxLength={120} placeholder="e.g. Close $500K ARR before Q2" value={priority} onChange={e=>setPriority(e.target.value)}/>
+            <div className="os-tf-row"><input className="os-tf-input" placeholder="Timeframe" value={tf} onChange={e=>setTf(e.target.value)}/><span className="os-char-count">{priority.length}/120</span></div>
+          </div>
+        </div>
+
+        {/* Weekly */}
+        <div className="os-card">
+          <div className="os-card-header"><div className="os-card-title"><span className="os-card-num">02</span>Weekly Non-Negotiables</div></div>
+          <div className="os-card-body">
+            {weekly.map((w,i)=><div className="os-list-item" key={i}><span className="os-list-marker">—</span><input className="os-list-input" type="text" value={w} placeholder={["Deep work block","Weekly team sync","Friday shutdown review","Strategic conversation"][i]||`Item ${i+1}`} onChange={e=>updListItem(weekly,setWeekly,i,e.target.value)}/>{weekly.length>1&&<button className="os-list-del" onClick={()=>remListItem(weekly,setWeekly,i)}>×</button>}</div>)}
+            {weekly.length<6&&<button className="os-add-btn" onClick={()=>addListItem(weekly,setWeekly)}>+ Add item</button>}
+          </div>
+        </div>
+
+        {/* Daily */}
+        <div className="os-card">
+          <div className="os-card-header"><div className="os-card-title"><span className="os-card-num">03</span>Daily Defaults</div></div>
+          <div className="os-card-body">
+            {daily.map((d,i)=><div className="os-list-item" key={i}><span className="os-list-marker">·</span><input className="os-list-input" type="text" value={d} placeholder={["First 90 min: deep work","Set daily intention","End-of-day: plan tomorrow","No meetings before 10am"][i]||`Default ${i+1}`} onChange={e=>updListItem(daily,setDaily,i,e.target.value)}/>{daily.length>1&&<button className="os-list-del" onClick={()=>remListItem(daily,setDaily,i)}>×</button>}</div>)}
+            {daily.length<6&&<button className="os-add-btn" onClick={()=>addListItem(daily,setDaily)}>+ Add item</button>}
+          </div>
+        </div>
+
+        {/* Decision Rules — full width */}
+        <div className="os-card full">
+          <div className="os-card-header"><div className="os-card-title"><span className="os-card-num">04</span>Decision Rules</div><span className="os-card-hint">Pre-committed yes/no criteria</span></div>
+          <div className="os-card-body">
+            <div className="os-rules-grid">
+              {rules.map((r,i)=><div className="os-rule" key={i}><div className={`os-rule-type ${r.type}`}><span className="os-rule-dot"/>{r.type==="yes"?"Say Yes when":"Say No when"}</div><textarea className="os-rule-textarea" rows={2} value={r.text} placeholder={r.type==="yes"?YES_PH[rules.filter(x=>x.type==="yes").indexOf(r)%YES_PH.length]:NO_PH[rules.filter(x=>x.type==="no").indexOf(r)%NO_PH.length]} onChange={e=>updRule(i,e.target.value)}/><button className="os-rule-del" onClick={()=>remRule(i)}>×</button></div>)}
+            </div>
+            <div className="os-rules-actions">{rules.filter(r=>r.type==="yes").length<4&&<button className="os-add-btn" style={{flex:1}} onClick={()=>addRule("yes")}>+ Yes rule</button>}{rules.filter(r=>r.type==="no").length<4&&<button className="os-add-btn" style={{flex:1}} onClick={()=>addRule("no")}>+ No rule</button>}</div>
+          </div>
+        </div>
+
+        {/* Cadence */}
+        <div className="os-card">
+          <div className="os-card-header"><div className="os-card-title"><span className="os-card-num">05</span>Operating Cadence</div></div>
+          <div className="os-card-body">
+            <div className="os-cadence-grid">{OS_CADENCE.map(c=><div key={c} className={`os-cadence-item${cadence.includes(c)?" active":""}`} onClick={()=>togCadence(c)}><div className="os-cadence-check">{cadence.includes(c)&&<div className="os-cadence-dot"/>}</div><span className="os-cadence-label">{c}</span></div>)}</div>
+          </div>
+        </div>
+
+        {/* Goals / Milestones — NEW */}
+        <div className="os-card">
+          <div className="os-card-header"><div className="os-card-title"><span className="os-card-num">06</span>Goals & Milestones</div></div>
+          <div className="os-card-body">
+            {goals.map((g,i)=><div className={`os-goal-item${g.done?" done":""}`} key={i}>
+              <div className={`os-goal-check${g.done?" checked":""}`} onClick={()=>togGoal(i)}>{g.done&&<span className="os-goal-check-mark">✓</span>}</div>
+              <input className={`os-goal-input${g.done?" done-text":""}`} type="text" value={g.text} placeholder={["Launch MVP","Hire key role","Hit revenue target"][i]||`Goal ${i+1}`} onChange={e=>updGoal(i,e.target.value)}/>
+              {goals.length>1&&<button className="os-list-del" onClick={()=>remGoal(i)}>×</button>}
+            </div>)}
+            {goals.length<8&&<button className="os-add-btn" onClick={addGoal}>+ Add goal</button>}
+          </div>
+        </div>
+
+        {/* Energy Tracker — NEW */}
+        <div className="os-card">
+          <div className="os-card-header"><div className="os-card-title"><span className="os-card-num">07</span>Energy Check-in</div><span className="os-card-hint">Today's level</span></div>
+          <div className="os-card-body">
+            <div className="os-energy-row">{ENERGY_LEVELS.map(e=><div key={e} className={`os-energy-item${energy===e?" active":""}`} onClick={()=>setEnergy(energy===e?"":e)}>{e}</div>)}</div>
+            <textarea className="os-energy-note" rows={2} placeholder="What's driving your energy today?" value={energyNote} onChange={e=>setEnergyNote(e.target.value)}/>
+          </div>
+        </div>
+
+        {/* Quick Notes — NEW, full width */}
+        <div className="os-card full">
+          <div className="os-card-header"><div className="os-card-title"><span className="os-card-num">08</span>Quick Notes</div><span className="os-card-hint">Freeform space for thoughts</span></div>
+          <div className="os-card-body">
+            <textarea className="os-notes-area" rows={4} placeholder="Capture ideas, reflections, or context…" value={notes} onChange={e=>setNotes(e.target.value)}/>
+          </div>
+        </div>
+      </div>
+
+      <div className="os-action-row"><button className="os-action-btn" onClick={()=>setMode("view")}>View My OS →</button></div>
     </>)}
 
     {mode==="view"&&(<>
-      {completePct<50&&<div className="os-inc">OS is {completePct}% complete — return to Edit to fill in more sections.</div>}
-      <div className="os-pg">
-        <div className="os-rm tl"/><div className="os-rm tr"/><div className="os-rm bl"/><div className="os-rm br"/>
-        <div className="os-phdr"><div><div className="os-pdoc">Personal Operating System · Official Record</div><div className="os-powner">{name||<em style={{color:"#ccc",fontFamily:"'Newsreader',serif",fontStyle:"italic",fontWeight:400}}>Your Name</em>}<em>'s OS</em></div></div>
-          <div className="os-phdr-r"><div className="os-pmeta"><strong>Version</strong> {version}</div><div className="os-pmeta"><strong>Updated</strong> {today}</div>{reviewDate&&<div className="os-pmeta"><strong>Review</strong> {reviewDate}</div>}<div className="os-pmeta"><strong>Timeframe</strong> {tf}</div></div>
+      {completePct<50&&<div className="os-incomplete-banner"><div className="os-incomplete-inner">OS is {completePct}% complete — return to Edit to fill in more sections.</div></div>}
+      <div className="os-view-container">
+        <div className="os-view-card">
+          <div className="os-view-header">
+            <div className="os-view-header-left">
+              <div className="os-view-doc-label">Personal Operating System · Official Record</div>
+              <div className="os-view-owner">{name||<em style={{color:"var(--text3)",fontFamily:"'Newsreader',serif",fontStyle:"italic",fontWeight:400}}>Your Name</em>}<em>'s OS</em></div>
+            </div>
+            <div className="os-view-meta">
+              <div><strong>Version</strong> {version}</div>
+              <div><strong>Updated</strong> {today}</div>
+              {reviewDate&&<div><strong>Review</strong> {reviewDate}</div>}
+              <div><strong>Timeframe</strong> {tf}</div>
+            </div>
+          </div>
+
+          <div className="os-view-body">
+            <div className="os-view-cell full" style={{borderBottom:"1px solid var(--border)"}}>
+              <div className="os-view-cell-header"><span className="os-view-cell-num">01</span><span className="os-view-cell-title">The One Priority — {tf}</span></div>
+              {priority?<div className="os-view-priority">{priority}</div>:<div className="os-view-empty">No priority set.</div>}
+            </div>
+
+            <div className="os-view-cell">
+              <div className="os-view-cell-header"><span className="os-view-cell-num">02</span><span className="os-view-cell-title">Weekly Non-Negotiables</span></div>
+              {weekly.filter(w=>w.trim()).length>0?<ul className="os-view-list">{weekly.filter(w=>w.trim()).map((w,i)=><li key={i} className="os-view-list-item"><span className="os-view-list-marker">—</span>{w}</li>)}</ul>:<div className="os-view-empty">Not defined.</div>}
+            </div>
+
+            <div className="os-view-cell">
+              <div className="os-view-cell-header"><span className="os-view-cell-num">03</span><span className="os-view-cell-title">Daily Defaults</span></div>
+              {daily.filter(d=>d.trim()).length>0?<ul className="os-view-list">{daily.filter(d=>d.trim()).map((d,i)=><li key={i} className="os-view-list-item"><span className="os-view-list-marker">·</span>{d}</li>)}</ul>:<div className="os-view-empty">Not defined.</div>}
+            </div>
+
+            <div className="os-view-cell full">
+              <div className="os-view-cell-header"><span className="os-view-cell-num">04</span><span className="os-view-cell-title">Decision Rules</span></div>
+              {rules.filter(r=>r.text.trim()).length>0?<div className="os-view-rules">{rules.filter(r=>r.text.trim()).map((r,i)=><div key={i} className="os-view-rule"><div className={`os-view-rule-label ${r.type}`}><span className="os-rule-dot"/>{r.type==="yes"?"Say Yes when":"Say No when"}</div><div className="os-view-rule-text">{r.text}</div></div>)}</div>:<div className="os-view-empty">No rules defined.</div>}
+            </div>
+
+            <div className="os-view-cell">
+              <div className="os-view-cell-header"><span className="os-view-cell-num">05</span><span className="os-view-cell-title">Operating Cadence</span></div>
+              {cadence.length>0?cadence.map((c,i)=><div key={i} className="os-view-cadence-item"><span className="os-view-cadence-freq">{c.split(" ")[0].toUpperCase()}</span><span>{c}</span></div>):<div className="os-view-empty">No cadence selected.</div>}
+            </div>
+
+            <div className="os-view-cell">
+              <div className="os-view-cell-header"><span className="os-view-cell-num">06</span><span className="os-view-cell-title">Goals & Milestones</span></div>
+              {goals.filter(g=>g.text.trim()).length>0?<ul className="os-view-list">{goals.filter(g=>g.text.trim()).map((g,i)=><li key={i} className="os-view-list-item"><span className="os-view-list-marker">{g.done?"✓":"○"}</span><span style={g.done?{textDecoration:"line-through",color:"var(--text3)"}:{}}>{g.text}</span></li>)}</ul>:<div className="os-view-empty">No goals set.</div>}
+            </div>
+
+            {(energy||energyNote.trim())&&<div className="os-view-cell full">
+              <div className="os-view-cell-header"><span className="os-view-cell-num">07</span><span className="os-view-cell-title">Energy Check-in</span></div>
+              {energy&&<div style={{fontSize:16,marginBottom:energyNote.trim()?8:0}}>{energy}</div>}
+              {energyNote.trim()&&<div style={{fontSize:12,color:"var(--text2)",lineHeight:1.6,fontStyle:"italic"}}>{energyNote}</div>}
+            </div>}
+
+            {notes.trim()&&<div className="os-view-cell full" style={{borderBottom:"none"}}>
+              <div className="os-view-cell-header"><span className="os-view-cell-num">08</span><span className="os-view-cell-title">Quick Notes</span></div>
+              <div style={{fontSize:13,color:"var(--text)",lineHeight:1.7,whiteSpace:"pre-wrap"}}>{notes}</div>
+            </div>}
+
+            <div className="os-view-cell full" style={{borderBottom:"none",background:"var(--bg2)"}}>
+              <div className="os-view-cell-header"><span className="os-view-cell-num">∞</span><span className="os-view-cell-title">Commitment</span></div>
+              <div style={{fontFamily:"'Newsreader',serif",fontStyle:"italic",fontSize:13,color:"var(--text2)",lineHeight:1.8}}>"I commit to reviewing this OS weekly and holding it as the authoritative source of my operating priorities."</div>
+              <div style={{marginTop:20,borderTop:"1px solid var(--border)",paddingTop:14}}>
+                <div style={{fontFamily:"'Azeret Mono',monospace",fontSize:8,color:"var(--text3)",letterSpacing:2,marginBottom:8}}>SIGNATURE / DATE</div>
+                <div style={{borderBottom:"1px solid var(--border)",height:24}}/>
+              </div>
+            </div>
+          </div>
+
+          <div className="os-view-footer">
+            <div className="os-view-footer-left">Decision Suite · One-Page OS · {version}</div>
+            <div className="os-view-footer-right">Review weekly. Revise quarterly. Trust the system.</div>
+          </div>
         </div>
-        <div className="os-pbody">
-          <div className="os-pcell full" style={{borderBottom:"1px solid #e0e0e0",background:priority?"#fff":"#f8f8f8"}}><div className="os-pch"><span className="os-pcnum">01</span><span className="os-pctitle">The One Priority — {tf}</span></div>{priority?<div className="os-ptxt">{priority}</div>:<div className="os-pempty">No priority set.</div>}</div>
-          <div className="os-pcell"><div className="os-pch"><span className="os-pcnum">02</span><span className="os-pctitle">Weekly Non-Negotiables</span></div>{weekly.filter(w=>w.trim()).length>0?<ul className="os-plist">{weekly.filter(w=>w.trim()).map((w,i)=><li key={i} className="os-pli"><span className="os-plm">—</span>{w}</li>)}</ul>:<div className="os-pempty">Not defined.</div>}</div>
-          <div className="os-pcell"><div className="os-pch"><span className="os-pcnum">03</span><span className="os-pctitle">Daily Defaults</span></div>{daily.filter(d=>d.trim()).length>0?<ul className="os-plist">{daily.filter(d=>d.trim()).map((d,i)=><li key={i} className="os-pli"><span className="os-plm">·</span>{d}</li>)}</ul>:<div className="os-pempty">Not defined.</div>}</div>
-          <div className="os-pcell full"><div className="os-pch"><span className="os-pcnum">04</span><span className="os-pctitle">Decision Rules</span></div>{rules.filter(r=>r.text.trim()).length>0?<div className="os-prg">{rules.filter(r=>r.text.trim()).map((r,i)=><div key={i} className="os-pr"><div className={`os-prl ${r.type}`}>{r.type==="yes"?"✓ Say Yes when":"✗ Say No when"}</div><div className="os-prt">{r.text}</div></div>)}</div>:<div className="os-pempty">No rules defined.</div>}</div>
-          <div className="os-pcell" style={{borderBottom:"none"}}><div className="os-pch"><span className="os-pcnum">05</span><span className="os-pctitle">Operating Cadence</span></div>{cadence.length>0?cadence.map((c,i)=><div key={i} className="os-pci"><span className="os-pcf">{c.split(" ")[0].toUpperCase()}</span><span>{c}</span></div>):<div className="os-pempty">No cadence selected.</div>}</div>
-          <div className="os-pcell" style={{borderBottom:"none",background:"#f8f8f8",display:"flex",flexDirection:"column",justifyContent:"space-between"}}><div className="os-pch"><span className="os-pcnum">06</span><span className="os-pctitle">Commitment</span></div><div style={{fontFamily:"'Newsreader',serif",fontStyle:"italic",fontSize:12,color:"#666",lineHeight:1.8}}>"I commit to reviewing this OS weekly and holding it as the authoritative source of my operating priorities. When in doubt, I return to §01."</div><div style={{marginTop:20,borderTop:"1px solid #e0e0e0",paddingTop:14}}><div style={{fontFamily:"'Azeret Mono',monospace",fontSize:8,color:"#aaa",letterSpacing:2,marginBottom:8}}>SIGNATURE / DATE</div><div style={{borderBottom:"1px solid #e0e0e0",height:24}}/></div></div>
-        </div>
-        <div className="os-pftr"><div className="os-pftr-l">Decision Suite · One-Page OS · {version}</div><div className="os-pftr-r">Review weekly. Revise quarterly. Trust the system.</div></div>
       </div>
-      <div className="os-act-row"><button className="os-btn os-btn-g" onClick={()=>setMode("edit")}>← Edit OS</button><button className="os-btn" onClick={()=>window.print()}>Print / Save PDF</button></div>
+      <div className="os-action-row">
+        <button className="os-action-btn ghost" onClick={()=>setMode("edit")}>← Edit OS</button>
+        <button className="os-action-btn" onClick={()=>window.print()}>Print / Save PDF</button>
+      </div>
     </>)}
   </div>);
 }
