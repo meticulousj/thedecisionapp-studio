@@ -33,7 +33,8 @@ const SHELL_CSS = `
   --amber:#f4a261;
 }
 .suite-shell body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;}
-.suite-shell{display:flex;height:100vh;overflow:hidden;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;}
+.suite-shell{display:flex;height:100vh;overflow:hidden;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;zoom:1.15;}
+
 
 /* SIDEBAR */
 .sidebar{
