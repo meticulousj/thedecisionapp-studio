@@ -22,7 +22,7 @@ const storage = {
 // ─────────────────────────────────────────
 const SHELL_CSS = `
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{
+:root, .theme-dark{
   --bg:#0c0c0c; --bg2:#141414; --bg3:#1c1c1c;
   --border:#2a2a2a; --border2:#333;
   --text:#f0f0f0; --text2:#888; --text3:#444;
@@ -31,6 +31,16 @@ const SHELL_CSS = `
   --green:#52b788; --green-d:rgba(82,183,136,0.12);
   --blue:#60a5fa; --blue-d:rgba(96,165,250,0.10);
   --amber:#f4a261;
+}
+.theme-light{
+  --bg:#f5f3ef; --bg2:#ffffff; --bg3:#eae7e1;
+  --border:#d5d0c8; --border2:#c0bab0;
+  --text:#1a1a1a; --text2:#555; --text3:#999;
+  --gold:#a07c2e; --gold-d:rgba(160,124,46,0.12);
+  --red:#c0392b; --red-d:rgba(192,57,43,0.08);
+  --green:#27ae60; --green-d:rgba(39,174,96,0.08);
+  --blue:#2980b9; --blue-d:rgba(41,128,185,0.08);
+  --amber:#d4870e;
 }
 .suite-shell body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;}
 .suite-shell{display:flex;height:100vh;overflow:hidden;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;zoom:1.15;}
@@ -1491,6 +1501,14 @@ const NAV_ITEMS = [
 export default function DecisionSuiteApp() {
   const [active, setActive] = useState("home");
   const [ledgerEntries, setLedgerEntries] = useState<CLEntry[]>([]);
+  const [theme, setTheme] = useState<"dark"|"light">(() => {
+    try { return (localStorage.getItem("ds-theme") as "dark"|"light") || "dark"; } catch { return "dark"; }
+  });
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    try { localStorage.setItem("ds-theme", next); } catch {}
+  };
 
   useEffect(() => {
     function loadLedger() {
@@ -1516,7 +1534,7 @@ export default function DecisionSuiteApp() {
   return (
     <>
       <style>{SHELL_CSS}</style>
-      <div className="suite-shell">
+      <div className={`suite-shell theme-${theme}`}>
         <div className="sidebar">
           <div className="sidebar-logo">
             <div className="logo-mark">Decision<span>.</span></div>
@@ -1546,8 +1564,11 @@ export default function DecisionSuiteApp() {
               <span className="path-sep">/</span>
               <span className="path-active">{currentLabel}</span>
             </div>
-            <div className="topbar-right">
-              {intPct !== null ? `Integrity: ${intPct}%` : ""}
+            <div className="topbar-right" style={{display:"flex",alignItems:"center",gap:16}}>
+              {intPct !== null ? <span>{`Integrity: ${intPct}%`}</span> : null}
+              <button onClick={toggleTheme} style={{background:"var(--bg3)",border:"1px solid var(--border2)",borderRadius:6,width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:16,color:"var(--text)",transition:"all .15s"}} title={`Switch to ${theme==="dark"?"light":"dark"} mode`}>
+                {theme==="dark"?"☀️":"🌙"}
+              </button>
             </div>
           </div>
           <div className="tool-frame">
