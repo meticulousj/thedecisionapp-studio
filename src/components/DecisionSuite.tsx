@@ -1534,7 +1534,7 @@ export default function DecisionSuiteApp() {
   return (
     <>
       <style>{SHELL_CSS}</style>
-      <div className="suite-shell">
+      <div className={`suite-shell theme-${theme}`}>
         <div className="sidebar">
           <div className="sidebar-logo">
             <div className="logo-mark">Decision<span>.</span></div>
