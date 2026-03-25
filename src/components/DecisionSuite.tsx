@@ -1022,98 +1022,114 @@ function PreMortemStudio(){
 
   return(<div className="pm-app">
     <style>{PM_CSS}</style>
-    <div className="pm-cmd"><div className="pm-cmd-l"><span className="pm-badge">Pre-Mortem</span></div><span style={{fontFamily:"'Azeret Mono',monospace",fontSize:9,letterSpacing:2,textTransform:"uppercase" as const,color:"#3a4a63"}}>Decision Suite · Risk Analysis</span></div>
-    <div className="pm-title">PRE<span>MORTEM</span></div>
-    <div className="pm-sub">Imagine the project has already failed. Work backwards to find what killed it — before it happens.</div>
 
-    <div className="pm-stages">
+    {/* Hero */}
+    <div className="pm-hero">
+      <div className="pm-hero-top"><span className="pm-badge">Pre-Mortem</span><span className="pm-suite-tag">Decision Suite · Risk Analysis</span></div>
+      <div className="pm-hero-title">Pre-<em>Mortem</em><br/>Studio</div>
+      <div className="pm-hero-desc">Imagine the project has already failed. Work backwards to find what killed it — before it happens.</div>
+    </div>
+
+    {/* Stepper */}
+    <div className="pm-stepper">
       {STAGES.map((s,i)=>(
-        <div key={s} style={{display:"flex",alignItems:"center",flex:i<STAGES.length-1?1:"0 0 auto"}}>
-          <div className="pm-snode">
-            <div className={`pm-pip${stage===i?" active":stage>i?" done":""}`}/>
-            <span className={`pm-sname${stage===i?" active":stage>i?" done":""}`}>{s}</span>
-          </div>
-          {i<STAGES.length-1&&<div className={`pm-sline${stage>i?" done":""}`}/>}
+        <div key={s} className={`pm-step${stage===i?" active":stage>i?" done":""}`}>
+          <div className="pm-step-dot">{stage>i?"✓":i+1}</div>
+          <span className="pm-step-label">{s}</span>
+          {i<STAGES.length-1&&<div className="pm-step-line"/>}
         </div>
       ))}
     </div>
 
+    {/* Stage 0: Mission */}
     {stage===0&&(<div className="pm-panel">
-      <div className="pm-pnum">01 / Mission</div><div className="pm-pt">Define the mission</div>
-      <div className="pm-pd">What project, initiative, or decision are we stress-testing?</div>
-      <label className="pm-fl">Mission statement</label>
+      <div className="pm-panel-title">Define the mission</div>
+      <div className="pm-panel-desc">What project, initiative, or decision are we stress-testing?</div>
+      <label className="pm-label">Mission statement</label>
       <textarea className="pm-ta" rows={3} placeholder='"Launch the B2B SaaS product by Q3"' value={mission} onChange={e=>setMission(e.target.value)}/>
-      <div style={{marginTop:14}}><label className="pm-fl">Timeframe</label>
+      <div style={{marginTop:14}}><label className="pm-label">Timeframe</label>
       <input className="pm-in" type="text" placeholder="12 months" value={timeframe} onChange={e=>setTimeframe(e.target.value)}/></div>
     </div>)}
 
+    {/* Stage 1: Obituary */}
     {stage===1&&(<div className="pm-panel">
-      <div className="pm-pnum">02 / Obituary</div><div className="pm-pt">Write the obituary</div>
-      <div className="pm-pd">It's {timeframe} from now. The project failed spectacularly. Write what happened.</div>
+      <div className="pm-panel-title">Write the obituary</div>
+      <div className="pm-panel-desc">It's {timeframe} from now. The project failed spectacularly. Write what happened.</div>
       <div className="pm-obit-ctx">Mission: "{mission}" — Timeframe: {timeframe}</div>
-      <label className="pm-fl">The obituary</label>
+      <label className="pm-label">The obituary</label>
       <textarea className="pm-ta" rows={6} placeholder="Describe the failure in detail. What went wrong? Who was affected? What was the final straw?" value={obituary} onChange={e=>setObituary(e.target.value)}/>
     </div>)}
 
+    {/* Stage 2: Failure Modes */}
     {stage===2&&(<div className="pm-panel">
-      <div className="pm-pnum">03 / Failure Modes</div><div className="pm-pt">Extract the failure modes</div>
-      <div className="pm-pd">From your obituary, list the specific things that went wrong.</div>
+      <div className="pm-panel-title">Extract the failure modes</div>
+      <div className="pm-panel-desc">From your obituary, list the specific things that went wrong.</div>
       <div className="pm-cats">{PM_CATS.map(c=><button key={c.id} className={`pm-cat${selCat===c.id?" sel":""}`} onClick={()=>setSelCat(c.id)}>{c.l}</button>)}</div>
       <div className="pm-add-row"><input className="pm-in" type="text" placeholder="Describe a specific failure mode…" value={fInp} onChange={e=>setFInp(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addF()}/><button className="pm-btn" onClick={addF}>Add</button></div>
-      <div className="pm-hint">// Categorize each failure. Press Enter to add.</div>
+      <div className="pm-hint">Categorize each failure · Press Enter to add</div>
       <div style={{marginTop:18}}>{failures.map(f=><div className={`pm-fcard cat-${f.cat}`} key={f.id}><div className="pm-fh"><div className="pm-ft">{f.text}</div><span className={`pm-cbadge cb-${f.cat}`}>{PM_CATS.find(c=>c.id===f.cat)?.l}</span><button className="pm-del" onClick={()=>remF(f.id)}>×</button></div></div>)}</div>
     </div>)}
 
+    {/* Stage 3: Rating */}
     {stage===3&&(<div className="pm-panel">
-      <div className="pm-pnum">04 / Risk Rating</div><div className="pm-pt">Rate each failure</div>
-      <div className="pm-pd">Set probability and impact for each failure mode.</div>
+      <div className="pm-panel-title">Rate each failure</div>
+      <div className="pm-panel-desc">Set probability and impact for each failure mode.</div>
       {failures.map(f=>{const score=pmRiskScore(f.prob,f.impact);const{l,cls}=pmRiskLabel(score);
         return(<div className={`pm-fcard cat-${f.cat}`} key={f.id}>
           <div className="pm-fh"><div className="pm-ft">{f.text}</div><span className={`pm-cbadge cb-${f.cat}`}>{PM_CATS.find(c=>c.id===f.cat)?.l}</span></div>
           <div className="pm-rrow">
-            <div className="pm-rg"><div className="pm-rh"><span className="pm-rn">Probability</span><span className="pm-rv" style={{color:"#fb923c"}}>{PM_PROB[f.prob-1]}</span></div><div className="pm-rt">{[1,2,3,4,5].map(j=><div key={j} className={`pm-rp${f.prob>=j?" prob-f":""}`} onClick={()=>updF(f.id,"prob",j)}/>)}</div></div>
-            <div className="pm-rg"><div className="pm-rh"><span className="pm-rn">Impact</span><span className="pm-rv" style={{color:"#ef4444"}}>{PM_IMP[f.impact-1]}</span></div><div className="pm-rt">{[1,2,3,4,5].map(j=><div key={j} className={`pm-rp${f.impact>=j?" impact-f":""}`} onClick={()=>updF(f.id,"impact",j)}/>)}</div></div>
+            <div><div className="pm-rh"><span className="pm-rn">Probability</span><span className="pm-rv" style={{color:"var(--pm-orange)"}}>{PM_PROB[f.prob-1]}</span></div><div className="pm-rt">{[1,2,3,4,5].map(j=><div key={j} className={`pm-rp${f.prob>=j?" prob-f":""}`} onClick={()=>updF(f.id,"prob",j)}/>)}</div></div>
+            <div><div className="pm-rh"><span className="pm-rn">Impact</span><span className="pm-rv" style={{color:"var(--pm-red)"}}>{PM_IMP[f.impact-1]}</span></div><div className="pm-rt">{[1,2,3,4,5].map(j=><div key={j} className={`pm-rp${f.impact>=j?" impact-f":""}`} onClick={()=>updF(f.id,"impact",j)}/>)}</div></div>
           </div>
           <div style={{marginTop:10,display:"flex",justifyContent:"flex-end"}}><span className={`pm-risk-lbl ${cls}`}>Risk: {l} ({score})</span></div>
         </div>);
       })}
     </div>)}
 
+    {/* Stage 4: Shield */}
     {stage===4&&(<div className="pm-panel">
-      <div className="pm-pnum">05 / Shield Protocol</div><div className="pm-pt">Build your defenses</div>
-      <div className="pm-pd">For each critical/high-risk failure: define a mitigation and an early warning signal.</div>
+      <div className="pm-panel-title">Build your defenses</div>
+      <div className="pm-panel-desc">For each critical/high-risk failure: define a mitigation and an early warning signal.</div>
       {priority.length===0&&<div className="pm-alert">No critical or high-risk failures identified. Proceed to brief.</div>}
       {priority.map(f=>{
         const score=pmRiskScore(f.prob,f.impact);const{l}=pmRiskLabel(score);const sh=getS(f.id);
         return(<div className="pm-sc" key={f.id}>
           <div className="pm-sct"><span className="pm-sarr">▸ {l}</span>{f.text}<span className={`pm-cbadge cb-${f.cat}`}>{PM_CATS.find(c=>c.id===f.cat)?.l}</span></div>
           <div className="pm-sgrid">
-            <div><label className="pm-fl">Mitigation plan</label><textarea className="pm-ta" rows={3} placeholder="What specific action reduces this risk?" value={sh.mitigation} onChange={e=>updS(f.id,"mitigation",e.target.value)}/></div>
-            <div><label className="pm-fl">Early warning signal</label><textarea className="pm-ta" rows={3} placeholder="What leading indicator tells you this is about to happen?" value={sh.signal} onChange={e=>updS(f.id,"signal",e.target.value)}/></div>
+            <div><label className="pm-label">Mitigation plan</label><textarea className="pm-ta" rows={3} placeholder="What specific action reduces this risk?" value={sh.mitigation} onChange={e=>updS(f.id,"mitigation",e.target.value)}/></div>
+            <div><label className="pm-label">Early warning signal</label><textarea className="pm-ta" rows={3} placeholder="What leading indicator tells you this is about to happen?" value={sh.signal} onChange={e=>updS(f.id,"signal",e.target.value)}/></div>
           </div>
         </div>);
       })}
     </div>)}
 
+    {/* Stage 5: Results */}
     {stage===5&&(<>
-      <div className="pm-rep-hdr"><div className="pm-rep-cls">Pre-Mortem Analysis · Confidential</div><div className="pm-rep-t">Pre-Mortem Brief</div><div className="pm-rep-s">Re: {mission}</div>
-        <div className="pm-rep-meta"><div className="pm-rmi"><strong>Timeframe</strong>{timeframe}</div><div className="pm-rmi"><strong>Failures</strong>{failures.length}</div><div className="pm-rmi"><strong>Critical</strong>{critical.length}</div><div className="pm-rmi"><strong>Date</strong>{today}</div></div>
+      <div className="pm-results-hero">
+        <div className="pm-results-headline">{critical.length===0?"Low Risk Profile":critical.length<=2?"Manageable Risk":"High Exposure"}</div>
+        <div className="pm-results-sub">Pre-Mortem complete · {failures.length} failure modes analyzed</div>
+        <div className="pm-results-strategy">"{mission}"</div>
       </div>
-      <div className="pm-stats">
-        <div className="pm-stile"><div className="pm-snum" style={{color:"#ef4444"}}>{critical.length}</div><div className="pm-slbl">Critical</div></div>
-        <div className="pm-stile"><div className="pm-snum" style={{color:"#fb923c"}}>{high.length}</div><div className="pm-slbl">High Risk</div></div>
-        <div className="pm-stile"><div className="pm-snum" style={{color:"#8a9ab8"}}>{failures.length-critical.length-high.length}</div><div className="pm-slbl">Manageable</div></div>
-        <div className="pm-stile"><div className="pm-snum" style={{color:"#10b981"}}>{priority.length}</div><div className="pm-slbl">Mitigated</div></div>
+
+      <div className="pm-stats-grid">
+        <div className="pm-stat-card"><div className="pm-stat-num" style={{color:"var(--pm-red)"}}>{critical.length}</div><div className="pm-stat-label">Critical</div></div>
+        <div className="pm-stat-card"><div className="pm-stat-num" style={{color:"var(--pm-orange)"}}>{high.length}</div><div className="pm-stat-label">High Risk</div></div>
+        <div className="pm-stat-card"><div className="pm-stat-num" style={{color:"var(--pm-muted)"}}>{failures.length-critical.length-high.length}</div><div className="pm-stat-label">Manageable</div></div>
+        <div className="pm-stat-card"><div className="pm-stat-num" style={{color:"var(--pm-green)"}}>{priority.length}</div><div className="pm-stat-label">Shielded</div></div>
       </div>
-      <div className="pm-verd"><div className="pm-vl">▸ Analysis Verdict</div><div className="pm-vt">{verdict()}</div></div>
-      <div className="pm-ttbl">
-        <div className="pm-ttbl-hdr"><span className="pm-th">Failure Mode</span><span className="pm-th">Category</span><span className="pm-th">Prob</span><span className="pm-th">Impact</span><span className="pm-th">Risk Level</span></div>
-        {sorted.map(f=>{const score=pmRiskScore(f.prob,f.impact);const{l,cls}=pmRiskLabel(score);const barColor=cls==="pm-sc-c"?"#ef4444":cls==="pm-sc-h"?"#fb923c":cls==="pm-sc-m"?"#f59e0b":"#3a4a63";
-          return(<div className="pm-trow" key={f.id}><div className="pm-tn">{f.text}</div><div style={{textAlign:"center"}}><span className={`pm-cbadge cb-${f.cat}`}>{PM_CATS.find(c=>c.id===f.cat)?.l}</span></div><div className="pm-ts" style={{color:"#fb923c"}}>{f.prob}/5</div><div className="pm-ts" style={{color:"#ef4444"}}>{f.impact}/5</div><div className="pm-bw"><div className="pm-bt"><div className="pm-bf" style={{width:`${barW[f.id]??0}%`,background:barColor}}/></div><span className={`pm-ts ${cls}`} style={{fontSize:9,minWidth:52}}>{l}</span></div></div>);
+
+      <div className="pm-insight"><div className="pm-insight-tag">▸ Analysis Verdict</div><div className="pm-insight-text">{verdict()}</div></div>
+
+      <div className="pm-table">
+        <div className="pm-table-hdr"><span className="pm-table-th">Failure Mode</span><span className="pm-table-th">Category</span><span className="pm-table-th">Prob</span><span className="pm-table-th">Impact</span><span className="pm-table-th">Risk Level</span></div>
+        {sorted.map(f=>{const score=pmRiskScore(f.prob,f.impact);const{l,cls}=pmRiskLabel(score);const barColor=cls==="pm-sc-c"?"var(--pm-red)":cls==="pm-sc-h"?"var(--pm-orange)":cls==="pm-sc-m"?"var(--pm-accent)":"var(--pm-muted2)";
+          return(<div className="pm-table-row" key={f.id}><div className="pm-table-cell">{f.text}</div><div style={{textAlign:"center"}}><span className={`pm-cbadge cb-${f.cat}`}>{PM_CATS.find(c=>c.id===f.cat)?.l}</span></div><div className="pm-table-val" style={{color:"var(--pm-orange)"}}>{f.prob}/5</div><div className="pm-table-val" style={{color:"var(--pm-red)"}}>{f.impact}/5</div><div className="pm-bw"><div className="pm-bt"><div className="pm-bf" style={{width:`${barW[f.id]??0}%`,background:barColor}}/></div><span className={`pm-table-val ${cls}`} style={{fontSize:9,minWidth:52}}>{l}</span></div></div>);
         })}
       </div>
-      {priority.length>0&&<div className="pm-srep"><div className="pm-srep-h">Shield Protocol — Mitigation Registry</div>{priority.map(f=>{const sh=getS(f.id);if(!sh.mitigation&&!sh.signal)return null;return(<div className="pm-srep-r" key={f.id}><div className="pm-srt">▸ {f.text}</div>{sh.mitigation&&<div className="pm-srm"><strong style={{color:"#f59e0b",fontFamily:"'Azeret Mono',monospace",fontSize:8,letterSpacing:2,textTransform:"uppercase" as const}}>Mitigation — </strong>{sh.mitigation}</div>}{sh.signal&&<div className="pm-srs"><span style={{color:"#3a4a63"}}>SIGNAL //</span>{sh.signal}</div>}</div>);})}</div>}
-      <div className="pm-rst-row"><button className="pm-btn pm-btn-g" onClick={reset}>↺ New Pre-Mortem</button><button className="pm-btn pm-btn-g" onClick={()=>setStage(4)}>← Revise Shield</button></div>
+
+      {priority.length>0&&<div className="pm-shield"><div className="pm-shield-h">Shield Protocol — Mitigation Registry</div>{priority.map(f=>{const sh=getS(f.id);if(!sh.mitigation&&!sh.signal)return null;return(<div className="pm-shield-r" key={f.id}><div className="pm-srt">▸ {f.text}</div>{sh.mitigation&&<div className="pm-srm"><strong style={{color:"var(--pm-accent)",fontFamily:"'Azeret Mono',monospace",fontSize:8,letterSpacing:2,textTransform:"uppercase" as const}}>Mitigation — </strong>{sh.mitigation}</div>}{sh.signal&&<div className="pm-srs"><span style={{color:"var(--pm-muted2)"}}>SIGNAL //</span>{sh.signal}</div>}</div>);})}</div>}
+
+      <div className="pm-actions"><button className="pm-btn pm-btn-g" onClick={reset}>↺ New Pre-Mortem</button><button className="pm-btn pm-btn-g" onClick={()=>setStage(4)}>← Revise Shield</button></div>
     </>)}
 
     {stage<5&&<div className="pm-nav"><button className="pm-btn pm-btn-g" onClick={()=>setStage(s=>s-1)} disabled={stage===0}>← Back</button><button className="pm-btn" onClick={()=>setStage(s=>s+1)} disabled={!canNext()}>{stage===4?"Generate Brief →":"Continue →"}</button></div>}
