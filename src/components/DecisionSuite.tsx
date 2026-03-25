@@ -807,109 +807,166 @@ function AssumptionAudit(){
 // TOOL: PRE-MORTEM STUDIO
 // ─────────────────────────────────────────
 const PM_CSS=`
-.pm-app{min-height:100%;background:#0e1117;font-family:'DM Sans',sans-serif;color:#e8eaf0;padding:40px 20px 80px;display:flex;flex-direction:column;align-items:center;}
-.pm-cmd{width:100%;max-width:760px;background:#141820;border:1px solid #2a3347;padding:10px 24px;display:flex;align-items:center;justify-content:space-between;margin-bottom:40px;}
-.pm-cmd-l{display:flex;align-items:center;gap:12px;}
-.pm-badge{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#f59e0b;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);padding:3px 10px;}
-.pm-title{font-family:'Syne',sans-serif;font-size:clamp(40px,7vw,72px);font-weight:800;line-height:.9;letter-spacing:1px;color:#e8eaf0;text-align:center;margin-bottom:20px;}
-.pm-title span{color:#f59e0b;display:block;}
-.pm-sub{font-size:13px;color:#8a9ab8;text-align:center;max-width:480px;line-height:1.7;font-weight:300;border-left:3px solid #f59e0b;padding-left:14px;margin-bottom:40px;}
-.pm-stages{width:100%;max-width:760px;display:flex;align-items:center;gap:0;margin-bottom:36px;}
-.pm-snode{display:flex;flex-direction:column;align-items:center;gap:6px;flex:0 0 auto;}
-.pm-pip{width:9px;height:9px;border:2px solid #3a4a63;background:#0e1117;transition:all .3s;transform:rotate(45deg);}
-.pm-pip.active{border-color:#f59e0b;background:#f59e0b;box-shadow:0 0 10px rgba(245,158,11,.3);}
-.pm-pip.done{border-color:#4a5a78;background:#4a5a78;}
-.pm-sname{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#3a4a63;transition:color .3s;white-space:nowrap;}
-.pm-sname.active{color:#f59e0b;}.pm-sname.done{color:#4a5a78;}
-.pm-sline{flex:1;height:1px;background:#2a3347;margin-bottom:16px;min-width:20px;}
-.pm-sline.done{background:#4a5a78;}
-.pm-panel{width:100%;max-width:760px;background:#1a2030;border:1px solid #2a3347;border-top:3px solid #f59e0b;padding:32px;margin-bottom:14px;position:relative;animation:pmIn .35s ease;}
+:root,.theme-dark{
+  --pm-bg:#0f1117;--pm-card:#181c27;--pm-card2:#1e2333;--pm-border:#2a3050;--pm-border2:#353d5a;
+  --pm-text:#e8eaf0;--pm-muted:#8a9ab8;--pm-muted2:#4a5a78;
+  --pm-accent:#f59e0b;--pm-accent-dim:rgba(245,158,11,.1);
+  --pm-red:#ef4444;--pm-red-dim:rgba(239,68,68,.1);
+  --pm-orange:#fb923c;--pm-orange-dim:rgba(251,146,60,.1);
+  --pm-green:#10b981;--pm-green-dim:rgba(16,185,129,.1);
+  --pm-blue:#60a5fa;--pm-blue-dim:rgba(96,165,250,.1);
+  --pm-purple:#a78bfa;--pm-purple-dim:rgba(167,139,250,.1);
+}
+.theme-light{
+  --pm-bg:#f4f2ee;--pm-card:#ffffff;--pm-card2:#f8f6f2;--pm-border:#ddd8ce;--pm-border2:#c8c2b6;
+  --pm-text:#1a1a2e;--pm-muted:#5a6070;--pm-muted2:#8a8e9a;
+  --pm-accent:#d4870e;--pm-accent-dim:rgba(212,135,14,.08);
+  --pm-red:#c0392b;--pm-red-dim:rgba(192,57,43,.08);
+  --pm-orange:#d4730e;--pm-orange-dim:rgba(212,115,14,.08);
+  --pm-green:#27ae60;--pm-green-dim:rgba(39,174,96,.08);
+  --pm-blue:#2980b9;--pm-blue-dim:rgba(41,128,185,.08);
+  --pm-purple:#7c3aed;--pm-purple-dim:rgba(124,58,237,.08);
+}
+.pm-app{min-height:100%;background:var(--pm-bg);font-family:'DM Sans',sans-serif;color:var(--pm-text);padding:40px 20px 80px;display:flex;flex-direction:column;align-items:center;}
+
+/* Hero */
+.pm-hero{text-align:center;margin-bottom:36px;position:relative;}
+.pm-hero-top{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:16px;}
+.pm-badge{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--pm-accent);background:var(--pm-accent-dim);border:1px solid rgba(245,158,11,.25);padding:4px 12px;border-radius:20px;}
+.pm-suite-tag{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--pm-muted2);}
+.pm-hero-title{font-family:'Syne',sans-serif;font-size:clamp(36px,6vw,60px);font-weight:800;line-height:.92;letter-spacing:-1px;color:var(--pm-text);}
+.pm-hero-title em{font-family:'Newsreader',serif;font-style:italic;font-weight:400;color:var(--pm-accent);}
+.pm-hero-desc{font-size:13px;color:var(--pm-muted);max-width:480px;margin:14px auto 0;line-height:1.7;font-weight:300;}
+
+/* Stepper */
+.pm-stepper{display:flex;align-items:flex-start;gap:0;margin-bottom:36px;width:100%;max-width:720px;justify-content:center;}
+.pm-step{display:flex;align-items:center;gap:0;}
+.pm-step-dot{width:34px;height:34px;border-radius:50%;border:2px solid var(--pm-border2);background:var(--pm-card);display:flex;align-items:center;justify-content:center;font-family:'Azeret Mono',monospace;font-size:11px;color:var(--pm-muted2);transition:all .3s;flex-shrink:0;}
+.pm-step.active .pm-step-dot{border-color:var(--pm-accent);background:var(--pm-accent);color:#0e1117;font-weight:700;box-shadow:0 0 16px rgba(245,158,11,.3);}
+.pm-step.done .pm-step-dot{border-color:var(--pm-muted2);background:var(--pm-muted2);color:var(--pm-bg);}
+.pm-step-label{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--pm-muted2);margin-top:6px;text-align:center;display:block;width:34px;}
+.pm-step.active .pm-step-label{color:var(--pm-accent);}
+.pm-step.done .pm-step-label{color:var(--pm-muted);}
+.pm-step-line{width:36px;height:2px;background:var(--pm-border);margin:0 4px;margin-bottom:20px;transition:background .3s;}
+.pm-step.done .pm-step-line{background:var(--pm-muted2);}
+
+/* Panel */
+.pm-panel{width:100%;max-width:720px;background:var(--pm-card);border:1px solid var(--pm-border);border-radius:16px;padding:32px;margin-bottom:14px;animation:pmIn .35s ease;}
 @keyframes pmIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-.pm-pnum{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;color:#f59e0b;margin-bottom:5px;}
-.pm-pt{font-family:'Syne',sans-serif;font-size:22px;letter-spacing:.5px;color:#e8eaf0;margin-bottom:7px;line-height:1;}
-.pm-pd{font-size:12px;color:#8a9ab8;line-height:1.7;margin-bottom:24px;font-weight:300;}
-.pm-fl{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#3a4a63;display:block;margin-bottom:9px;}
-.pm-ta,.pm-in{width:100%;background:#0e1117;border:1px solid #2a3347;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:13px;color:#e8eaf0;outline:none;transition:border-color .2s;resize:none;}
-.pm-ta:focus,.pm-in:focus{border-color:#f59e0b;}
-.pm-ta::placeholder,.pm-in::placeholder{color:#3a4a63;font-style:italic;}
-.pm-obit-ctx{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);padding:12px 16px;margin-bottom:18px;font-family:'Courier Prime',monospace;font-size:11px;color:#f59e0b;line-height:1.6;}
-.pm-cats{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
-.pm-cat{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border:1px solid #2a3347;background:transparent;color:#3a4a63;cursor:pointer;transition:all .15s;}
-.pm-cat.sel{border-color:#f59e0b;background:rgba(245,158,11,.1);color:#f59e0b;}
+.pm-panel-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--pm-text);margin-bottom:6px;}
+.pm-panel-desc{font-size:12px;color:var(--pm-muted);line-height:1.7;margin-bottom:24px;font-weight:300;}
+
+/* Inputs */
+.pm-label{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--pm-muted2);display:block;margin-bottom:9px;}
+.pm-ta,.pm-in{width:100%;background:var(--pm-bg);border:1px solid var(--pm-border);border-radius:10px;padding:14px 16px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--pm-text);outline:none;transition:border-color .2s;resize:none;}
+.pm-ta:focus,.pm-in:focus{border-color:var(--pm-accent);}
+.pm-ta::placeholder,.pm-in::placeholder{color:var(--pm-muted2);font-style:italic;}
+
+/* Context quote */
+.pm-obit-ctx{background:var(--pm-accent-dim);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:14px 18px;margin-bottom:18px;font-family:'Azeret Mono',monospace;font-size:11px;color:var(--pm-accent);line-height:1.6;}
+
+/* Categories */
+.pm-cats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.pm-cat{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:5px 12px;border:1px solid var(--pm-border);border-radius:20px;background:transparent;color:var(--pm-muted2);cursor:pointer;transition:all .15s;}
+.pm-cat.sel{border-color:var(--pm-accent);background:var(--pm-accent-dim);color:var(--pm-accent);}
 .pm-add-row{display:flex;gap:8px;margin-top:12px;}
 .pm-add-row .pm-in{flex:1;}
-.pm-hint{font-family:'Courier Prime',monospace;font-size:10px;color:#3a4a63;margin-top:8px;line-height:1.6;}
-.pm-fcard{background:#0e1117;border:1px solid #2a3347;border-left:3px solid #3a4a63;padding:16px 18px;margin-bottom:8px;animation:pmSlide .2s ease;transition:border-left-color .3s;}
+.pm-hint{font-family:'Azeret Mono',monospace;font-size:10px;color:var(--pm-muted2);margin-top:8px;line-height:1.6;}
+
+/* Failure cards */
+.pm-fcard{background:var(--pm-bg);border:1px solid var(--pm-border);border-radius:12px;padding:16px 18px;margin-bottom:8px;animation:pmSlide .2s ease;transition:border-left-color .3s;border-left:3px solid var(--pm-border2);}
 @keyframes pmSlide{from{opacity:0;transform:translateX(-6px);}to{opacity:1;transform:translateX(0);}}
-.pm-fcard.cat-execution{border-left-color:#ef4444;}.pm-fcard.cat-market{border-left-color:#fb923c;}.pm-fcard.cat-resource{border-left-color:#f59e0b;}.pm-fcard.cat-people{border-left-color:#60a5fa;}.pm-fcard.cat-timing{border-left-color:#a78bfa;}.pm-fcard.cat-external{border-left-color:#10b981;}
+.pm-fcard.cat-execution{border-left-color:var(--pm-red);}.pm-fcard.cat-market{border-left-color:var(--pm-orange);}.pm-fcard.cat-resource{border-left-color:var(--pm-accent);}.pm-fcard.cat-people{border-left-color:var(--pm-blue);}.pm-fcard.cat-timing{border-left-color:var(--pm-purple);}.pm-fcard.cat-external{border-left-color:var(--pm-green);}
 .pm-fh{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;}
-.pm-ft{font-size:13px;color:#e8eaf0;line-height:1.5;flex:1;}
-.pm-cbadge{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;padding:2px 7px;border:1px solid;white-space:nowrap;flex-shrink:0;}
-.cb-execution{color:#ef4444;border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.08);}
-.cb-market{color:#fb923c;border-color:rgba(251,146,60,.3);background:rgba(251,146,60,.08);}
-.cb-resource{color:#f59e0b;border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.08);}
-.cb-people{color:#60a5fa;border-color:rgba(96,165,250,.3);background:rgba(96,165,250,.08);}
-.cb-timing{color:#a78bfa;border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.08);}
-.cb-external{color:#10b981;border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.08);}
+.pm-ft{font-size:13px;color:var(--pm-text);line-height:1.5;flex:1;}
+.pm-cbadge{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;padding:3px 9px;border:1px solid;white-space:nowrap;flex-shrink:0;border-radius:10px;}
+.cb-execution{color:var(--pm-red);border-color:rgba(239,68,68,.3);background:var(--pm-red-dim);}
+.cb-market{color:var(--pm-orange);border-color:rgba(251,146,60,.3);background:var(--pm-orange-dim);}
+.cb-resource{color:var(--pm-accent);border-color:rgba(245,158,11,.3);background:var(--pm-accent-dim);}
+.cb-people{color:var(--pm-blue);border-color:rgba(96,165,250,.3);background:var(--pm-blue-dim);}
+.cb-timing{color:var(--pm-purple);border-color:rgba(167,139,250,.3);background:var(--pm-purple-dim);}
+.cb-external{color:var(--pm-green);border-color:rgba(16,185,129,.3);background:var(--pm-green-dim);}
+
+/* Rating */
 .pm-rrow{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.pm-rg{}
 .pm-rh{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
-.pm-rn{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#3a4a63;}
-.pm-rv{font-family:'Courier Prime',monospace;font-size:10px;font-weight:700;}
+.pm-rn{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--pm-muted2);}
+.pm-rv{font-family:'Azeret Mono',monospace;font-size:10px;font-weight:700;}
 .pm-rt{display:flex;gap:3px;}
-.pm-rp{flex:1;height:4px;background:#2a3347;cursor:pointer;transition:background .15s;}
-.pm-rp.prob-f{background:#fb923c;}.pm-rp.impact-f{background:#ef4444;}
-.pm-del{background:none;border:none;color:#3a4a63;cursor:pointer;font-size:17px;line-height:1;padding:2px 5px;transition:color .15s;}
-.pm-del:hover{color:#ef4444;}
-.pm-risk-lbl{font-family:'Courier Prime',monospace;font-size:11px;font-weight:700;}
-.pm-alert{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-left:3px solid #f59e0b;padding:12px 16px;margin-bottom:16px;font-family:'Azeret Mono',monospace;font-size:10px;color:#f59e0b;line-height:1.6;}
-.pm-sc{background:#0e1117;border:1px solid #2a3347;padding:18px;margin-bottom:8px;}
-.pm-sct{font-size:12px;color:#8a9ab8;margin-bottom:10px;display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
-.pm-sarr{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;color:#ef4444;flex-shrink:0;margin-top:2px;}
+.pm-rp{flex:1;height:6px;background:var(--pm-border);border-radius:3px;cursor:pointer;transition:background .15s;}
+.pm-rp.prob-f{background:var(--pm-orange);}.pm-rp.impact-f{background:var(--pm-red);}
+.pm-del{background:none;border:none;color:var(--pm-muted2);cursor:pointer;font-size:17px;line-height:1;padding:2px 5px;transition:color .15s;}
+.pm-del:hover{color:var(--pm-red);}
+.pm-risk-lbl{font-family:'Azeret Mono',monospace;font-size:11px;font-weight:700;}
+
+/* Alert & Shield */
+.pm-alert{background:var(--pm-accent-dim);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:14px 18px;margin-bottom:16px;font-family:'Azeret Mono',monospace;font-size:10px;color:var(--pm-accent);line-height:1.6;}
+.pm-sc{background:var(--pm-bg);border:1px solid var(--pm-border);border-radius:12px;padding:18px;margin-bottom:8px;}
+.pm-sct{font-size:12px;color:var(--pm-muted);margin-bottom:10px;display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+.pm-sarr{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--pm-red);flex-shrink:0;margin-top:2px;}
 .pm-sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.pm-nav{width:100%;max-width:760px;display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
-.pm-btn{font-family:'Azeret Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:11px 22px;border:1px solid #8a9ab8;background:#e8eaf0;color:#0e1117;cursor:pointer;transition:all .2s;}
-.pm-btn:hover{background:#f59e0b;border-color:#f59e0b;color:#0e1117;}
+
+/* Navigation */
+.pm-nav{width:100%;max-width:720px;display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
+.pm-btn{font-family:'Azeret Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:11px 22px;border:1px solid var(--pm-accent);background:var(--pm-accent);color:#0e1117;cursor:pointer;transition:all .2s;border-radius:10px;font-weight:600;}
+.pm-btn:hover{background:var(--pm-text);border-color:var(--pm-text);color:var(--pm-bg);}
 .pm-btn:disabled{opacity:.3;cursor:not-allowed;}
-.pm-btn:disabled:hover{background:#e8eaf0;color:#0e1117;border-color:#8a9ab8;}
-.pm-btn-g{background:transparent;color:#8a9ab8;border-color:#2a3347;}
-.pm-btn-g:hover{background:#1f2738;color:#e8eaf0;border-color:#8a9ab8;}
-.pm-rep-hdr{width:100%;max-width:760px;background:#f59e0b;padding:28px 32px;margin-bottom:3px;position:relative;overflow:hidden;}
-.pm-rep-hdr::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent,transparent 6px,rgba(245,158,11,.08) 6px,rgba(245,158,11,.08) 12px);}
-.pm-rep-hdr>*{position:relative;}
-.pm-rep-cls{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:rgba(0,0,0,.5);margin-bottom:6px;}
-.pm-rep-t{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,44px);letter-spacing:1px;color:#0e1117;line-height:1;margin-bottom:4px;font-weight:800;}
-.pm-rep-s{font-size:12px;color:rgba(0,0,0,.6);font-weight:300;font-style:italic;}
-.pm-rep-meta{display:flex;gap:20px;margin-top:14px;flex-wrap:wrap;}
-.pm-rmi{font-family:'Azeret Mono',monospace;font-size:9px;color:rgba(0,0,0,.5);}
-.pm-rmi strong{display:block;color:rgba(0,0,0,.7);font-size:10px;margin-bottom:1px;}
-.pm-stats{width:100%;max-width:760px;display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-bottom:3px;}
-.pm-stile{background:#1a2030;border:1px solid #2a3347;padding:18px;text-align:center;}
-.pm-snum{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;line-height:1;margin-bottom:4px;}
-.pm-slbl{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#3a4a63;}
-.pm-verd{width:100%;max-width:760px;background:#0e1117;border:1px solid #2a3347;border-left:4px solid #f59e0b;padding:22px 26px;margin:3px 0;}
-.pm-vl{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#f59e0b;margin-bottom:8px;}
-.pm-vt{font-size:13px;color:#8a9ab8;line-height:1.8;font-weight:300;}
-.pm-ttbl{width:100%;max-width:760px;background:#1a2030;border:1px solid #2a3347;margin:3px 0;}
-.pm-ttbl-hdr{padding:12px 22px;border-bottom:1px solid #2a3347;display:grid;grid-template-columns:1fr 80px 60px 60px 100px;gap:10px;}
-.pm-th{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#3a4a63;text-align:center;}
-.pm-th:first-child{text-align:left;}
-.pm-trow{padding:12px 22px;border-bottom:1px solid #1f2738;display:grid;grid-template-columns:1fr 80px 60px 60px 100px;gap:10px;align-items:center;transition:background .15s;}
-.pm-trow:last-child{border-bottom:none;}.pm-trow:hover{background:#1f2738;}
-.pm-tn{font-size:12px;color:#e8eaf0;line-height:1.4;}
-.pm-ts{font-family:'Courier Prime',monospace;font-size:11px;font-weight:700;text-align:center;}
-.pm-sc-c{color:#ef4444;}.pm-sc-h{color:#fb923c;}.pm-sc-m{color:#f59e0b;}.pm-sc-l{color:#3a4a63;}
+.pm-btn:disabled:hover{background:var(--pm-accent);color:#0e1117;border-color:var(--pm-accent);}
+.pm-btn-g{background:transparent;color:var(--pm-muted);border-color:var(--pm-border);}
+.pm-btn-g:hover{background:var(--pm-card);color:var(--pm-text);border-color:var(--pm-border2);}
+
+/* ─── RESULTS ─── */
+.pm-results-hero{text-align:center;margin-bottom:24px;width:100%;max-width:720px;}
+.pm-results-headline{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,44px);font-weight:800;line-height:1;color:var(--pm-text);margin-bottom:8px;}
+.pm-results-sub{font-family:'Azeret Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--pm-muted2);margin-bottom:8px;}
+.pm-results-strategy{font-size:12px;color:var(--pm-muted2);border-left:2px solid var(--pm-border2);padding-left:12px;margin-top:12px;line-height:1.6;text-align:left;display:inline-block;}
+
+/* Stats Grid */
+.pm-stats-grid{width:100%;max-width:720px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;}
+.pm-stat-card{background:var(--pm-card);border:1px solid var(--pm-border);border-radius:12px;padding:20px;text-align:center;transition:transform .2s;}
+.pm-stat-card:hover{transform:translateY(-2px);}
+.pm-stat-num{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;line-height:1;margin-bottom:6px;}
+.pm-stat-label{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--pm-muted2);}
+
+/* Verdict */
+.pm-insight{width:100%;max-width:720px;border-radius:12px;border-left:4px solid var(--pm-accent);background:var(--pm-accent-dim);padding:20px 24px;margin-bottom:24px;}
+.pm-insight-tag{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--pm-accent);margin-bottom:8px;}
+.pm-insight-text{font-size:13px;color:var(--pm-muted);line-height:1.7;}
+
+/* Results Table */
+.pm-table{width:100%;max-width:720px;background:var(--pm-card);border:1px solid var(--pm-border);border-radius:12px;overflow:hidden;margin-bottom:24px;}
+.pm-table-hdr{padding:14px 24px;border-bottom:1px solid var(--pm-border);display:grid;grid-template-columns:1fr 80px 60px 60px 100px;gap:10px;background:var(--pm-card2);}
+.pm-table-th{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--pm-muted2);text-align:center;}
+.pm-table-th:first-child{text-align:left;}
+.pm-table-row{padding:14px 24px;border-bottom:1px solid var(--pm-border);display:grid;grid-template-columns:1fr 80px 60px 60px 100px;gap:10px;align-items:center;transition:background .15s;}
+.pm-table-row:last-child{border-bottom:none;}
+.pm-table-row:hover{background:var(--pm-card2);}
+.pm-table-cell{font-size:12px;color:var(--pm-text);line-height:1.4;}
+.pm-table-val{font-family:'Azeret Mono',monospace;font-size:11px;font-weight:700;text-align:center;}
 .pm-bw{display:flex;align-items:center;gap:5px;}
-.pm-bt{flex:1;height:3px;background:#2a3347;overflow:hidden;}
-.pm-bf{height:100%;transition:width .8s ease;}
-.pm-srep{width:100%;max-width:760px;background:#1a2030;border:1px solid #2a3347;margin:3px 0;}
-.pm-srep-h{padding:12px 22px;border-bottom:1px solid #2a3347;font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#3a4a63;}
-.pm-srep-r{padding:16px 22px;border-bottom:1px solid #1f2738;transition:background .15s;}
-.pm-srep-r:last-child{border-bottom:none;}.pm-srep-r:hover{background:#1f2738;}
-.pm-srt{font-size:11px;color:#3a4a63;margin-bottom:6px;font-style:italic;}
-.pm-srm{font-size:12px;color:#e8eaf0;line-height:1.5;margin-bottom:5px;}
-.pm-srs{font-family:'Courier Prime',monospace;font-size:10px;color:#10b981;display:flex;align-items:flex-start;gap:5px;}
-.pm-rst-row{display:flex;gap:10px;justify-content:center;margin-top:16px;}
+.pm-bt{flex:1;height:4px;background:var(--pm-border);border-radius:2px;overflow:hidden;}
+.pm-bf{height:100%;border-radius:2px;transition:width .8s ease;}
+
+/* Shield Protocol */
+.pm-shield{width:100%;max-width:720px;background:var(--pm-card);border:1px solid var(--pm-border);border-radius:12px;overflow:hidden;margin-bottom:24px;}
+.pm-shield-h{padding:14px 24px;border-bottom:1px solid var(--pm-border);font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--pm-muted2);background:var(--pm-card2);}
+.pm-shield-r{padding:16px 24px;border-bottom:1px solid var(--pm-border);transition:background .15s;}
+.pm-shield-r:last-child{border-bottom:none;}.pm-shield-r:hover{background:var(--pm-card2);}
+.pm-srt{font-size:11px;color:var(--pm-muted2);margin-bottom:6px;font-style:italic;}
+.pm-srm{font-size:12px;color:var(--pm-text);line-height:1.5;margin-bottom:5px;}
+.pm-srs{font-family:'Azeret Mono',monospace;font-size:10px;color:var(--pm-green);display:flex;align-items:flex-start;gap:5px;}
+
+/* Actions */
+.pm-actions{display:flex;gap:10px;justify-content:center;margin-top:16px;}
+
+.pm-sc-c{color:var(--pm-red);}.pm-sc-h{color:var(--pm-orange);}.pm-sc-m{color:var(--pm-accent);}.pm-sc-l{color:var(--pm-muted2);}
+
+@media(max-width:600px){
+  .pm-stats-grid{grid-template-columns:1fr 1fr;}
+  .pm-table-hdr,.pm-table-row{grid-template-columns:1fr 60px 40px 40px 80px;padding:10px 14px;}
+  .pm-rrow{grid-template-columns:1fr;}
+  .pm-sgrid{grid-template-columns:1fr;}
+}
 `;
 
 const PM_CATS=[{id:"execution",l:"Execution"},{id:"market",l:"Market"},{id:"resource",l:"Resource"},{id:"people",l:"People"},{id:"timing",l:"Timing"},{id:"external",l:"External"}];
@@ -965,98 +1022,114 @@ function PreMortemStudio(){
 
   return(<div className="pm-app">
     <style>{PM_CSS}</style>
-    <div className="pm-cmd"><div className="pm-cmd-l"><span className="pm-badge">Pre-Mortem</span></div><span style={{fontFamily:"'Azeret Mono',monospace",fontSize:9,letterSpacing:2,textTransform:"uppercase" as const,color:"#3a4a63"}}>Decision Suite · Risk Analysis</span></div>
-    <div className="pm-title">PRE<span>MORTEM</span></div>
-    <div className="pm-sub">Imagine the project has already failed. Work backwards to find what killed it — before it happens.</div>
 
-    <div className="pm-stages">
+    {/* Hero */}
+    <div className="pm-hero">
+      <div className="pm-hero-top"><span className="pm-badge">Pre-Mortem</span><span className="pm-suite-tag">Decision Suite · Risk Analysis</span></div>
+      <div className="pm-hero-title">Pre-<em>Mortem</em><br/>Studio</div>
+      <div className="pm-hero-desc">Imagine the project has already failed. Work backwards to find what killed it — before it happens.</div>
+    </div>
+
+    {/* Stepper */}
+    <div className="pm-stepper">
       {STAGES.map((s,i)=>(
-        <div key={s} style={{display:"flex",alignItems:"center",flex:i<STAGES.length-1?1:"0 0 auto"}}>
-          <div className="pm-snode">
-            <div className={`pm-pip${stage===i?" active":stage>i?" done":""}`}/>
-            <span className={`pm-sname${stage===i?" active":stage>i?" done":""}`}>{s}</span>
-          </div>
-          {i<STAGES.length-1&&<div className={`pm-sline${stage>i?" done":""}`}/>}
+        <div key={s} className={`pm-step${stage===i?" active":stage>i?" done":""}`}>
+          <div className="pm-step-dot">{stage>i?"✓":i+1}</div>
+          <span className="pm-step-label">{s}</span>
+          {i<STAGES.length-1&&<div className="pm-step-line"/>}
         </div>
       ))}
     </div>
 
+    {/* Stage 0: Mission */}
     {stage===0&&(<div className="pm-panel">
-      <div className="pm-pnum">01 / Mission</div><div className="pm-pt">Define the mission</div>
-      <div className="pm-pd">What project, initiative, or decision are we stress-testing?</div>
-      <label className="pm-fl">Mission statement</label>
+      <div className="pm-panel-title">Define the mission</div>
+      <div className="pm-panel-desc">What project, initiative, or decision are we stress-testing?</div>
+      <label className="pm-label">Mission statement</label>
       <textarea className="pm-ta" rows={3} placeholder='"Launch the B2B SaaS product by Q3"' value={mission} onChange={e=>setMission(e.target.value)}/>
-      <div style={{marginTop:14}}><label className="pm-fl">Timeframe</label>
+      <div style={{marginTop:14}}><label className="pm-label">Timeframe</label>
       <input className="pm-in" type="text" placeholder="12 months" value={timeframe} onChange={e=>setTimeframe(e.target.value)}/></div>
     </div>)}
 
+    {/* Stage 1: Obituary */}
     {stage===1&&(<div className="pm-panel">
-      <div className="pm-pnum">02 / Obituary</div><div className="pm-pt">Write the obituary</div>
-      <div className="pm-pd">It's {timeframe} from now. The project failed spectacularly. Write what happened.</div>
+      <div className="pm-panel-title">Write the obituary</div>
+      <div className="pm-panel-desc">It's {timeframe} from now. The project failed spectacularly. Write what happened.</div>
       <div className="pm-obit-ctx">Mission: "{mission}" — Timeframe: {timeframe}</div>
-      <label className="pm-fl">The obituary</label>
+      <label className="pm-label">The obituary</label>
       <textarea className="pm-ta" rows={6} placeholder="Describe the failure in detail. What went wrong? Who was affected? What was the final straw?" value={obituary} onChange={e=>setObituary(e.target.value)}/>
     </div>)}
 
+    {/* Stage 2: Failure Modes */}
     {stage===2&&(<div className="pm-panel">
-      <div className="pm-pnum">03 / Failure Modes</div><div className="pm-pt">Extract the failure modes</div>
-      <div className="pm-pd">From your obituary, list the specific things that went wrong.</div>
+      <div className="pm-panel-title">Extract the failure modes</div>
+      <div className="pm-panel-desc">From your obituary, list the specific things that went wrong.</div>
       <div className="pm-cats">{PM_CATS.map(c=><button key={c.id} className={`pm-cat${selCat===c.id?" sel":""}`} onClick={()=>setSelCat(c.id)}>{c.l}</button>)}</div>
       <div className="pm-add-row"><input className="pm-in" type="text" placeholder="Describe a specific failure mode…" value={fInp} onChange={e=>setFInp(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addF()}/><button className="pm-btn" onClick={addF}>Add</button></div>
-      <div className="pm-hint">// Categorize each failure. Press Enter to add.</div>
+      <div className="pm-hint">Categorize each failure · Press Enter to add</div>
       <div style={{marginTop:18}}>{failures.map(f=><div className={`pm-fcard cat-${f.cat}`} key={f.id}><div className="pm-fh"><div className="pm-ft">{f.text}</div><span className={`pm-cbadge cb-${f.cat}`}>{PM_CATS.find(c=>c.id===f.cat)?.l}</span><button className="pm-del" onClick={()=>remF(f.id)}>×</button></div></div>)}</div>
     </div>)}
 
+    {/* Stage 3: Rating */}
     {stage===3&&(<div className="pm-panel">
-      <div className="pm-pnum">04 / Risk Rating</div><div className="pm-pt">Rate each failure</div>
-      <div className="pm-pd">Set probability and impact for each failure mode.</div>
+      <div className="pm-panel-title">Rate each failure</div>
+      <div className="pm-panel-desc">Set probability and impact for each failure mode.</div>
       {failures.map(f=>{const score=pmRiskScore(f.prob,f.impact);const{l,cls}=pmRiskLabel(score);
         return(<div className={`pm-fcard cat-${f.cat}`} key={f.id}>
           <div className="pm-fh"><div className="pm-ft">{f.text}</div><span className={`pm-cbadge cb-${f.cat}`}>{PM_CATS.find(c=>c.id===f.cat)?.l}</span></div>
           <div className="pm-rrow">
-            <div className="pm-rg"><div className="pm-rh"><span className="pm-rn">Probability</span><span className="pm-rv" style={{color:"#fb923c"}}>{PM_PROB[f.prob-1]}</span></div><div className="pm-rt">{[1,2,3,4,5].map(j=><div key={j} className={`pm-rp${f.prob>=j?" prob-f":""}`} onClick={()=>updF(f.id,"prob",j)}/>)}</div></div>
-            <div className="pm-rg"><div className="pm-rh"><span className="pm-rn">Impact</span><span className="pm-rv" style={{color:"#ef4444"}}>{PM_IMP[f.impact-1]}</span></div><div className="pm-rt">{[1,2,3,4,5].map(j=><div key={j} className={`pm-rp${f.impact>=j?" impact-f":""}`} onClick={()=>updF(f.id,"impact",j)}/>)}</div></div>
+            <div><div className="pm-rh"><span className="pm-rn">Probability</span><span className="pm-rv" style={{color:"var(--pm-orange)"}}>{PM_PROB[f.prob-1]}</span></div><div className="pm-rt">{[1,2,3,4,5].map(j=><div key={j} className={`pm-rp${f.prob>=j?" prob-f":""}`} onClick={()=>updF(f.id,"prob",j)}/>)}</div></div>
+            <div><div className="pm-rh"><span className="pm-rn">Impact</span><span className="pm-rv" style={{color:"var(--pm-red)"}}>{PM_IMP[f.impact-1]}</span></div><div className="pm-rt">{[1,2,3,4,5].map(j=><div key={j} className={`pm-rp${f.impact>=j?" impact-f":""}`} onClick={()=>updF(f.id,"impact",j)}/>)}</div></div>
           </div>
           <div style={{marginTop:10,display:"flex",justifyContent:"flex-end"}}><span className={`pm-risk-lbl ${cls}`}>Risk: {l} ({score})</span></div>
         </div>);
       })}
     </div>)}
 
+    {/* Stage 4: Shield */}
     {stage===4&&(<div className="pm-panel">
-      <div className="pm-pnum">05 / Shield Protocol</div><div className="pm-pt">Build your defenses</div>
-      <div className="pm-pd">For each critical/high-risk failure: define a mitigation and an early warning signal.</div>
+      <div className="pm-panel-title">Build your defenses</div>
+      <div className="pm-panel-desc">For each critical/high-risk failure: define a mitigation and an early warning signal.</div>
       {priority.length===0&&<div className="pm-alert">No critical or high-risk failures identified. Proceed to brief.</div>}
       {priority.map(f=>{
         const score=pmRiskScore(f.prob,f.impact);const{l}=pmRiskLabel(score);const sh=getS(f.id);
         return(<div className="pm-sc" key={f.id}>
           <div className="pm-sct"><span className="pm-sarr">▸ {l}</span>{f.text}<span className={`pm-cbadge cb-${f.cat}`}>{PM_CATS.find(c=>c.id===f.cat)?.l}</span></div>
           <div className="pm-sgrid">
-            <div><label className="pm-fl">Mitigation plan</label><textarea className="pm-ta" rows={3} placeholder="What specific action reduces this risk?" value={sh.mitigation} onChange={e=>updS(f.id,"mitigation",e.target.value)}/></div>
-            <div><label className="pm-fl">Early warning signal</label><textarea className="pm-ta" rows={3} placeholder="What leading indicator tells you this is about to happen?" value={sh.signal} onChange={e=>updS(f.id,"signal",e.target.value)}/></div>
+            <div><label className="pm-label">Mitigation plan</label><textarea className="pm-ta" rows={3} placeholder="What specific action reduces this risk?" value={sh.mitigation} onChange={e=>updS(f.id,"mitigation",e.target.value)}/></div>
+            <div><label className="pm-label">Early warning signal</label><textarea className="pm-ta" rows={3} placeholder="What leading indicator tells you this is about to happen?" value={sh.signal} onChange={e=>updS(f.id,"signal",e.target.value)}/></div>
           </div>
         </div>);
       })}
     </div>)}
 
+    {/* Stage 5: Results */}
     {stage===5&&(<>
-      <div className="pm-rep-hdr"><div className="pm-rep-cls">Pre-Mortem Analysis · Confidential</div><div className="pm-rep-t">Pre-Mortem Brief</div><div className="pm-rep-s">Re: {mission}</div>
-        <div className="pm-rep-meta"><div className="pm-rmi"><strong>Timeframe</strong>{timeframe}</div><div className="pm-rmi"><strong>Failures</strong>{failures.length}</div><div className="pm-rmi"><strong>Critical</strong>{critical.length}</div><div className="pm-rmi"><strong>Date</strong>{today}</div></div>
+      <div className="pm-results-hero">
+        <div className="pm-results-headline">{critical.length===0?"Low Risk Profile":critical.length<=2?"Manageable Risk":"High Exposure"}</div>
+        <div className="pm-results-sub">Pre-Mortem complete · {failures.length} failure modes analyzed</div>
+        <div className="pm-results-strategy">"{mission}"</div>
       </div>
-      <div className="pm-stats">
-        <div className="pm-stile"><div className="pm-snum" style={{color:"#ef4444"}}>{critical.length}</div><div className="pm-slbl">Critical</div></div>
-        <div className="pm-stile"><div className="pm-snum" style={{color:"#fb923c"}}>{high.length}</div><div className="pm-slbl">High Risk</div></div>
-        <div className="pm-stile"><div className="pm-snum" style={{color:"#8a9ab8"}}>{failures.length-critical.length-high.length}</div><div className="pm-slbl">Manageable</div></div>
-        <div className="pm-stile"><div className="pm-snum" style={{color:"#10b981"}}>{priority.length}</div><div className="pm-slbl">Mitigated</div></div>
+
+      <div className="pm-stats-grid">
+        <div className="pm-stat-card"><div className="pm-stat-num" style={{color:"var(--pm-red)"}}>{critical.length}</div><div className="pm-stat-label">Critical</div></div>
+        <div className="pm-stat-card"><div className="pm-stat-num" style={{color:"var(--pm-orange)"}}>{high.length}</div><div className="pm-stat-label">High Risk</div></div>
+        <div className="pm-stat-card"><div className="pm-stat-num" style={{color:"var(--pm-muted)"}}>{failures.length-critical.length-high.length}</div><div className="pm-stat-label">Manageable</div></div>
+        <div className="pm-stat-card"><div className="pm-stat-num" style={{color:"var(--pm-green)"}}>{priority.length}</div><div className="pm-stat-label">Shielded</div></div>
       </div>
-      <div className="pm-verd"><div className="pm-vl">▸ Analysis Verdict</div><div className="pm-vt">{verdict()}</div></div>
-      <div className="pm-ttbl">
-        <div className="pm-ttbl-hdr"><span className="pm-th">Failure Mode</span><span className="pm-th">Category</span><span className="pm-th">Prob</span><span className="pm-th">Impact</span><span className="pm-th">Risk Level</span></div>
-        {sorted.map(f=>{const score=pmRiskScore(f.prob,f.impact);const{l,cls}=pmRiskLabel(score);const barColor=cls==="pm-sc-c"?"#ef4444":cls==="pm-sc-h"?"#fb923c":cls==="pm-sc-m"?"#f59e0b":"#3a4a63";
-          return(<div className="pm-trow" key={f.id}><div className="pm-tn">{f.text}</div><div style={{textAlign:"center"}}><span className={`pm-cbadge cb-${f.cat}`}>{PM_CATS.find(c=>c.id===f.cat)?.l}</span></div><div className="pm-ts" style={{color:"#fb923c"}}>{f.prob}/5</div><div className="pm-ts" style={{color:"#ef4444"}}>{f.impact}/5</div><div className="pm-bw"><div className="pm-bt"><div className="pm-bf" style={{width:`${barW[f.id]??0}%`,background:barColor}}/></div><span className={`pm-ts ${cls}`} style={{fontSize:9,minWidth:52}}>{l}</span></div></div>);
+
+      <div className="pm-insight"><div className="pm-insight-tag">▸ Analysis Verdict</div><div className="pm-insight-text">{verdict()}</div></div>
+
+      <div className="pm-table">
+        <div className="pm-table-hdr"><span className="pm-table-th">Failure Mode</span><span className="pm-table-th">Category</span><span className="pm-table-th">Prob</span><span className="pm-table-th">Impact</span><span className="pm-table-th">Risk Level</span></div>
+        {sorted.map(f=>{const score=pmRiskScore(f.prob,f.impact);const{l,cls}=pmRiskLabel(score);const barColor=cls==="pm-sc-c"?"var(--pm-red)":cls==="pm-sc-h"?"var(--pm-orange)":cls==="pm-sc-m"?"var(--pm-accent)":"var(--pm-muted2)";
+          return(<div className="pm-table-row" key={f.id}><div className="pm-table-cell">{f.text}</div><div style={{textAlign:"center"}}><span className={`pm-cbadge cb-${f.cat}`}>{PM_CATS.find(c=>c.id===f.cat)?.l}</span></div><div className="pm-table-val" style={{color:"var(--pm-orange)"}}>{f.prob}/5</div><div className="pm-table-val" style={{color:"var(--pm-red)"}}>{f.impact}/5</div><div className="pm-bw"><div className="pm-bt"><div className="pm-bf" style={{width:`${barW[f.id]??0}%`,background:barColor}}/></div><span className={`pm-table-val ${cls}`} style={{fontSize:9,minWidth:52}}>{l}</span></div></div>);
         })}
       </div>
-      {priority.length>0&&<div className="pm-srep"><div className="pm-srep-h">Shield Protocol — Mitigation Registry</div>{priority.map(f=>{const sh=getS(f.id);if(!sh.mitigation&&!sh.signal)return null;return(<div className="pm-srep-r" key={f.id}><div className="pm-srt">▸ {f.text}</div>{sh.mitigation&&<div className="pm-srm"><strong style={{color:"#f59e0b",fontFamily:"'Azeret Mono',monospace",fontSize:8,letterSpacing:2,textTransform:"uppercase" as const}}>Mitigation — </strong>{sh.mitigation}</div>}{sh.signal&&<div className="pm-srs"><span style={{color:"#3a4a63"}}>SIGNAL //</span>{sh.signal}</div>}</div>);})}</div>}
-      <div className="pm-rst-row"><button className="pm-btn pm-btn-g" onClick={reset}>↺ New Pre-Mortem</button><button className="pm-btn pm-btn-g" onClick={()=>setStage(4)}>← Revise Shield</button></div>
+
+      {priority.length>0&&<div className="pm-shield"><div className="pm-shield-h">Shield Protocol — Mitigation Registry</div>{priority.map(f=>{const sh=getS(f.id);if(!sh.mitigation&&!sh.signal)return null;return(<div className="pm-shield-r" key={f.id}><div className="pm-srt">▸ {f.text}</div>{sh.mitigation&&<div className="pm-srm"><strong style={{color:"var(--pm-accent)",fontFamily:"'Azeret Mono',monospace",fontSize:8,letterSpacing:2,textTransform:"uppercase" as const}}>Mitigation — </strong>{sh.mitigation}</div>}{sh.signal&&<div className="pm-srs"><span style={{color:"var(--pm-muted2)"}}>SIGNAL //</span>{sh.signal}</div>}</div>);})}</div>}
+
+      <div className="pm-actions"><button className="pm-btn pm-btn-g" onClick={reset}>↺ New Pre-Mortem</button><button className="pm-btn pm-btn-g" onClick={()=>setStage(4)}>← Revise Shield</button></div>
     </>)}
 
     {stage<5&&<div className="pm-nav"><button className="pm-btn pm-btn-g" onClick={()=>setStage(s=>s-1)} disabled={stage===0}>← Back</button><button className="pm-btn" onClick={()=>setStage(s=>s+1)} disabled={!canNext()}>{stage===4?"Generate Brief →":"Continue →"}</button></div>}
