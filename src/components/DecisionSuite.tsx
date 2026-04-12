@@ -1399,6 +1399,11 @@ function CommitmentLedger(){
       </div>
     </div>
     {total>0&&<div className="cl-int"><div className="cl-int-row"><span className="cl-int-n">Word Integrity Score</span><span className="cl-int-pct">{intPct!==null?`${intPct}%`:"—"}</span></div><div className="cl-int-track"><div className="cl-int-fill" style={{width:`${intPct??0}%`}}/></div><div className="cl-int-v">{clIntVerdict(intPct)}</div></div>}
+    {(currentStreak>0||recentHistory.length>0)&&<div className="cl-streak">
+      <div className="cl-streak-fire">{currentStreak>=5?"🔥":currentStreak>=3?"✨":"🏆"}</div>
+      <div className="cl-streak-info"><div className="cl-streak-n">{currentStreak} commitment{currentStreak!==1?"s":""} kept in a row</div><div className="cl-streak-l">Current streak</div></div>
+      <div className="cl-streak-dots">{recentHistory.slice(0,10).map((e,i)=><div key={i} className={`cl-streak-dot ${e.status==="kept"?"active":"broken"}`} title={`${e.text} — ${e.status}`}/>)}</div>
+    </div>}
     <div className="cl-tabs">{["ledger","patterns"].map(t=><button key={t} className={`cl-tab${tab===t?" active":""}`} onClick={()=>setTab(t)}>{t==="ledger"?"Active Ledger":"Patterns & Insights"}</button>)}</div>
     <div className="cl-content">
       {tab==="ledger"&&(<>
