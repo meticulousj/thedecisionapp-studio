@@ -1292,7 +1292,7 @@ function CommitmentLedger(){
     if(tab==="patterns"){setTimeout(()=>{const w:Record<string,number>={};CL_CATS.forEach(c=>{const ces=entries.filter(e=>e.cat===c&&e.status!=="pending");w[c]=ces.length>0?Math.round((ces.filter(e=>e.status==="kept").length/ces.length)*100):0;});setBarW(w);},100);}
   },[tab,entries]);
 
-  const addEntry=()=>{if(!text.trim())return;setEntries([{id:Date.now().toString(),text:text.trim(),cat,deadline,stakes,madeWith:madeWith.trim()||"Myself",status:"pending",createdAt:clToday()},...entries]);setText("");setDeadline("");setStakes(3);setCat("Work");setMadeWith("Myself");setShowForm(false);};
+  const addEntry=()=>{if(!text.trim())return;const hasStake=stakeMode.social?.enabled||stakeMode.financial?.enabled||stakeMode.reputation?.enabled;setEntries([{id:Date.now().toString(),text:text.trim(),cat,deadline,stakes,madeWith:madeWith.trim()||"Myself",status:"pending",createdAt:clToday(),stakeMode:hasStake?stakeMode:undefined},...entries]);setText("");setDeadline("");setStakes(3);setCat("Work");setMadeWith("Myself");setStakeMode({});setShowStakes(false);setShowForm(false);};
   const updStatus=(id:string,status:string)=>setEntries(entries.map(e=>e.id===id?{...e,status,resolvedAt:clToday()}:e));
   const delEntry=(id:string)=>setEntries(entries.filter(e=>e.id!==id));
 
