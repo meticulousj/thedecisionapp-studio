@@ -1250,6 +1250,11 @@ function clDaysUntil(d:string){if(!d)return null;return Math.ceil((new Date(d).g
 function clFmtDate(d:string){if(!d)return"No deadline";return new Date(d+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});}
 function clIntVerdict(p:number|null){if(p===null)return"No completed commitments yet.";if(p>=90)return"Exceptional follow-through. Your word is your bond.";if(p>=75)return"Strong integrity. Minor gaps worth investigating.";if(p>=60)return"Moderate follow-through. Patterns of over-commitment emerging.";if(p>=40)return"Significant gap between intention and execution. Review your commitment cadence.";return"Critical gap. You are over-committing or under-delivering.";}
 
+interface CLStakeMode {
+  social?: { enabled: boolean; friendName?: string; shared?: boolean };
+  financial?: { enabled: boolean; amount?: number; penalty?: string };
+  reputation?: { enabled: boolean };
+}
 interface CLEntry {
   id: string;
   text: string;
@@ -1260,6 +1265,7 @@ interface CLEntry {
   status: string;
   createdAt: string;
   resolvedAt?: string;
+  stakeMode?: CLStakeMode;
 }
 
 function CommitmentLedger(){
@@ -1273,6 +1279,8 @@ function CommitmentLedger(){
   const [deadline,setDeadline]=useState("");
   const [stakes,setStakes]=useState(3);
   const [madeWith,setMadeWith]=useState("Myself");
+  const [stakeMode,setStakeMode]=useState<CLStakeMode>({});
+  const [showStakes,setShowStakes]=useState(false);
 
   useEffect(()=>{
     const r=storage.get("commitment-ledger-entries");
