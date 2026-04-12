@@ -1345,10 +1345,17 @@ function CommitmentLedger(){
 
   const genInsights=()=>{const ins:string[]=[];if(overdue.length>0)ins.push(`${overdue.length} overdue commitment${overdue.length>1?"s":""}. Each unresolved item erodes execution credibility — even with yourself.`);const worst=catStats.filter(c=>c.pct!==null).sort((a,b)=>(a.pct??0)-(b.pct??0))[0];if(worst&&(worst.pct??100)<60)ins.push(`Lowest follow-through: ${worst.cat} (${worst.pct}% kept). This is structural, not willpower — reduce commitment frequency in this domain.`);const best=catStats.filter(c=>c.pct!==null).sort((a,b)=>(b.pct??0)-(a.pct??0))[0];if(best&&(best.pct??0)>=80&&best!==worst)ins.push(`Strongest domain: ${best.cat} at ${best.pct}% follow-through. This is your high-integrity zone — understand what makes it work and replicate it.`);if(deferred.length>=3)ins.push(`${deferred.length} deferred commitments. Deferral is often disguised avoidance — review whether these are genuinely rescheduled.`);if(ins.length===0&&resolved.length>=3)ins.push(`Clean record so far. As your ledger grows, patterns will surface here.`);return ins;};
 
+  // Streak calculation — consecutive kept commitments (by resolvedAt date, most recent first)
+  const calcStreak=()=>{const sorted=[...entries].filter(e=>e.status==="kept"||e.status==="broken").sort((a,b)=>(b.resolvedAt||"").localeCompare(a.resolvedAt||""));let streak=0;for(const e of sorted){if(e.status==="kept")streak++;else break;}return streak;};
+  const currentStreak=calcStreak();
+  const recentHistory=[...entries].filter(e=>e.status==="kept"||e.status==="broken").sort((a,b)=>(b.resolvedAt||"").localeCompare(a.resolvedAt||"")).slice(0,10);
+
   const ClEntry=({entry}:{entry:CLEntry})=>{
     const days=entry.deadline?clDaysUntil(entry.deadline):null;
     const isOverdue=days!==null&&days<0&&entry.status==="pending";
     const isDueSoon=days!==null&&days>=0&&days<=3&&entry.status==="pending";
+    const sm=entry.stakeMode;
+    const hasStakes=sm&&(sm.social?.enabled||sm.financial?.enabled||sm.reputation?.enabled);
     return(<div className={`cl-entry ${entry.status} ${isOverdue?"overdue":""}`}>
       <div><div className="cl-et">{entry.text}</div>
         <div className="cl-emeta">
@@ -1357,6 +1364,11 @@ function CommitmentLedger(){
           {entry.deadline&&<span className={`cl-edate${isOverdue?" overdue":isDueSoon?" due-soon":""}`}>{isOverdue?`${Math.abs(days!)}d overdue`:days===0?"Due today":days!==null&&days<=3?`${days}d left`:clFmtDate(entry.deadline)}</span>}
           {entry.madeWith&&entry.madeWith!=="Myself"&&<span className="cl-edate">with {entry.madeWith}</span>}
         </div>
+        {hasStakes&&<div className="cl-stake-badges">
+          {sm.social?.enabled&&<span className="cl-sbadge social">👥 Social{sm.social.friendName?` · ${sm.social.friendName}`:""}</span>}
+          {sm.financial?.enabled&&<span className="cl-sbadge financial">💰 Financial{sm.financial.amount?` · $${sm.financial.amount}`:""}{sm.financial.penalty?` → ${sm.financial.penalty}`:""}</span>}
+          {sm.reputation?.enabled&&<span className="cl-sbadge reputation">🏆 Reputation</span>}
+        </div>}
       </div>
       <div className="cl-ectl">
         <span className={`cl-stamp cl-stamp-${entry.status}`}>{entry.status}</span>
