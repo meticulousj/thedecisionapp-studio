@@ -1241,8 +1241,42 @@ const CL_CSS=`
 .cl-ins-lbl{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#7a5c10;margin-bottom:7px;}
 .cl-ins-txt{font-family:'DM Sans',sans-serif;font-style:italic;font-size:12px;color:#3a5040;line-height:1.8;}
 .cl-no-data{font-family:'Newsreader',serif;font-style:italic;font-size:12px;color:#9ab89f;padding:10px 0;}
+/* Stakes Mode */
+.cl-stakes-mode{margin-top:14px;border:1px solid #e2dcd0;background:#fff;padding:16px 18px;animation:clFade .3s ease;}
+.cl-stakes-toggle{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#6b8c72;cursor:pointer;background:none;border:1px dashed #e2dcd0;padding:6px 14px;transition:all .15s;width:100%;text-align:center;margin-top:8px;}
+.cl-stakes-toggle:hover{border-color:#1a3a2a;color:#1a3a2a;}
+.cl-stakes-toggle.active{background:#1a3a2a;border-style:solid;border-color:#1a3a2a;color:#fff;}
+.cl-sm-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#1a3a2a;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.cl-sm-title::after{content:'';flex:1;height:1px;background:rgba(28,43,30,.1);}
+.cl-sm-option{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid #e2dcd0;background:#f6f1e7;margin-bottom:6px;cursor:pointer;transition:all .15s;}
+.cl-sm-option:hover{border-color:#6b8c72;}
+.cl-sm-option.active{border-color:#1a3a2a;background:#e8f5ec;border-left:3px solid #1a3a2a;}
+.cl-sm-check{width:16px;height:16px;border:1.5px solid #9ab89f;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all .15s;}
+.cl-sm-option.active .cl-sm-check{background:#1a3a2a;border-color:#1a3a2a;color:#fff;}
+.cl-sm-info{flex:1;}
+.cl-sm-name{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:#1c2b1e;margin-bottom:2px;}
+.cl-sm-desc{font-family:'DM Sans',sans-serif;font-size:11px;color:#6b8c72;font-style:italic;line-height:1.5;}
+.cl-sm-field{margin-top:6px;}
+.cl-sm-field input{width:100%;background:#fff;border:1px solid #e2dcd0;padding:5px 8px;font-family:'DM Sans',sans-serif;font-size:12px;color:#1c2b1e;outline:none;}
+.cl-sm-field input:focus{border-color:#1a3a2a;}
+.cl-sm-field input::placeholder{color:#9ab89f;font-style:italic;}
+/* Stake badges on entries */
+.cl-stake-badges{display:flex;gap:4px;margin-top:4px;}
+.cl-sbadge{font-family:'Azeret Mono',monospace;font-size:7px;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:2px;font-weight:600;}
+.cl-sbadge.social{background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;}
+.cl-sbadge.financial{background:#fef3c7;color:#92400e;border:1px solid #fde68a;}
+.cl-sbadge.reputation{background:#ede9fe;color:#6d28d9;border:1px solid #ddd6fe;}
+/* Streak */
+.cl-streak{display:flex;align-items:center;gap:8px;padding:12px 18px;background:#fff;border:1px solid #e2dcd0;border-left:4px solid #c9a84c;margin-bottom:18px;}
+.cl-streak-fire{font-size:18px;}
+.cl-streak-info{flex:1;}
+.cl-streak-n{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#1a3a2a;}
+.cl-streak-l{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#6b8c72;}
+.cl-streak-dots{display:flex;gap:3px;}
+.cl-streak-dot{width:8px;height:8px;border-radius:50%;background:#e2dcd0;border:1px solid rgba(28,43,30,.1);}
+.cl-streak-dot.active{background:#52b788;border-color:#52b788;}
+.cl-streak-dot.broken{background:#c0392b;border-color:#c0392b;}
 `;
-
 const CL_CATS=["Self","Work","Health","Finance","Relationship","Learning","Other"];
 const CL_STAKES=["Trivial","Minor","Moderate","Important","Critical"];
 function clToday(){return new Date().toISOString().split("T")[0];}
@@ -1250,6 +1284,11 @@ function clDaysUntil(d:string){if(!d)return null;return Math.ceil((new Date(d).g
 function clFmtDate(d:string){if(!d)return"No deadline";return new Date(d+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});}
 function clIntVerdict(p:number|null){if(p===null)return"No completed commitments yet.";if(p>=90)return"Exceptional follow-through. Your word is your bond.";if(p>=75)return"Strong integrity. Minor gaps worth investigating.";if(p>=60)return"Moderate follow-through. Patterns of over-commitment emerging.";if(p>=40)return"Significant gap between intention and execution. Review your commitment cadence.";return"Critical gap. You are over-committing or under-delivering.";}
 
+interface CLStakeMode {
+  social?: { enabled: boolean; friendName?: string; shared?: boolean };
+  financial?: { enabled: boolean; amount?: number; penalty?: string };
+  reputation?: { enabled: boolean };
+}
 interface CLEntry {
   id: string;
   text: string;
@@ -1260,6 +1299,7 @@ interface CLEntry {
   status: string;
   createdAt: string;
   resolvedAt?: string;
+  stakeMode?: CLStakeMode;
 }
 
 function CommitmentLedger(){
@@ -1273,6 +1313,8 @@ function CommitmentLedger(){
   const [deadline,setDeadline]=useState("");
   const [stakes,setStakes]=useState(3);
   const [madeWith,setMadeWith]=useState("Myself");
+  const [stakeMode,setStakeMode]=useState<CLStakeMode>({});
+  const [showStakes,setShowStakes]=useState(false);
 
   useEffect(()=>{
     const r=storage.get("commitment-ledger-entries");
@@ -1284,7 +1326,7 @@ function CommitmentLedger(){
     if(tab==="patterns"){setTimeout(()=>{const w:Record<string,number>={};CL_CATS.forEach(c=>{const ces=entries.filter(e=>e.cat===c&&e.status!=="pending");w[c]=ces.length>0?Math.round((ces.filter(e=>e.status==="kept").length/ces.length)*100):0;});setBarW(w);},100);}
   },[tab,entries]);
 
-  const addEntry=()=>{if(!text.trim())return;setEntries([{id:Date.now().toString(),text:text.trim(),cat,deadline,stakes,madeWith:madeWith.trim()||"Myself",status:"pending",createdAt:clToday()},...entries]);setText("");setDeadline("");setStakes(3);setCat("Work");setMadeWith("Myself");setShowForm(false);};
+  const addEntry=()=>{if(!text.trim())return;const hasStake=stakeMode.social?.enabled||stakeMode.financial?.enabled||stakeMode.reputation?.enabled;setEntries([{id:Date.now().toString(),text:text.trim(),cat,deadline,stakes,madeWith:madeWith.trim()||"Myself",status:"pending",createdAt:clToday(),stakeMode:hasStake?stakeMode:undefined},...entries]);setText("");setDeadline("");setStakes(3);setCat("Work");setMadeWith("Myself");setStakeMode({});setShowStakes(false);setShowForm(false);};
   const updStatus=(id:string,status:string)=>setEntries(entries.map(e=>e.id===id?{...e,status,resolvedAt:clToday()}:e));
   const delEntry=(id:string)=>setEntries(entries.filter(e=>e.id!==id));
 
@@ -1303,10 +1345,17 @@ function CommitmentLedger(){
 
   const genInsights=()=>{const ins:string[]=[];if(overdue.length>0)ins.push(`${overdue.length} overdue commitment${overdue.length>1?"s":""}. Each unresolved item erodes execution credibility — even with yourself.`);const worst=catStats.filter(c=>c.pct!==null).sort((a,b)=>(a.pct??0)-(b.pct??0))[0];if(worst&&(worst.pct??100)<60)ins.push(`Lowest follow-through: ${worst.cat} (${worst.pct}% kept). This is structural, not willpower — reduce commitment frequency in this domain.`);const best=catStats.filter(c=>c.pct!==null).sort((a,b)=>(b.pct??0)-(a.pct??0))[0];if(best&&(best.pct??0)>=80&&best!==worst)ins.push(`Strongest domain: ${best.cat} at ${best.pct}% follow-through. This is your high-integrity zone — understand what makes it work and replicate it.`);if(deferred.length>=3)ins.push(`${deferred.length} deferred commitments. Deferral is often disguised avoidance — review whether these are genuinely rescheduled.`);if(ins.length===0&&resolved.length>=3)ins.push(`Clean record so far. As your ledger grows, patterns will surface here.`);return ins;};
 
+  // Streak calculation — consecutive kept commitments (by resolvedAt date, most recent first)
+  const calcStreak=()=>{const sorted=[...entries].filter(e=>e.status==="kept"||e.status==="broken").sort((a,b)=>(b.resolvedAt||"").localeCompare(a.resolvedAt||""));let streak=0;for(const e of sorted){if(e.status==="kept")streak++;else break;}return streak;};
+  const currentStreak=calcStreak();
+  const recentHistory=[...entries].filter(e=>e.status==="kept"||e.status==="broken").sort((a,b)=>(b.resolvedAt||"").localeCompare(a.resolvedAt||"")).slice(0,10);
+
   const ClEntry=({entry}:{entry:CLEntry})=>{
     const days=entry.deadline?clDaysUntil(entry.deadline):null;
     const isOverdue=days!==null&&days<0&&entry.status==="pending";
     const isDueSoon=days!==null&&days>=0&&days<=3&&entry.status==="pending";
+    const sm=entry.stakeMode;
+    const hasStakes=sm&&(sm.social?.enabled||sm.financial?.enabled||sm.reputation?.enabled);
     return(<div className={`cl-entry ${entry.status} ${isOverdue?"overdue":""}`}>
       <div><div className="cl-et">{entry.text}</div>
         <div className="cl-emeta">
@@ -1315,6 +1364,11 @@ function CommitmentLedger(){
           {entry.deadline&&<span className={`cl-edate${isOverdue?" overdue":isDueSoon?" due-soon":""}`}>{isOverdue?`${Math.abs(days!)}d overdue`:days===0?"Due today":days!==null&&days<=3?`${days}d left`:clFmtDate(entry.deadline)}</span>}
           {entry.madeWith&&entry.madeWith!=="Myself"&&<span className="cl-edate">with {entry.madeWith}</span>}
         </div>
+        {hasStakes&&<div className="cl-stake-badges">
+          {sm.social?.enabled&&<span className="cl-sbadge social">👥 Social{sm.social.friendName?` · ${sm.social.friendName}`:""}</span>}
+          {sm.financial?.enabled&&<span className="cl-sbadge financial">💰 Financial{sm.financial.amount?` · $${sm.financial.amount}`:""}{sm.financial.penalty?` → ${sm.financial.penalty}`:""}</span>}
+          {sm.reputation?.enabled&&<span className="cl-sbadge reputation">🏆 Reputation</span>}
+        </div>}
       </div>
       <div className="cl-ectl">
         <span className={`cl-stamp cl-stamp-${entry.status}`}>{entry.status}</span>
@@ -1345,6 +1399,11 @@ function CommitmentLedger(){
       </div>
     </div>
     {total>0&&<div className="cl-int"><div className="cl-int-row"><span className="cl-int-n">Word Integrity Score</span><span className="cl-int-pct">{intPct!==null?`${intPct}%`:"—"}</span></div><div className="cl-int-track"><div className="cl-int-fill" style={{width:`${intPct??0}%`}}/></div><div className="cl-int-v">{clIntVerdict(intPct)}</div></div>}
+    {(currentStreak>0||recentHistory.length>0)&&<div className="cl-streak">
+      <div className="cl-streak-fire">{currentStreak>=5?"🔥":currentStreak>=3?"✨":"🏆"}</div>
+      <div className="cl-streak-info"><div className="cl-streak-n">{currentStreak} commitment{currentStreak!==1?"s":""} kept in a row</div><div className="cl-streak-l">Current streak</div></div>
+      <div className="cl-streak-dots">{recentHistory.slice(0,10).map((e,i)=><div key={i} className={`cl-streak-dot ${e.status==="kept"?"active":"broken"}`} title={`${e.text} — ${e.status}`}/>)}</div>
+    </div>}
     <div className="cl-tabs">{["ledger","patterns"].map(t=><button key={t} className={`cl-tab${tab===t?" active":""}`} onClick={()=>setTab(t)}>{t==="ledger"?"Active Ledger":"Patterns & Insights"}</button>)}</div>
     <div className="cl-content">
       {tab==="ledger"&&(<>
@@ -1354,6 +1413,36 @@ function CommitmentLedger(){
           <div className="cl-form-grid"><div><label className="cl-fl">Deadline</label><input className="cl-in" type="date" value={deadline} min={clToday()} onChange={e=>setDeadline(e.target.value)}/></div><div><label className="cl-fl">Made with</label><input className="cl-in" type="text" placeholder="Myself, team, client…" value={madeWith} onChange={e=>setMadeWith(e.target.value)}/></div></div>
           <div className="cl-form-row"><label className="cl-fl">Category</label><div className="cl-cats">{CL_CATS.map(c=><button key={c} className={`cl-cat${cat===c?" active":""}`} onClick={()=>setCat(c)}>{c}</button>)}</div></div>
           <div className="cl-form-row"><label className="cl-fl">Stakes — {CL_STAKES[stakes-1]}</label><div className="cl-stakes-row"><div className="cl-strack">{[1,2,3,4,5].map(i=><div key={i} className={`cl-sp${stakes>=i?" f":""}`} onClick={()=>setStakes(i)}/>)}</div><span className="cl-slbl-txt">{CL_STAKES[stakes-1]}</span></div></div>
+          <button className={`cl-stakes-toggle${showStakes?" active":""}`} onClick={()=>setShowStakes(!showStakes)}>{showStakes?"▾ Hide Stakes Mode":"▸ Add Stakes Mode — Behavioral Lock-In"}</button>
+          {showStakes&&<div className="cl-stakes-mode">
+            <div className="cl-sm-title">Stakes Mode</div>
+            <div className={`cl-sm-option${stakeMode.social?.enabled?" active":""}`} onClick={()=>setStakeMode({...stakeMode,social:{...stakeMode.social,enabled:!stakeMode.social?.enabled}})}>
+              <div className="cl-sm-check">{stakeMode.social?.enabled&&"✓"}</div>
+              <div className="cl-sm-info">
+                <div className="cl-sm-name">👥 Social Stake</div>
+                <div className="cl-sm-desc">Share this commitment with a friend — adding external accountability</div>
+                {stakeMode.social?.enabled&&<div className="cl-sm-field"><input type="text" placeholder="Friend's name (optional)" value={stakeMode.social?.friendName||""} onChange={e=>{e.stopPropagation();setStakeMode({...stakeMode,social:{...stakeMode.social,enabled:true,friendName:e.target.value}})}} onClick={e=>e.stopPropagation()}/></div>}
+              </div>
+            </div>
+            <div className={`cl-sm-option${stakeMode.financial?.enabled?" active":""}`} onClick={()=>setStakeMode({...stakeMode,financial:{...stakeMode.financial,enabled:!stakeMode.financial?.enabled}})}>
+              <div className="cl-sm-check">{stakeMode.financial?.enabled&&"✓"}</div>
+              <div className="cl-sm-info">
+                <div className="cl-sm-name">💰 Financial Stake</div>
+                <div className="cl-sm-desc">Self-imposed penalty if broken — put money on the line</div>
+                {stakeMode.financial?.enabled&&<div className="cl-sm-field" style={{display:"flex",gap:6}}>
+                  <input type="number" placeholder="Amount ($)" style={{width:"40%"}} value={stakeMode.financial?.amount||""} onChange={e=>{e.stopPropagation();setStakeMode({...stakeMode,financial:{...stakeMode.financial,enabled:true,amount:Number(e.target.value)}})}} onClick={e=>e.stopPropagation()}/>
+                  <input type="text" placeholder="Penalty (e.g. donate to charity)" style={{width:"60%"}} value={stakeMode.financial?.penalty||""} onChange={e=>{e.stopPropagation();setStakeMode({...stakeMode,financial:{...stakeMode.financial,enabled:true,penalty:e.target.value}})}} onClick={e=>e.stopPropagation()}/>
+                </div>}
+              </div>
+            </div>
+            <div className={`cl-sm-option${stakeMode.reputation?.enabled?" active":""}`} onClick={()=>setStakeMode({...stakeMode,reputation:{enabled:!stakeMode.reputation?.enabled}})}>
+              <div className="cl-sm-check">{stakeMode.reputation?.enabled&&"✓"}</div>
+              <div className="cl-sm-info">
+                <div className="cl-sm-name">🏆 Reputation Stake</div>
+                <div className="cl-sm-desc">Log visible streaks — your track record becomes your identity</div>
+              </div>
+            </div>
+          </div>}
           <div className="cl-form-btns"><button className="cl-btn cl-btn-g cl-btn-sm" onClick={()=>setShowForm(false)}>Cancel</button><button className="cl-btn cl-btn-sm" onClick={addEntry} disabled={!text.trim()}>Enter in Ledger</button></div>
         </div>}
         {total===0&&<div className="cl-empty">The ledger is empty.<span>Enter your first commitment to begin tracking</span></div>}
