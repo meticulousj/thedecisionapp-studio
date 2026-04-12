@@ -1408,6 +1408,36 @@ function CommitmentLedger(){
           <div className="cl-form-grid"><div><label className="cl-fl">Deadline</label><input className="cl-in" type="date" value={deadline} min={clToday()} onChange={e=>setDeadline(e.target.value)}/></div><div><label className="cl-fl">Made with</label><input className="cl-in" type="text" placeholder="Myself, team, client…" value={madeWith} onChange={e=>setMadeWith(e.target.value)}/></div></div>
           <div className="cl-form-row"><label className="cl-fl">Category</label><div className="cl-cats">{CL_CATS.map(c=><button key={c} className={`cl-cat${cat===c?" active":""}`} onClick={()=>setCat(c)}>{c}</button>)}</div></div>
           <div className="cl-form-row"><label className="cl-fl">Stakes — {CL_STAKES[stakes-1]}</label><div className="cl-stakes-row"><div className="cl-strack">{[1,2,3,4,5].map(i=><div key={i} className={`cl-sp${stakes>=i?" f":""}`} onClick={()=>setStakes(i)}/>)}</div><span className="cl-slbl-txt">{CL_STAKES[stakes-1]}</span></div></div>
+          <button className={`cl-stakes-toggle${showStakes?" active":""}`} onClick={()=>setShowStakes(!showStakes)}>{showStakes?"▾ Hide Stakes Mode":"▸ Add Stakes Mode — Behavioral Lock-In"}</button>
+          {showStakes&&<div className="cl-stakes-mode">
+            <div className="cl-sm-title">Stakes Mode</div>
+            <div className={`cl-sm-option${stakeMode.social?.enabled?" active":""}`} onClick={()=>setStakeMode({...stakeMode,social:{...stakeMode.social,enabled:!stakeMode.social?.enabled}})}>
+              <div className="cl-sm-check">{stakeMode.social?.enabled&&"✓"}</div>
+              <div className="cl-sm-info">
+                <div className="cl-sm-name">👥 Social Stake</div>
+                <div className="cl-sm-desc">Share this commitment with a friend — adding external accountability</div>
+                {stakeMode.social?.enabled&&<div className="cl-sm-field"><input type="text" placeholder="Friend's name (optional)" value={stakeMode.social?.friendName||""} onChange={e=>{e.stopPropagation();setStakeMode({...stakeMode,social:{...stakeMode.social,enabled:true,friendName:e.target.value}})}} onClick={e=>e.stopPropagation()}/></div>}
+              </div>
+            </div>
+            <div className={`cl-sm-option${stakeMode.financial?.enabled?" active":""}`} onClick={()=>setStakeMode({...stakeMode,financial:{...stakeMode.financial,enabled:!stakeMode.financial?.enabled}})}>
+              <div className="cl-sm-check">{stakeMode.financial?.enabled&&"✓"}</div>
+              <div className="cl-sm-info">
+                <div className="cl-sm-name">💰 Financial Stake</div>
+                <div className="cl-sm-desc">Self-imposed penalty if broken — put money on the line</div>
+                {stakeMode.financial?.enabled&&<div className="cl-sm-field" style={{display:"flex",gap:6}}>
+                  <input type="number" placeholder="Amount ($)" style={{width:"40%"}} value={stakeMode.financial?.amount||""} onChange={e=>{e.stopPropagation();setStakeMode({...stakeMode,financial:{...stakeMode.financial,enabled:true,amount:Number(e.target.value)}})}} onClick={e=>e.stopPropagation()}/>
+                  <input type="text" placeholder="Penalty (e.g. donate to charity)" style={{width:"60%"}} value={stakeMode.financial?.penalty||""} onChange={e=>{e.stopPropagation();setStakeMode({...stakeMode,financial:{...stakeMode.financial,enabled:true,penalty:e.target.value}})}} onClick={e=>e.stopPropagation()}/>
+                </div>}
+              </div>
+            </div>
+            <div className={`cl-sm-option${stakeMode.reputation?.enabled?" active":""}`} onClick={()=>setStakeMode({...stakeMode,reputation:{enabled:!stakeMode.reputation?.enabled}})}>
+              <div className="cl-sm-check">{stakeMode.reputation?.enabled&&"✓"}</div>
+              <div className="cl-sm-info">
+                <div className="cl-sm-name">🏆 Reputation Stake</div>
+                <div className="cl-sm-desc">Log visible streaks — your track record becomes your identity</div>
+              </div>
+            </div>
+          </div>}
           <div className="cl-form-btns"><button className="cl-btn cl-btn-g cl-btn-sm" onClick={()=>setShowForm(false)}>Cancel</button><button className="cl-btn cl-btn-sm" onClick={addEntry} disabled={!text.trim()}>Enter in Ledger</button></div>
         </div>}
         {total===0&&<div className="cl-empty">The ledger is empty.<span>Enter your first commitment to begin tracking</span></div>}
