@@ -1891,6 +1891,479 @@ interface LedgerStats {
   intPct: number | null;
 }
 
+// ─────────────────────────────────────────
+// TOOL: TEMPLATES LIBRARY
+// ─────────────────────────────────────────
+const TPL_CSS = `
+.tpl-app{min-height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);padding:40px 32px 80px;}
+.tpl-wrap{max-width:960px;margin:0 auto;}
+.tpl-hdr{margin-bottom:36px;}
+.tpl-ey{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.tpl-title{font-family:'Syne',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-1px;color:var(--text);margin-bottom:6px;}
+.tpl-title span{color:var(--gold);}
+.tpl-sub{font-size:13px;color:var(--text2);font-weight:300;max-width:520px;line-height:1.7;}
+
+.tpl-cats{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap;}
+.tpl-cat{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:7px 16px;border:1px solid var(--border2);background:var(--bg2);color:var(--text2);cursor:pointer;border-radius:20px;transition:all .2s;}
+.tpl-cat:hover{border-color:var(--gold);color:var(--text);}
+.tpl-cat.active{background:var(--gold);border-color:var(--gold);color:#0d0d0d;font-weight:600;}
+
+.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.tpl-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.tpl-card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.15);}
+.tpl-card-icon{font-size:28px;margin-bottom:14px;}
+.tpl-card-badge{position:absolute;top:16px;right:16px;font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:10px;border:1px solid;}
+.tpl-badge-prioritize{background:var(--blue-d);color:var(--blue);border-color:rgba(96,165,250,.2);}
+.tpl-badge-decide{background:var(--gold-d);color:var(--gold);border-color:rgba(201,168,76,.25);}
+.tpl-badge-analyze{background:var(--green-d);color:var(--green);border-color:rgba(82,183,136,.2);}
+.tpl-badge-plan{background:var(--red-d);color:var(--red);border-color:rgba(230,57,70,.2);}
+.tpl-card-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--text);margin-bottom:4px;letter-spacing:-.3px;}
+.tpl-card-full{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--text3);margin-bottom:10px;}
+.tpl-card-desc{font-size:12px;color:var(--text2);line-height:1.65;font-weight:300;margin-bottom:16px;}
+.tpl-card-dims{display:flex;gap:6px;flex-wrap:wrap;}
+.tpl-dim{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:1px;padding:3px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text3);}
+
+/* Active template view */
+.tpl-active{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:36px;max-width:720px;margin:0 auto;}
+.tpl-back{font-family:'Azeret Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text2);cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-bottom:24px;transition:color .15s;background:none;border:none;}
+.tpl-back:hover{color:var(--gold);}
+.tpl-a-icon{font-size:36px;margin-bottom:12px;}
+.tpl-a-name{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-.5px;}
+.tpl-a-full{font-family:'Azeret Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;}
+.tpl-a-desc{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:28px;font-weight:300;}
+.tpl-a-section{margin-bottom:24px;}
+.tpl-a-slbl{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.tpl-a-steps{display:flex;flex-direction:column;gap:8px;}
+.tpl-a-step{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;align-items:flex-start;gap:14px;}
+.tpl-a-snum{width:28px;height:28px;border-radius:50%;background:var(--gold-d);border:1px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;font-family:'Azeret Mono',monospace;font-size:11px;color:var(--gold);font-weight:700;flex-shrink:0;}
+.tpl-a-stxt{flex:1;}
+.tpl-a-sttl{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.tpl-a-sdsc{font-size:12px;color:var(--text2);line-height:1.6;font-weight:300;}
+
+/* Interactive workspace */
+.tpl-ws{margin-top:28px;}
+.tpl-ws-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:16px;}
+.tpl-ws-grid{display:grid;gap:12px;}
+.tpl-ws-grid.cols-2{grid-template-columns:1fr 1fr;}
+.tpl-ws-grid.cols-4{grid-template-columns:1fr 1fr;gap:12px;}
+.tpl-ws-quad{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:20px;min-height:160px;display:flex;flex-direction:column;}
+.tpl-ws-qlbl{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;font-weight:600;}
+.tpl-ws-qdesc{font-size:11px;color:var(--text2);margin-bottom:12px;font-weight:300;}
+.tpl-ws-items{flex:1;display:flex;flex-direction:column;gap:6px;}
+.tpl-ws-item{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text);}
+.tpl-ws-item button{background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;margin-left:auto;}.tpl-ws-item button:hover{color:var(--red);}
+.tpl-ws-add{display:flex;gap:8px;margin-top:8px;}
+.tpl-ws-add input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);outline:none;}
+.tpl-ws-add input:focus{border-color:var(--gold);}
+.tpl-ws-add input::placeholder{color:var(--text3);}
+.tpl-ws-add button{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:1px;padding:8px 14px;background:var(--gold);border:none;border-radius:8px;color:#0d0d0d;cursor:pointer;font-weight:600;white-space:nowrap;}
+.tpl-ws-add button:hover{opacity:.85;}
+
+/* RICE scoring */
+.tpl-rice-row{display:grid;grid-template-columns:2fr repeat(4,1fr) 80px;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+.tpl-rice-hdr{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);padding-bottom:8px;border-bottom:2px solid var(--border);}
+.tpl-rice-name{font-size:13px;color:var(--text);font-weight:500;}
+.tpl-rice-in{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-family:'Azeret Mono',monospace;font-size:12px;color:var(--text);text-align:center;outline:none;}
+.tpl-rice-in:focus{border-color:var(--gold);}
+.tpl-rice-score{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--gold);text-align:center;}
+
+/* SWOT quadrant colors */
+.tpl-q-s .tpl-ws-qlbl{color:var(--green);}
+.tpl-q-w .tpl-ws-qlbl{color:var(--red);}
+.tpl-q-o .tpl-ws-qlbl{color:var(--blue);}
+.tpl-q-t .tpl-ws-qlbl{color:var(--amber);}
+
+@media(max-width:600px){
+  .tpl-grid{grid-template-columns:1fr;}
+  .tpl-ws-grid.cols-2,.tpl-ws-grid.cols-4{grid-template-columns:1fr;}
+  .tpl-rice-row{grid-template-columns:1fr;gap:4px;}
+}
+`;
+
+interface TplItem { id: string; items: string[] }
+interface RiceItem { name: string; reach: number; impact: number; confidence: number; effort: number }
+
+const TEMPLATES = [
+  { id:"rice", icon:"📊", name:"RICE", fullName:"Reach · Impact · Confidence · Effort", cat:"prioritize", badge:"tpl-badge-prioritize",
+    desc:"Prioritize features or initiatives by scoring each on Reach, Impact, Confidence, and Effort. Produces a single comparable score.",
+    dims:["Product","Features","Backlog"],
+    steps:[
+      {title:"List initiatives",desc:"Add every feature, project, or idea you're considering."},
+      {title:"Score Reach",desc:"How many people will this impact in a given time period? (e.g. customers/quarter)"},
+      {title:"Score Impact",desc:"How much will each person be affected? Scale: 3=massive, 2=high, 1=medium, 0.5=low, 0.25=minimal."},
+      {title:"Score Confidence",desc:"How confident are you in your estimates? 100%=high, 80%=medium, 50%=low."},
+      {title:"Score Effort",desc:"How many person-months will this take? Higher effort = lower priority."},
+      {title:"Rank by RICE score",desc:"RICE = (Reach × Impact × Confidence) / Effort. Highest score wins."},
+    ]},
+  { id:"eisenhower", icon:"🎯", name:"Eisenhower", fullName:"Urgent-Important Matrix", cat:"prioritize", badge:"tpl-badge-prioritize",
+    desc:"Sort tasks into four quadrants based on urgency and importance. Focus on what matters, delegate or eliminate the rest.",
+    dims:["Time Mgmt","Tasks","Focus"],
+    steps:[
+      {title:"Brain dump",desc:"List every task, obligation, and to-do on your plate."},
+      {title:"Assess importance",desc:"Ask: does this contribute to my long-term goals and values?"},
+      {title:"Assess urgency",desc:"Ask: does this require immediate attention? What's the deadline pressure?"},
+      {title:"Place in quadrant",desc:"Important+Urgent → Do Now. Important+Not Urgent → Schedule. Not Important+Urgent → Delegate. Neither → Eliminate."},
+    ]},
+  { id:"swot", icon:"🔲", name:"SWOT", fullName:"Strengths · Weaknesses · Opportunities · Threats", cat:"analyze", badge:"tpl-badge-analyze",
+    desc:"Map internal strengths and weaknesses against external opportunities and threats. Classic strategic analysis framework.",
+    dims:["Strategy","Analysis","Planning"],
+    steps:[
+      {title:"Identify Strengths",desc:"What advantages do you have? What do you do well? What resources can you draw on?"},
+      {title:"Identify Weaknesses",desc:"What could you improve? Where do you have fewer resources? What are others likely to see as weaknesses?"},
+      {title:"Identify Opportunities",desc:"What trends could you take advantage of? What opportunities are open to you?"},
+      {title:"Identify Threats",desc:"What obstacles do you face? What is your competition doing? Are quality standards changing?"},
+    ]},
+  { id:"sixhats", icon:"🎩", name:"Six Hats", fullName:"De Bono's Six Thinking Hats", cat:"decide", badge:"tpl-badge-decide",
+    desc:"Explore a decision from six distinct perspectives: facts, emotions, risks, benefits, creativity, and process.",
+    dims:["Perspective","Meetings","Teams"],
+    steps:[
+      {title:"White Hat — Facts",desc:"What data and information do we have? What's missing? Focus purely on known facts."},
+      {title:"Red Hat — Emotions",desc:"What's your gut reaction? How do you feel about this? No justification needed."},
+      {title:"Black Hat — Risks",desc:"What could go wrong? Play devil's advocate. Find weaknesses and dangers."},
+      {title:"Yellow Hat — Benefits",desc:"What's the best case? Find the value and benefits. Be optimistic."},
+      {title:"Green Hat — Creativity",desc:"What are the alternatives? New ideas? Provocative suggestions welcome."},
+      {title:"Blue Hat — Process",desc:"What's the summary? What are the next steps? Manage the thinking process."},
+    ]},
+  { id:"iceScore", icon:"❄️", name:"ICE Score", fullName:"Impact · Confidence · Ease", cat:"prioritize", badge:"tpl-badge-prioritize",
+    desc:"A simpler alternative to RICE. Score each idea on Impact, Confidence, and Ease (1-10 each), then average.",
+    dims:["Growth","Ideas","Quick"],
+    steps:[
+      {title:"List growth ideas",desc:"Brainstorm every experiment, feature, or campaign you could run."},
+      {title:"Score Impact (1-10)",desc:"If this works, how big is the impact on your key metric?"},
+      {title:"Score Confidence (1-10)",desc:"How confident are you that this will work based on data and experience?"},
+      {title:"Score Ease (1-10)",desc:"How easy is this to implement? 10=trivial, 1=massive undertaking."},
+      {title:"Calculate & rank",desc:"ICE = (Impact + Confidence + Ease) / 3. Rank highest to lowest."},
+    ]},
+  { id:"pdca", icon:"🔄", name:"PDCA", fullName:"Plan · Do · Check · Act", cat:"plan", badge:"tpl-badge-plan",
+    desc:"Deming's continuous improvement cycle. Plan the change, execute it, check results, act on learnings. Repeat.",
+    dims:["Process","Improvement","Ops"],
+    steps:[
+      {title:"Plan",desc:"Identify the problem. Analyze root causes. Develop a hypothesis and plan for change."},
+      {title:"Do",desc:"Implement the plan on a small scale. Document what happens."},
+      {title:"Check",desc:"Measure the results. Did the change produce the expected improvement? Analyze data."},
+      {title:"Act",desc:"If it worked, standardize the change. If not, learn from it and plan the next cycle."},
+    ]},
+];
+
+const TEMPLATE_CATS = [
+  {id:"all",label:"All Frameworks"},
+  {id:"prioritize",label:"Prioritize"},
+  {id:"decide",label:"Decide"},
+  {id:"analyze",label:"Analyze"},
+  {id:"plan",label:"Plan"},
+];
+
+function TemplatesLibrary() {
+  const [cat, setCat] = useState("all");
+  const [activeTpl, setActiveTpl] = useState<string|null>(null);
+  // SWOT/Eisenhower quadrant data
+  const [quadData, setQuadData] = useState<Record<string, TplItem[]>>({});
+  const [quadInputs, setQuadInputs] = useState<Record<string, string>>({});
+  // RICE data
+  const [riceItems, setRiceItems] = useState<RiceItem[]>([]);
+  const [riceInput, setRiceInput] = useState("");
+  // Six Hats data
+  const [hatNotes, setHatNotes] = useState<Record<string, string[]>>({});
+  const [hatInputs, setHatInputs] = useState<Record<string, string>>({});
+
+  const filtered = cat === "all" ? TEMPLATES : TEMPLATES.filter(t => t.cat === cat);
+  const tpl = TEMPLATES.find(t => t.id === activeTpl);
+
+  const getQuadItems = (tplId: string, quadId: string) => {
+    const key = `${tplId}-${quadId}`;
+    return (quadData[key] || []).map(i => i.items).flat();
+  };
+  const addQuadItem = (tplId: string, quadId: string) => {
+    const key = `${tplId}-${quadId}`;
+    const inputKey = `${tplId}-${quadId}`;
+    const val = (quadInputs[inputKey] || "").trim();
+    if (!val) return;
+    const existing = quadData[key] || [{id: quadId, items: []}];
+    const updated = [{...existing[0], items: [...(existing[0]?.items||[]), val]}];
+    setQuadData({...quadData, [key]: updated});
+    setQuadInputs({...quadInputs, [inputKey]: ""});
+  };
+  const removeQuadItem = (tplId: string, quadId: string, idx: number) => {
+    const key = `${tplId}-${quadId}`;
+    const existing = quadData[key] || [{id: quadId, items: []}];
+    const updated = [{...existing[0], items: existing[0].items.filter((_,i) => i !== idx)}];
+    setQuadData({...quadData, [key]: updated});
+  };
+
+  const addRiceItem = () => {
+    const val = riceInput.trim();
+    if (!val) return;
+    setRiceItems([...riceItems, {name: val, reach: 1000, impact: 1, confidence: 80, effort: 1}]);
+    setRiceInput("");
+  };
+  const updateRice = (idx: number, field: keyof RiceItem, value: number) => {
+    setRiceItems(riceItems.map((r,i) => i === idx ? {...r, [field]: value} : r));
+  };
+  const riceScore = (r: RiceItem) => r.effort > 0 ? (r.reach * r.impact * (r.confidence/100)) / r.effort : 0;
+
+  const addHatNote = (hatId: string) => {
+    const val = (hatInputs[hatId] || "").trim();
+    if (!val) return;
+    setHatNotes({...hatNotes, [hatId]: [...(hatNotes[hatId]||[]), val]});
+    setHatInputs({...hatInputs, [hatId]: ""});
+  };
+
+  const renderWorkspace = () => {
+    if (!tpl) return null;
+
+    if (tpl.id === "swot") {
+      const quads = [
+        {id:"s",label:"Strengths",desc:"Internal advantages",cls:"tpl-q-s"},
+        {id:"w",label:"Weaknesses",desc:"Internal limitations",cls:"tpl-q-w"},
+        {id:"o",label:"Opportunities",desc:"External possibilities",cls:"tpl-q-o"},
+        {id:"t",label:"Threats",desc:"External risks",cls:"tpl-q-t"},
+      ];
+      return (
+        <div className="tpl-ws">
+          <div className="tpl-ws-title">SWOT Workspace</div>
+          <div className="tpl-ws-grid cols-4">
+            {quads.map(q => (
+              <div key={q.id} className={`tpl-ws-quad ${q.cls}`}>
+                <div className="tpl-ws-qlbl">{q.label}</div>
+                <div className="tpl-ws-qdesc">{q.desc}</div>
+                <div className="tpl-ws-items">
+                  {getQuadItems("swot",q.id).map((item,i) => (
+                    <div key={i} className="tpl-ws-item">{item}<button onClick={() => removeQuadItem("swot",q.id,i)}>×</button></div>
+                  ))}
+                </div>
+                <div className="tpl-ws-add">
+                  <input placeholder={`Add ${q.label.toLowerCase()}...`} value={quadInputs[`swot-${q.id}`]||""} onChange={e => setQuadInputs({...quadInputs,[`swot-${q.id}`]:e.target.value})} onKeyDown={e => e.key==="Enter" && addQuadItem("swot",q.id)}/>
+                  <button onClick={() => addQuadItem("swot",q.id)}>Add</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (tpl.id === "eisenhower") {
+      const quads = [
+        {id:"do",label:"Do Now",desc:"Important & Urgent",cls:"tpl-q-s"},
+        {id:"schedule",label:"Schedule",desc:"Important & Not Urgent",cls:"tpl-q-o"},
+        {id:"delegate",label:"Delegate",desc:"Not Important & Urgent",cls:"tpl-q-t"},
+        {id:"eliminate",label:"Eliminate",desc:"Not Important & Not Urgent",cls:"tpl-q-w"},
+      ];
+      return (
+        <div className="tpl-ws">
+          <div className="tpl-ws-title">Eisenhower Matrix</div>
+          <div className="tpl-ws-grid cols-4">
+            {quads.map(q => (
+              <div key={q.id} className={`tpl-ws-quad ${q.cls}`}>
+                <div className="tpl-ws-qlbl">{q.label}</div>
+                <div className="tpl-ws-qdesc">{q.desc}</div>
+                <div className="tpl-ws-items">
+                  {getQuadItems("eisen",q.id).map((item,i) => (
+                    <div key={i} className="tpl-ws-item">{item}<button onClick={() => removeQuadItem("eisen",q.id,i)}>×</button></div>
+                  ))}
+                </div>
+                <div className="tpl-ws-add">
+                  <input placeholder="Add task..." value={quadInputs[`eisen-${q.id}`]||""} onChange={e => setQuadInputs({...quadInputs,[`eisen-${q.id}`]:e.target.value})} onKeyDown={e => e.key==="Enter" && addQuadItem("eisen",q.id)}/>
+                  <button onClick={() => addQuadItem("eisen",q.id)}>Add</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (tpl.id === "rice") {
+      const sorted = [...riceItems].sort((a,b) => riceScore(b) - riceScore(a));
+      return (
+        <div className="tpl-ws">
+          <div className="tpl-ws-title">RICE Scoring Table</div>
+          <div className="tpl-ws-add" style={{marginBottom:16}}>
+            <input placeholder="Add initiative name..." value={riceInput} onChange={e => setRiceInput(e.target.value)} onKeyDown={e => e.key==="Enter" && addRiceItem()}/>
+            <button onClick={addRiceItem}>Add</button>
+          </div>
+          {sorted.length > 0 && <>
+            <div className="tpl-rice-row tpl-rice-hdr">
+              <span>Initiative</span><span>Reach</span><span>Impact</span><span>Confidence</span><span>Effort</span><span>Score</span>
+            </div>
+            {sorted.map((r,i) => {
+              const origIdx = riceItems.indexOf(r);
+              return (
+                <div key={i} className="tpl-rice-row">
+                  <div className="tpl-rice-name">{r.name}</div>
+                  <input className="tpl-rice-in" type="number" value={r.reach} onChange={e => updateRice(origIdx,"reach",Number(e.target.value))}/>
+                  <input className="tpl-rice-in" type="number" value={r.impact} step="0.25" onChange={e => updateRice(origIdx,"impact",Number(e.target.value))}/>
+                  <input className="tpl-rice-in" type="number" value={r.confidence} onChange={e => updateRice(origIdx,"confidence",Number(e.target.value))}/>
+                  <input className="tpl-rice-in" type="number" value={r.effort} onChange={e => updateRice(origIdx,"effort",Number(e.target.value))}/>
+                  <div className="tpl-rice-score">{Math.round(riceScore(r))}</div>
+                </div>
+              );
+            })}
+          </>}
+        </div>
+      );
+    }
+
+    if (tpl.id === "sixhats") {
+      const hats = [
+        {id:"white",emoji:"⚪",label:"White Hat",desc:"Facts & data",cls:""},
+        {id:"red",emoji:"🔴",label:"Red Hat",desc:"Emotions & gut feelings",cls:""},
+        {id:"black",emoji:"⚫",label:"Black Hat",desc:"Risks & caution",cls:""},
+        {id:"yellow",emoji:"🟡",label:"Yellow Hat",desc:"Benefits & optimism",cls:""},
+        {id:"green",emoji:"🟢",label:"Green Hat",desc:"Creativity & ideas",cls:""},
+        {id:"blue",emoji:"🔵",label:"Blue Hat",desc:"Process & summary",cls:""},
+      ];
+      return (
+        <div className="tpl-ws">
+          <div className="tpl-ws-title">Six Hats Workspace</div>
+          <div className="tpl-ws-grid cols-2">
+            {hats.map(h => (
+              <div key={h.id} className="tpl-ws-quad">
+                <div className="tpl-ws-qlbl" style={{color:"var(--text2)"}}>{h.emoji} {h.label}</div>
+                <div className="tpl-ws-qdesc">{h.desc}</div>
+                <div className="tpl-ws-items">
+                  {(hatNotes[h.id]||[]).map((note,i) => (
+                    <div key={i} className="tpl-ws-item">{note}<button onClick={() => setHatNotes({...hatNotes,[h.id]:(hatNotes[h.id]||[]).filter((_,j)=>j!==i)})}>×</button></div>
+                  ))}
+                </div>
+                <div className="tpl-ws-add">
+                  <input placeholder={`Add ${h.label.toLowerCase()} note...`} value={hatInputs[h.id]||""} onChange={e => setHatInputs({...hatInputs,[h.id]:e.target.value})} onKeyDown={e => e.key==="Enter" && addHatNote(h.id)}/>
+                  <button onClick={() => addHatNote(h.id)}>Add</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // ICE Score
+    if (tpl.id === "iceScore") {
+      const sorted = [...riceItems].sort((a,b) => ((b.reach+b.impact+b.confidence)/3) - ((a.reach+a.impact+a.confidence)/3));
+      return (
+        <div className="tpl-ws">
+          <div className="tpl-ws-title">ICE Scoring Table</div>
+          <div className="tpl-ws-add" style={{marginBottom:16}}>
+            <input placeholder="Add idea name..." value={riceInput} onChange={e => setRiceInput(e.target.value)} onKeyDown={e => e.key==="Enter" && addRiceItem()}/>
+            <button onClick={addRiceItem}>Add</button>
+          </div>
+          {sorted.length > 0 && <>
+            <div className="tpl-rice-row tpl-rice-hdr" style={{gridTemplateColumns:"2fr repeat(3,1fr) 80px"}}>
+              <span>Idea</span><span>Impact</span><span>Confidence</span><span>Ease</span><span>Score</span>
+            </div>
+            {sorted.map((r,i) => {
+              const origIdx = riceItems.indexOf(r);
+              return (
+                <div key={i} className="tpl-rice-row" style={{gridTemplateColumns:"2fr repeat(3,1fr) 80px"}}>
+                  <div className="tpl-rice-name">{r.name}</div>
+                  <input className="tpl-rice-in" type="number" min="1" max="10" value={r.reach} onChange={e => updateRice(origIdx,"reach",Number(e.target.value))}/>
+                  <input className="tpl-rice-in" type="number" min="1" max="10" value={r.impact} onChange={e => updateRice(origIdx,"impact",Number(e.target.value))}/>
+                  <input className="tpl-rice-in" type="number" min="1" max="10" value={r.confidence} onChange={e => updateRice(origIdx,"confidence",Number(e.target.value))}/>
+                  <div className="tpl-rice-score">{((r.reach+r.impact+r.confidence)/3).toFixed(1)}</div>
+                </div>
+              );
+            })}
+          </>}
+        </div>
+      );
+    }
+
+    // PDCA
+    if (tpl.id === "pdca") {
+      const phases = [
+        {id:"plan",label:"Plan",desc:"What will you change and why?",cls:"tpl-q-o"},
+        {id:"do",label:"Do",desc:"Actions taken",cls:"tpl-q-s"},
+        {id:"check",label:"Check",desc:"Results observed",cls:"tpl-q-t"},
+        {id:"act",label:"Act",desc:"Standardize or iterate",cls:"tpl-q-w"},
+      ];
+      return (
+        <div className="tpl-ws">
+          <div className="tpl-ws-title">PDCA Cycle</div>
+          <div className="tpl-ws-grid cols-4">
+            {phases.map(p => (
+              <div key={p.id} className={`tpl-ws-quad ${p.cls}`}>
+                <div className="tpl-ws-qlbl">{p.label}</div>
+                <div className="tpl-ws-qdesc">{p.desc}</div>
+                <div className="tpl-ws-items">
+                  {getQuadItems("pdca",p.id).map((item,i) => (
+                    <div key={i} className="tpl-ws-item">{item}<button onClick={() => removeQuadItem("pdca",p.id,i)}>×</button></div>
+                  ))}
+                </div>
+                <div className="tpl-ws-add">
+                  <input placeholder={`Add to ${p.label}...`} value={quadInputs[`pdca-${p.id}`]||""} onChange={e => setQuadInputs({...quadInputs,[`pdca-${p.id}`]:e.target.value})} onKeyDown={e => e.key==="Enter" && addQuadItem("pdca",p.id)}/>
+                  <button onClick={() => addQuadItem("pdca",p.id)}>Add</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  return (
+    <div className="tpl-app">
+      <style>{TPL_CSS}</style>
+      <div className="tpl-wrap">
+        <div className="tpl-hdr">
+          <div className="tpl-ey">Decision Frameworks · Templates Library</div>
+          <div className="tpl-title">Templates<span>.</span>Library</div>
+          <div className="tpl-sub">Pre-built decision frameworks used by the world's best operators. Pick a template, fill in the blanks, get clarity.</div>
+        </div>
+
+        {!activeTpl ? (
+          <>
+            <div className="tpl-cats">
+              {TEMPLATE_CATS.map(c => (
+                <button key={c.id} className={`tpl-cat${cat===c.id?" active":""}`} onClick={() => setCat(c.id)}>{c.label}</button>
+              ))}
+            </div>
+            <div className="tpl-grid">
+              {filtered.map(t => (
+                <div key={t.id} className="tpl-card" onClick={() => setActiveTpl(t.id)}>
+                  <div className={`tpl-card-badge ${t.badge}`}>{t.cat}</div>
+                  <div className="tpl-card-icon">{t.icon}</div>
+                  <div className="tpl-card-name">{t.name}</div>
+                  <div className="tpl-card-full">{t.fullName}</div>
+                  <div className="tpl-card-desc">{t.desc}</div>
+                  <div className="tpl-card-dims">{t.dims.map(d => <span key={d} className="tpl-dim">{d}</span>)}</div>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : tpl ? (
+          <div className="tpl-active">
+            <button className="tpl-back" onClick={() => setActiveTpl(null)}>← Back to templates</button>
+            <div className="tpl-a-icon">{tpl.icon}</div>
+            <div className="tpl-a-name">{tpl.name}</div>
+            <div className="tpl-a-full">{tpl.fullName}</div>
+            <div className="tpl-a-desc">{tpl.desc}</div>
+
+            <div className="tpl-a-section">
+              <div className="tpl-a-slbl">How it works</div>
+              <div className="tpl-a-steps">
+                {tpl.steps.map((s,i) => (
+                  <div key={i} className="tpl-a-step">
+                    <div className="tpl-a-snum">{i+1}</div>
+                    <div className="tpl-a-stxt">
+                      <div className="tpl-a-sttl">{s.title}</div>
+                      <div className="tpl-a-sdsc">{s.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {renderWorkspace()}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 function HomeDashboard({onNavigate, ledgerStats}:{onNavigate:(id:string)=>void;ledgerStats:LedgerStats}) {
   const TOOLS = [
     { id:"assumption", icon:"🔍", title:"Assumption Audit", role:"Before you decide", seq:"01", badge:"badge-before", badgeLabel:"Before", desc:"Surface the hidden beliefs holding up your strategy. Rate each on evidence quality and load-bearing weight. Find blind spots before they find you." },
@@ -1898,6 +2371,7 @@ function HomeDashboard({onNavigate, ledgerStats}:{onNavigate:(id:string)=>void;l
     { id:"premortem",  icon:"💀", title:"Pre-Mortem Studio",role:"Stress-test the plan",seq:"03",badge:"badge-after", badgeLabel:"After",  desc:"Imagine the project is already dead. Extract failure modes, rate probability and impact, build mitigation plans. Based on Gary Klein's methodology." },
     { id:"ledger",     icon:"📒", title:"Commitment Ledger",role:"Track follow-through",seq:"04",badge:"badge-exec",  badgeLabel:"Execute",desc:"A formal record of what you said you would do — and whether you did it. Tracks integrity score, behavioral patterns, and overdue commitments." },
     { id:"os",         icon:"📐", title:"One-Page OS",       role:"Always-on system",  seq:"05", badge:"badge-always",badgeLabel:"Always",  desc:"Your complete operating model on one page. Priority, weekly non-negotiables, daily defaults, decision rules, cadence. Builds and persists." },
+    { id:"templates",  icon:"📋", title:"Templates Library", role:"Decision frameworks",seq:"06", badge:"badge-always",badgeLabel:"Library", desc:"Pre-built frameworks like RICE, Eisenhower, SWOT, Six Hats, and more. Pick a template, fill in the blanks, get structured clarity." },
   ];
 
   return (
@@ -1961,6 +2435,7 @@ const NAV_ITEMS = [
   { id:"premortem",  icon:"💀", label:"Pre-Mortem Studio", sub:"After" },
   { id:"ledger",     icon:"📒", label:"Commitment Ledger", sub:"Execute" },
   { id:"os",         icon:"📐", label:"One-Page OS",        sub:"Always-on" },
+  { id:"templates",  icon:"📋", label:"Templates Library", sub:"Frameworks" },
 ];
 
 export default function DecisionSuiteApp() {
@@ -2043,6 +2518,7 @@ export default function DecisionSuiteApp() {
             {active==="premortem" && <PreMortemStudio/>}
             {active==="ledger"    && <CommitmentLedger/>}
             {active==="os"        && <OnePageOS/>}
+            {active==="templates" && <TemplatesLibrary/>}
           </div>
         </div>
       </div>
