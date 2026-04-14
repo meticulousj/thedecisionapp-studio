@@ -2435,6 +2435,7 @@ const NAV_ITEMS = [
   { id:"premortem",  icon:"💀", label:"Pre-Mortem Studio", sub:"After" },
   { id:"ledger",     icon:"📒", label:"Commitment Ledger", sub:"Execute" },
   { id:"os",         icon:"📐", label:"One-Page OS",        sub:"Always-on" },
+  { id:"templates",  icon:"📋", label:"Templates Library", sub:"Frameworks" },
 ];
 
 export default function DecisionSuiteApp() {
@@ -2517,6 +2518,7 @@ export default function DecisionSuiteApp() {
             {active==="premortem" && <PreMortemStudio/>}
             {active==="ledger"    && <CommitmentLedger/>}
             {active==="os"        && <OnePageOS/>}
+            {active==="templates" && <TemplatesLibrary/>}
           </div>
         </div>
       </div>
