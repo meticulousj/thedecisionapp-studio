@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import DevilsAdvocate from "./DevilsAdvocate";
 
 // Storage helpers using localStorage instead of window.storage
 const storage = {
@@ -2372,6 +2373,7 @@ function HomeDashboard({onNavigate, ledgerStats}:{onNavigate:(id:string)=>void;l
     { id:"ledger",     icon:"📒", title:"Commitment Ledger",role:"Track follow-through",seq:"04",badge:"badge-exec",  badgeLabel:"Execute",desc:"A formal record of what you said you would do — and whether you did it. Tracks integrity score, behavioral patterns, and overdue commitments." },
     { id:"os",         icon:"📐", title:"One-Page OS",       role:"Always-on system",  seq:"05", badge:"badge-always",badgeLabel:"Always",  desc:"Your complete operating model on one page. Priority, weekly non-negotiables, daily defaults, decision rules, cadence. Builds and persists." },
     { id:"templates",  icon:"📋", title:"Templates Library", role:"Decision frameworks",seq:"06", badge:"badge-always",badgeLabel:"Library", desc:"Pre-built frameworks like RICE, Eisenhower, SWOT, Six Hats, and more. Pick a template, fill in the blanks, get structured clarity." },
+    { id:"devils",     icon:"😈", title:"Devil's Advocate", role:"Stress-test your thinking",seq:"07", badge:"badge-during",badgeLabel:"AI", desc:"Paste a decision. AI generates the strongest counter-arguments, hidden assumptions, and questions you must answer before proceeding." },
   ];
 
   return (
@@ -2436,6 +2438,7 @@ const NAV_ITEMS = [
   { id:"ledger",     icon:"📒", label:"Commitment Ledger", sub:"Execute" },
   { id:"os",         icon:"📐", label:"One-Page OS",        sub:"Always-on" },
   { id:"templates",  icon:"📋", label:"Templates Library", sub:"Frameworks" },
+  { id:"devils",     icon:"😈", label:"Devil's Advocate",  sub:"AI · Counter-arguments" },
 ];
 
 export default function DecisionSuiteApp() {
@@ -2519,6 +2522,7 @@ export default function DecisionSuiteApp() {
             {active==="ledger"    && <CommitmentLedger/>}
             {active==="os"        && <OnePageOS/>}
             {active==="templates" && <TemplatesLibrary/>}
+            {active==="devils"    && <DevilsAdvocate/>}
           </div>
         </div>
       </div>
