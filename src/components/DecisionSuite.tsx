@@ -1482,7 +1482,7 @@ function CommitmentLedger(){
                   {k:"Overdue",v:String(overdue.length)},
                   {k:"Word integrity",v:intPct!==null?`${intPct}%`:"—"},
                 ]},
-                {heading:"All commitments",type:"table",columns:["Commitment","Category","Deadline","Stakes","Status"],rows:entries.map(e=>[e.text,e.category||"—",e.deadline||"—",String(e.stakes??"—"),e.status])},
+                {heading:"All commitments",type:"table",columns:["Commitment","Category","Deadline","Stakes","Status"],rows:entries.map(e=>[e.text,e.cat||"—",e.deadline||"—",String(e.stakes??"—"),e.status])},
               ],
             } as ExportPayload)}/>
             <button className="cl-btn cl-btn-sm" onClick={()=>setShowForm(!showForm)}>{showForm?"— Cancel":"+ Enter Commitment"}</button>
