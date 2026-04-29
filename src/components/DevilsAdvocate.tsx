@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import ExportMenu from "./ExportMenu";
 
 type CounterArg = { title: string; reasoning: string; severity: "low" | "medium" | "high" };
 type Assumption = { assumption: string; risk_if_wrong: string };
@@ -115,8 +116,36 @@ export default function DevilsAdvocate() {
 
         {analysis && (
           <>
-            <div className="da-row" style={{ marginBottom: 18 }}>
+            <div className="da-row" style={{ marginBottom: 18, justifyContent: "space-between" }}>
               <button className="da-btn-ghost" onClick={reset}>← New analysis</button>
+              <ExportMenu getPayload={() => ({
+                kind: "decision",
+                toolLabel: "Decision Suite · Devil's Advocate",
+                title: "Devil's",
+                titleEm: "Advocate",
+                subtitle: decision,
+                sections: [
+                  { heading: "Decision under review", type: "text", body: decision },
+                  ...(context.trim() ? [{ heading: "Context", type: "text" as const, body: context }] : []),
+                  {
+                    heading: "Counter-arguments",
+                    type: "table",
+                    columns: ["Severity", "Title", "Reasoning"],
+                    rows: analysis.counter_arguments.map(c => [c.severity.toUpperCase(), c.title, c.reasoning]),
+                  },
+                  {
+                    heading: "Hidden assumptions",
+                    type: "kv",
+                    body: analysis.hidden_assumptions.map(a => ({ k: a.assumption, v: `Risk if wrong: ${a.risk_if_wrong}` })),
+                  },
+                  {
+                    heading: "Questions to answer first",
+                    type: "list",
+                    ordered: true,
+                    body: analysis.questions_to_answer,
+                  },
+                ],
+              })} />
             </div>
 
             <div className="da-section">
