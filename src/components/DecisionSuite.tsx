@@ -490,6 +490,23 @@ function DecisionClarity() {
           {insight&&<div className="dc-ins">{insight}</div>}
         </div>
       </>)}
+      {step===4&&results.length>0&&(
+        <div style={{display:"flex",justifyContent:"flex-end",marginTop:16}}>
+          <ExportMenu getPayload={()=>({
+            kind:"decision",
+            toolLabel:"Decision Suite · Decision Clarity",
+            title:"Decision",
+            titleEm:"Clarity",
+            subtitle:decision||undefined,
+            sections:[
+              {heading:"Recommendation",type:"text",body:`${results[0]?.name} — weighted score ${results[0]?.score.toFixed(1)}%`},
+              {heading:"Ranked options",type:"table",columns:["Rank","Option","Score"],rows:results.map((r,i)=>[i+1,r.name,`${r.score.toFixed(1)}%`])},
+              {heading:"Criteria & weights",type:"table",columns:["Criterion","Weight"],rows:criteria.map(c=>[c.name,`×${c.weight}`])},
+              {heading:"Score matrix",type:"table",columns:["Option",...criteria.map(c=>c.name)],rows:options.map(o=>[o,...criteria.map(c=>getScore(o,c.name))])},
+            ],
+          } as ExportPayload)}/>
+        </div>
+      )}
       <div className="dc-nav">
         <button className="dc-btn dc-btn-g" onClick={()=>setStep(s=>s-1)} disabled={step===0}>← Back</button>
         {step<4?<button className="dc-btn" onClick={()=>setStep(s=>s+1)} disabled={!canNext()}>{step===3?"See Results →":"Continue →"}</button>:<button className="dc-btn dc-btn-g" onClick={reset}>↺ New Decision</button>}
