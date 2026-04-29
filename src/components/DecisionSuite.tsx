@@ -1768,6 +1768,24 @@ function OnePageOS(){
       <div className="os-topbar-right">
         <button className={`os-mode-btn${mode==="edit"?" active":""}`} onClick={()=>setMode("edit")}>Edit</button>
         <button className={`os-mode-btn${mode==="view"?" active":""}`} onClick={()=>setMode("view")}>View</button>
+        <ExportMenu disabled={!priority.trim()} getPayload={()=>({
+          kind:"opos",
+          toolLabel:"Decision Suite · One-Page OS",
+          title:"One-Page",
+          titleEm:"OS",
+          subtitle:`${name||"Operator"} · ${tf}${reviewDate?` · review ${reviewDate}`:""}${version?` · v${version}`:""}`,
+          sections:[
+            {heading:"90-day priority",type:"text",body:priority||"—"},
+            ...(goals.some(g=>g.text.trim())?[{heading:"Goals",type:"list" as const,checklist:true,body:goals.filter(g=>g.text.trim()).map(g=>`${g.done?"[x] ":""}${g.text}`)}]:[]),
+            {heading:"Weekly non-negotiables",type:"list",body:weekly.filter(w=>w.trim())},
+            {heading:"Daily defaults",type:"list",body:daily.filter(d=>d.trim())},
+            {heading:"Decision rules — YES",type:"list",body:rules.filter(r=>r.type==="yes"&&r.text.trim()).map(r=>r.text)},
+            {heading:"Decision rules — NO",type:"list",body:rules.filter(r=>r.type==="no"&&r.text.trim()).map(r=>r.text)},
+            ...(cadence.length?[{heading:"Cadence",type:"list" as const,body:cadence}]:[]),
+            ...(energy?[{heading:"Energy",type:"kv" as const,body:[{k:"Level",v:energy},...(energyNote?[{k:"Note",v:energyNote}]:[])]}]:[]),
+            ...(notes?.trim()?[{heading:"Notes",type:"text" as const,body:notes}]:[]),
+          ],
+        } as ExportPayload)}/>
       </div>
     </div>
 
