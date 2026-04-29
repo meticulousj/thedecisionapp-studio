@@ -1464,7 +1464,30 @@ function CommitmentLedger(){
     <div className="cl-tabs">{["ledger","patterns"].map(t=><button key={t} className={`cl-tab${tab===t?" active":""}`} onClick={()=>setTab(t)}>{t==="ledger"?"Active Ledger":"Patterns & Insights"}</button>)}</div>
     <div className="cl-content">
       {tab==="ledger"&&(<>
-        <div className="cl-top-row"><span className="cl-pending-info">{pending.length} pending · {dueSoon.length} due within 3 days</span><button className="cl-btn cl-btn-sm" onClick={()=>setShowForm(!showForm)}>{showForm?"— Cancel":"+ Enter Commitment"}</button></div>
+        <div className="cl-top-row" style={{flexWrap:"wrap",gap:8}}>
+          <span className="cl-pending-info">{pending.length} pending · {dueSoon.length} due within 3 days</span>
+          <div style={{display:"flex",gap:8,marginLeft:"auto"}}>
+            <ExportMenu disabled={total===0} getPayload={()=>({
+              kind:"ledger",
+              toolLabel:"Decision Suite · Commitment Ledger",
+              title:"Commitment",
+              titleEm:"Ledger",
+              subtitle:`${total} commitments · integrity ${intPct!==null?intPct+"%":"—"}`,
+              sections:[
+                {heading:"Integrity stats",type:"kv",body:[
+                  {k:"Total",v:String(total)},
+                  {k:"Kept",v:String(kept.length)},
+                  {k:"Broken",v:String(broken.length)},
+                  {k:"Pending",v:String(pending.length)},
+                  {k:"Overdue",v:String(overdue.length)},
+                  {k:"Word integrity",v:intPct!==null?`${intPct}%`:"—"},
+                ]},
+                {heading:"All commitments",type:"table",columns:["Commitment","Category","Deadline","Stakes","Status"],rows:entries.map(e=>[e.text,e.category||"—",e.deadline||"—",String(e.stakes??"—"),e.status])},
+              ],
+            } as ExportPayload)}/>
+            <button className="cl-btn cl-btn-sm" onClick={()=>setShowForm(!showForm)}>{showForm?"— Cancel":"+ Enter Commitment"}</button>
+          </div>
+        </div>
         {showForm&&<div className="cl-form"><div className="cl-ft">New Ledger Entry</div>
           <div className="cl-form-row"><label className="cl-fl">Commitment</label><textarea className="cl-ta" rows={2} placeholder='State it precisely. "I will finish the investor memo by Friday"' value={text} onChange={e=>setText(e.target.value)}/></div>
           <div className="cl-form-grid"><div><label className="cl-fl">Deadline</label><input className="cl-in" type="date" value={deadline} min={clToday()} onChange={e=>setDeadline(e.target.value)}/></div><div><label className="cl-fl">Made with</label><input className="cl-in" type="text" placeholder="Myself, team, client…" value={madeWith} onChange={e=>setMadeWith(e.target.value)}/></div></div>
