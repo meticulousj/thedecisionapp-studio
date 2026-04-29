@@ -815,7 +815,27 @@ function AssumptionAudit(){
         {assumptions.map((a,i)=><div className="aa-table-row" key={i}><div className="aa-table-cell">{a.text}</div><div className="aa-table-val" style={{color:"var(--aa-blue)"}}>{a.evidence}/5</div><div className="aa-table-val" style={{color:"var(--aa-orange)"}}>{a.weight}/5</div><div className="aa-table-flag"><AAFlag flag={aaFlag(a.evidence,a.weight)}/></div></div>)}
       </div>
 
-      <div className="aa-actions"><button className="aa-btn aa-btn-ghost" onClick={reset}>↺ New Audit</button><button className="aa-btn aa-btn-ghost" onClick={()=>setPhase(2)}>← Revise</button></div>
+      <div className="aa-actions" style={{flexWrap:"wrap"}}>
+        <button className="aa-btn aa-btn-ghost" onClick={reset}>↺ New Audit</button>
+        <button className="aa-btn aa-btn-ghost" onClick={()=>setPhase(2)}>← Revise</button>
+        <ExportMenu getPayload={()=>({
+          kind:"assumption",
+          toolLabel:"Decision Suite · Assumption Audit",
+          title:"Assumption",
+          titleEm:"Audit",
+          subtitle:strategy||undefined,
+          sections:[
+            {heading:"Verdict",type:"text",body:genInsight()||"No assumptions logged."},
+            {heading:"Summary",type:"kv",body:[
+              {k:"Blind spots",v:String(blindSpots.length)},
+              {k:"Caution",v:String(cautions.length)},
+              {k:"Solid",v:String(solids.length)},
+              {k:"Untested",v:String(untested.length)},
+            ]},
+            {heading:"Assumptions",type:"table",columns:["Assumption","Evidence","Weight","Status"],rows:assumptions.map(a=>[a.text,`${a.evidence}/5`,`${a.weight}/5`,aaFlag(a.evidence,a.weight)])},
+          ],
+        } as ExportPayload)}/>
+      </div>
     </>)}
 
     {/* Navigation */}
