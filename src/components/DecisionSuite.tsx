@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import DevilsAdvocate from "./DevilsAdvocate";
+import ExportMenu from "./ExportMenu";
+import type { ExportPayload } from "@/lib/export";
 
 // Storage helpers using localStorage instead of window.storage
 const storage = {
@@ -488,6 +490,23 @@ function DecisionClarity() {
           {insight&&<div className="dc-ins">{insight}</div>}
         </div>
       </>)}
+      {step===4&&results.length>0&&(
+        <div style={{display:"flex",justifyContent:"flex-end",marginTop:16}}>
+          <ExportMenu getPayload={()=>({
+            kind:"decision",
+            toolLabel:"Decision Suite · Decision Clarity",
+            title:"Decision",
+            titleEm:"Clarity",
+            subtitle:decision||undefined,
+            sections:[
+              {heading:"Recommendation",type:"text",body:`${results[0]?.name} — weighted score ${results[0]?.score.toFixed(1)}%`},
+              {heading:"Ranked options",type:"table",columns:["Rank","Option","Score"],rows:results.map((r,i)=>[i+1,r.name,`${r.score.toFixed(1)}%`])},
+              {heading:"Criteria & weights",type:"table",columns:["Criterion","Weight"],rows:criteria.map(c=>[c.name,`×${c.weight}`])},
+              {heading:"Score matrix",type:"table",columns:["Option",...criteria.map(c=>c.name)],rows:options.map(o=>[o,...criteria.map(c=>getScore(o,c.name))])},
+            ],
+          } as ExportPayload)}/>
+        </div>
+      )}
       <div className="dc-nav">
         <button className="dc-btn dc-btn-g" onClick={()=>setStep(s=>s-1)} disabled={step===0}>← Back</button>
         {step<4?<button className="dc-btn" onClick={()=>setStep(s=>s+1)} disabled={!canNext()}>{step===3?"See Results →":"Continue →"}</button>:<button className="dc-btn dc-btn-g" onClick={reset}>↺ New Decision</button>}
@@ -796,7 +815,27 @@ function AssumptionAudit(){
         {assumptions.map((a,i)=><div className="aa-table-row" key={i}><div className="aa-table-cell">{a.text}</div><div className="aa-table-val" style={{color:"var(--aa-blue)"}}>{a.evidence}/5</div><div className="aa-table-val" style={{color:"var(--aa-orange)"}}>{a.weight}/5</div><div className="aa-table-flag"><AAFlag flag={aaFlag(a.evidence,a.weight)}/></div></div>)}
       </div>
 
-      <div className="aa-actions"><button className="aa-btn aa-btn-ghost" onClick={reset}>↺ New Audit</button><button className="aa-btn aa-btn-ghost" onClick={()=>setPhase(2)}>← Revise</button></div>
+      <div className="aa-actions" style={{flexWrap:"wrap"}}>
+        <button className="aa-btn aa-btn-ghost" onClick={reset}>↺ New Audit</button>
+        <button className="aa-btn aa-btn-ghost" onClick={()=>setPhase(2)}>← Revise</button>
+        <ExportMenu getPayload={()=>({
+          kind:"assumption",
+          toolLabel:"Decision Suite · Assumption Audit",
+          title:"Assumption",
+          titleEm:"Audit",
+          subtitle:strategy||undefined,
+          sections:[
+            {heading:"Verdict",type:"text",body:genInsight()||"No assumptions logged."},
+            {heading:"Summary",type:"kv",body:[
+              {k:"Blind spots",v:String(blindSpots.length)},
+              {k:"Caution",v:String(cautions.length)},
+              {k:"Solid",v:String(solids.length)},
+              {k:"Untested",v:String(untested.length)},
+            ]},
+            {heading:"Assumptions",type:"table",columns:["Assumption","Evidence","Weight","Status"],rows:assumptions.map(a=>[a.text,`${a.evidence}/5`,`${a.weight}/5`,aaFlag(a.evidence,a.weight)])},
+          ],
+        } as ExportPayload)}/>
+      </div>
     </>)}
 
     {/* Navigation */}
@@ -1130,7 +1169,24 @@ function PreMortemStudio(){
 
       {priority.length>0&&<div className="pm-shield"><div className="pm-shield-h">Shield Protocol — Mitigation Registry</div>{priority.map(f=>{const sh=getS(f.id);if(!sh.mitigation&&!sh.signal)return null;return(<div className="pm-shield-r" key={f.id}><div className="pm-srt">▸ {f.text}</div>{sh.mitigation&&<div className="pm-srm"><strong style={{color:"var(--pm-accent)",fontFamily:"'Azeret Mono',monospace",fontSize:8,letterSpacing:2,textTransform:"uppercase" as const}}>Mitigation — </strong>{sh.mitigation}</div>}{sh.signal&&<div className="pm-srs"><span style={{color:"var(--pm-muted2)"}}>SIGNAL //</span>{sh.signal}</div>}</div>);})}</div>}
 
-      <div className="pm-actions"><button className="pm-btn pm-btn-g" onClick={reset}>↺ New Pre-Mortem</button><button className="pm-btn pm-btn-g" onClick={()=>setStage(4)}>← Revise Shield</button></div>
+      <div className="pm-actions" style={{flexWrap:"wrap"}}>
+        <button className="pm-btn pm-btn-g" onClick={reset}>↺ New Pre-Mortem</button>
+        <button className="pm-btn pm-btn-g" onClick={()=>setStage(4)}>← Revise Shield</button>
+        <ExportMenu getPayload={()=>({
+          kind:"premortem",
+          toolLabel:"Decision Suite · Pre-Mortem Studio",
+          title:"Pre-Mortem",
+          titleEm:"Brief",
+          subtitle:mission||undefined,
+          sections:[
+            {heading:"Verdict",type:"text",body:verdict()||""},
+            {heading:"Mission & timeframe",type:"kv",body:[{k:"Mission",v:mission||"—"},{k:"Timeframe",v:timeframe||"—"}]},
+            ...(obituary?[{heading:"Obituary",type:"text" as const,body:obituary}]:[]),
+            {heading:"Failure modes (by risk)",type:"table",columns:["Failure mode","Category","Prob","Impact","Risk"],rows:sorted.map(f=>{const sc=pmRiskScore(f.prob,f.impact);return [f.text,PM_CATS.find(c=>c.id===f.cat)?.l||f.cat,`${f.prob}/5`,`${f.impact}/5`,pmRiskLabel(sc).l];})},
+            {heading:"Mitigations & signals",type:"kv",body:priority.flatMap(f=>{const sh=getS(f.id);const out:{k:string;v:string}[]=[];if(sh.mitigation)out.push({k:`Mitigation — ${f.text}`,v:sh.mitigation});if(sh.signal)out.push({k:`Signal — ${f.text}`,v:sh.signal});return out;})},
+          ],
+        } as ExportPayload)}/>
+      </div>
     </>)}
 
     {stage<5&&<div className="pm-nav"><button className="pm-btn pm-btn-g" onClick={()=>setStage(s=>s-1)} disabled={stage===0}>← Back</button><button className="pm-btn" onClick={()=>setStage(s=>s+1)} disabled={!canNext()}>{stage===4?"Generate Brief →":"Continue →"}</button></div>}
@@ -1408,7 +1464,30 @@ function CommitmentLedger(){
     <div className="cl-tabs">{["ledger","patterns"].map(t=><button key={t} className={`cl-tab${tab===t?" active":""}`} onClick={()=>setTab(t)}>{t==="ledger"?"Active Ledger":"Patterns & Insights"}</button>)}</div>
     <div className="cl-content">
       {tab==="ledger"&&(<>
-        <div className="cl-top-row"><span className="cl-pending-info">{pending.length} pending · {dueSoon.length} due within 3 days</span><button className="cl-btn cl-btn-sm" onClick={()=>setShowForm(!showForm)}>{showForm?"— Cancel":"+ Enter Commitment"}</button></div>
+        <div className="cl-top-row" style={{flexWrap:"wrap",gap:8}}>
+          <span className="cl-pending-info">{pending.length} pending · {dueSoon.length} due within 3 days</span>
+          <div style={{display:"flex",gap:8,marginLeft:"auto"}}>
+            <ExportMenu disabled={total===0} getPayload={()=>({
+              kind:"ledger",
+              toolLabel:"Decision Suite · Commitment Ledger",
+              title:"Commitment",
+              titleEm:"Ledger",
+              subtitle:`${total} commitments · integrity ${intPct!==null?intPct+"%":"—"}`,
+              sections:[
+                {heading:"Integrity stats",type:"kv",body:[
+                  {k:"Total",v:String(total)},
+                  {k:"Kept",v:String(kept.length)},
+                  {k:"Broken",v:String(broken.length)},
+                  {k:"Pending",v:String(pending.length)},
+                  {k:"Overdue",v:String(overdue.length)},
+                  {k:"Word integrity",v:intPct!==null?`${intPct}%`:"—"},
+                ]},
+                {heading:"All commitments",type:"table",columns:["Commitment","Category","Deadline","Stakes","Status"],rows:entries.map(e=>[e.text,e.cat||"—",e.deadline||"—",String(e.stakes??"—"),e.status])},
+              ],
+            } as ExportPayload)}/>
+            <button className="cl-btn cl-btn-sm" onClick={()=>setShowForm(!showForm)}>{showForm?"— Cancel":"+ Enter Commitment"}</button>
+          </div>
+        </div>
         {showForm&&<div className="cl-form"><div className="cl-ft">New Ledger Entry</div>
           <div className="cl-form-row"><label className="cl-fl">Commitment</label><textarea className="cl-ta" rows={2} placeholder='State it precisely. "I will finish the investor memo by Friday"' value={text} onChange={e=>setText(e.target.value)}/></div>
           <div className="cl-form-grid"><div><label className="cl-fl">Deadline</label><input className="cl-in" type="date" value={deadline} min={clToday()} onChange={e=>setDeadline(e.target.value)}/></div><div><label className="cl-fl">Made with</label><input className="cl-in" type="text" placeholder="Myself, team, client…" value={madeWith} onChange={e=>setMadeWith(e.target.value)}/></div></div>
@@ -1689,6 +1768,24 @@ function OnePageOS(){
       <div className="os-topbar-right">
         <button className={`os-mode-btn${mode==="edit"?" active":""}`} onClick={()=>setMode("edit")}>Edit</button>
         <button className={`os-mode-btn${mode==="view"?" active":""}`} onClick={()=>setMode("view")}>View</button>
+        <ExportMenu disabled={!priority.trim()} getPayload={()=>({
+          kind:"opos",
+          toolLabel:"Decision Suite · One-Page OS",
+          title:"One-Page",
+          titleEm:"OS",
+          subtitle:`${name||"Operator"} · ${tf}${reviewDate?` · review ${reviewDate}`:""}${version?` · v${version}`:""}`,
+          sections:[
+            {heading:"90-day priority",type:"text",body:priority||"—"},
+            ...(goals.some(g=>g.text.trim())?[{heading:"Goals",type:"list" as const,checklist:true,body:goals.filter(g=>g.text.trim()).map(g=>`${g.done?"[x] ":""}${g.text}`)}]:[]),
+            {heading:"Weekly non-negotiables",type:"list",body:weekly.filter(w=>w.trim())},
+            {heading:"Daily defaults",type:"list",body:daily.filter(d=>d.trim())},
+            {heading:"Decision rules — YES",type:"list",body:rules.filter(r=>r.type==="yes"&&r.text.trim()).map(r=>r.text)},
+            {heading:"Decision rules — NO",type:"list",body:rules.filter(r=>r.type==="no"&&r.text.trim()).map(r=>r.text)},
+            ...(cadence.length?[{heading:"Cadence",type:"list" as const,body:cadence}]:[]),
+            ...(energy?[{heading:"Energy",type:"kv" as const,body:[{k:"Level",v:energy},...(energyNote?[{k:"Note",v:energyNote}]:[])]}]:[]),
+            ...(notes?.trim()?[{heading:"Notes",type:"text" as const,body:notes}]:[]),
+          ],
+        } as ExportPayload)}/>
       </div>
     </div>
 
