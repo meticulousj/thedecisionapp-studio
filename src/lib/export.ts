@@ -189,7 +189,6 @@ export function toPDF(p: ExportPayload): jsPDF {
         headStyles: { fillColor: [245, 240, 230], textColor: TEXT, fontStyle: "bold" },
         alternateRowStyles: { fillColor: [250, 250, 250] },
       });
-      // @ts-expect-error lastAutoTable is added by jspdf-autotable
       y = (doc as any).lastAutoTable.finalY + 16;
     }
   }
