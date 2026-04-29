@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import DevilsAdvocate from "./DevilsAdvocate";
+import ExportMenu from "./ExportMenu";
+import type { ExportPayload } from "@/lib/export";
 
 // Storage helpers using localStorage instead of window.storage
 const storage = {
