@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import DevilsAdvocate from "./DevilsAdvocate";
 
 // Storage helpers using localStorage instead of window.storage
 const storage = {
