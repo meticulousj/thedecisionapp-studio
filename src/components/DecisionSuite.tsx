@@ -1169,7 +1169,24 @@ function PreMortemStudio(){
 
       {priority.length>0&&<div className="pm-shield"><div className="pm-shield-h">Shield Protocol — Mitigation Registry</div>{priority.map(f=>{const sh=getS(f.id);if(!sh.mitigation&&!sh.signal)return null;return(<div className="pm-shield-r" key={f.id}><div className="pm-srt">▸ {f.text}</div>{sh.mitigation&&<div className="pm-srm"><strong style={{color:"var(--pm-accent)",fontFamily:"'Azeret Mono',monospace",fontSize:8,letterSpacing:2,textTransform:"uppercase" as const}}>Mitigation — </strong>{sh.mitigation}</div>}{sh.signal&&<div className="pm-srs"><span style={{color:"var(--pm-muted2)"}}>SIGNAL //</span>{sh.signal}</div>}</div>);})}</div>}
 
-      <div className="pm-actions"><button className="pm-btn pm-btn-g" onClick={reset}>↺ New Pre-Mortem</button><button className="pm-btn pm-btn-g" onClick={()=>setStage(4)}>← Revise Shield</button></div>
+      <div className="pm-actions" style={{flexWrap:"wrap"}}>
+        <button className="pm-btn pm-btn-g" onClick={reset}>↺ New Pre-Mortem</button>
+        <button className="pm-btn pm-btn-g" onClick={()=>setStage(4)}>← Revise Shield</button>
+        <ExportMenu getPayload={()=>({
+          kind:"premortem",
+          toolLabel:"Decision Suite · Pre-Mortem Studio",
+          title:"Pre-Mortem",
+          titleEm:"Brief",
+          subtitle:mission||undefined,
+          sections:[
+            {heading:"Verdict",type:"text",body:verdict()||""},
+            {heading:"Mission & timeframe",type:"kv",body:[{k:"Mission",v:mission||"—"},{k:"Timeframe",v:timeframe||"—"}]},
+            ...(obituary?[{heading:"Obituary",type:"text" as const,body:obituary}]:[]),
+            {heading:"Failure modes (by risk)",type:"table",columns:["Failure mode","Category","Prob","Impact","Risk"],rows:sorted.map(f=>{const sc=pmRiskScore(f.prob,f.impact);return [f.text,PM_CATS.find(c=>c.id===f.cat)?.l||f.cat,`${f.prob}/5`,`${f.impact}/5`,pmRiskLabel(sc).l];})},
+            {heading:"Mitigations & signals",type:"kv",body:priority.flatMap(f=>{const sh=getS(f.id);const out:{k:string;v:string}[]=[];if(sh.mitigation)out.push({k:`Mitigation — ${f.text}`,v:sh.mitigation});if(sh.signal)out.push({k:`Signal — ${f.text}`,v:sh.signal});return out;})},
+          ],
+        } as ExportPayload)}/>
+      </div>
     </>)}
 
     {stage<5&&<div className="pm-nav"><button className="pm-btn pm-btn-g" onClick={()=>setStage(s=>s-1)} disabled={stage===0}>← Back</button><button className="pm-btn" onClick={()=>setStage(s=>s+1)} disabled={!canNext()}>{stage===4?"Generate Brief →":"Continue →"}</button></div>}
