@@ -2526,9 +2526,16 @@ const NAV_ITEMS = [
 export default function DecisionSuiteApp() {
   const [active, setActive] = useState("home");
   const [ledgerEntries, setLedgerEntries] = useState<CLEntry[]>([]);
+  const [syncTick, setSyncTick] = useState(0);
   const [theme, setTheme] = useState<"dark"|"light">(() => {
     try { return (localStorage.getItem("ds-theme") as "dark"|"light") || "dark"; } catch { return "dark"; }
   });
+
+  useEffect(() => {
+    const handler = () => setSyncTick(t => t + 1);
+    window.addEventListener("sync:reloaded", handler);
+    return () => window.removeEventListener("sync:reloaded", handler);
+  }, []);
   const toggleTheme = () => {
     const next = theme === "dark" ? "light" : "dark";
     setTheme(next);
