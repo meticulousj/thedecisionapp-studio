@@ -1738,7 +1738,7 @@ function OnePageOS(){
   const [energyNote,setEnergyNote,l11]=useOSState("opos-energy-note","");
   const [notes,setNotes,l12]=useOSState("opos-notes","");
   const allLoaded=l0&&l1&&l2&&l3&&l4&&l5&&l6&&l7&&l8&&l9&&l10&&l11&&l12;
-  const { sub: osSub, startCheckout: osStartCheckout } = useAuth();
+  const { sub: osSub } = useAuth();
   const isPro = osSub.subscribed;
   const limit = (n: number) => isPro ? Infinity : Math.min(n, FREE_LIMIT);
   const showUpsell = (kind: string) => toast({title:"Free plan limit reached",description:`Upgrade to Pro for unlimited ${kind} (Free is capped at ${FREE_LIMIT}).`});
