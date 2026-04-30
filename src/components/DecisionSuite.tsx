@@ -4,6 +4,10 @@ import ExportMenu from "./ExportMenu";
 import AccountButton from "./AccountButton";
 import type { ExportPayload } from "@/lib/export";
 import { storage } from "@/lib/syncedStorage";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "@/hooks/use-toast";
+
+const FREE_LIMIT = 5;
 
 // ─────────────────────────────────────────
 // SHELL CSS
@@ -1349,6 +1353,8 @@ function CommitmentLedger(){
   const [entries,setEntries]=useState<CLEntry[]>([]);
   const [loading,setLoading]=useState(true);
   const [showForm,setShowForm]=useState(false);
+  const { sub, startCheckout } = useAuth();
+  const isPro = sub.subscribed;
   const [barW,setBarW]=useState<Record<string,number>>({});
   const [text,setText]=useState("");
   const [cat,setCat]=useState("Work");
@@ -1368,7 +1374,14 @@ function CommitmentLedger(){
     if(tab==="patterns"){setTimeout(()=>{const w:Record<string,number>={};CL_CATS.forEach(c=>{const ces=entries.filter(e=>e.cat===c&&e.status!=="pending");w[c]=ces.length>0?Math.round((ces.filter(e=>e.status==="kept").length/ces.length)*100):0;});setBarW(w);},100);}
   },[tab,entries]);
 
-  const addEntry=()=>{if(!text.trim())return;const hasStake=stakeMode.social?.enabled||stakeMode.financial?.enabled||stakeMode.reputation?.enabled;setEntries([{id:Date.now().toString(),text:text.trim(),cat,deadline,stakes,madeWith:madeWith.trim()||"Myself",status:"pending",createdAt:clToday(),stakeMode:hasStake?stakeMode:undefined},...entries]);setText("");setDeadline("");setStakes(3);setCat("Work");setMadeWith("Myself");setStakeMode({});setShowStakes(false);setShowForm(false);};
+  const atCap = !isPro && entries.length >= FREE_LIMIT;
+  const addEntry=()=>{
+    if(!text.trim())return;
+    if(atCap){toast({title:"Free plan limit reached",description:`Upgrade to Pro for unlimited commitments (Free is capped at ${FREE_LIMIT}).`});return;}
+    const hasStake=stakeMode.social?.enabled||stakeMode.financial?.enabled||stakeMode.reputation?.enabled;
+    setEntries([{id:Date.now().toString(),text:text.trim(),cat,deadline,stakes,madeWith:madeWith.trim()||"Myself",status:"pending",createdAt:clToday(),stakeMode:hasStake?stakeMode:undefined},...entries]);
+    setText("");setDeadline("");setStakes(3);setCat("Work");setMadeWith("Myself");setStakeMode({});setShowStakes(false);setShowForm(false);
+  };
   const updStatus=(id:string,status:string)=>setEntries(entries.map(e=>e.id===id?{...e,status,resolvedAt:clToday()}:e));
   const delEntry=(id:string)=>setEntries(entries.filter(e=>e.id!==id));
 
@@ -1470,9 +1483,13 @@ function CommitmentLedger(){
                 {heading:"All commitments",type:"table",columns:["Commitment","Category","Deadline","Stakes","Status"],rows:entries.map(e=>[e.text,e.cat||"—",e.deadline||"—",String(e.stakes??"—"),e.status])},
               ],
             } as ExportPayload)}/>
-            <button className="cl-btn cl-btn-sm" onClick={()=>setShowForm(!showForm)}>{showForm?"— Cancel":"+ Enter Commitment"}</button>
+            <button className="cl-btn cl-btn-sm" onClick={()=>{ if(atCap){ toast({title:"Free plan limit reached",description:`Upgrade to Pro for unlimited commitments (Free is capped at ${FREE_LIMIT}).`}); return; } setShowForm(!showForm); }}>{showForm?"— Cancel":"+ Enter Commitment"}</button>
           </div>
         </div>
+        {atCap&&<div style={{margin:"0 0 14px",padding:"10px 14px",background:"var(--gold-d)",border:"1px solid var(--gold)",borderRadius:8,fontSize:12,color:"var(--text)",display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,fontFamily:"'DM Sans',sans-serif"}}>
+          <span><strong style={{color:"var(--gold)"}}>Free limit reached ({FREE_LIMIT}/{FREE_LIMIT}).</strong> Upgrade to Pro for unlimited commitments + cloud sync across devices.</span>
+          <button onClick={startCheckout} style={{background:"var(--gold)",color:"#1a1408",border:"none",borderRadius:6,padding:"6px 12px",fontSize:11,fontWeight:700,cursor:"pointer",letterSpacing:".06em",textTransform:"uppercase",fontFamily:"'Azeret Mono',monospace"}}>Upgrade</button>
+        </div>}
         {showForm&&<div className="cl-form"><div className="cl-ft">New Ledger Entry</div>
           <div className="cl-form-row"><label className="cl-fl">Commitment</label><textarea className="cl-ta" rows={2} placeholder='State it precisely. "I will finish the investor memo by Friday"' value={text} onChange={e=>setText(e.target.value)}/></div>
           <div className="cl-form-grid"><div><label className="cl-fl">Deadline</label><input className="cl-in" type="date" value={deadline} min={clToday()} onChange={e=>setDeadline(e.target.value)}/></div><div><label className="cl-fl">Made with</label><input className="cl-in" type="text" placeholder="Myself, team, client…" value={madeWith} onChange={e=>setMadeWith(e.target.value)}/></div></div>
@@ -1721,6 +1738,10 @@ function OnePageOS(){
   const [energyNote,setEnergyNote,l11]=useOSState("opos-energy-note","");
   const [notes,setNotes,l12]=useOSState("opos-notes","");
   const allLoaded=l0&&l1&&l2&&l3&&l4&&l5&&l6&&l7&&l8&&l9&&l10&&l11&&l12;
+  const { sub: osSub } = useAuth();
+  const isPro = osSub.subscribed;
+  const limit = (n: number) => isPro ? Infinity : Math.min(n, FREE_LIMIT);
+  const showUpsell = (kind: string) => toast({title:"Free plan limit reached",description:`Upgrade to Pro for unlimited ${kind} (Free is capped at ${FREE_LIMIT}).`});
 
   const togCadence=(item:string)=>setCadence(cadence.includes(item)?cadence.filter(c=>c!==item):[...cadence,item]);
   const addListItem=(list:string[],setList:React.Dispatch<React.SetStateAction<string[]>>)=>setList([...list,""]);
@@ -1815,7 +1836,7 @@ function OnePageOS(){
           <div className="os-card-header"><div className="os-card-title"><span className="os-card-num">02</span>Weekly Non-Negotiables</div></div>
           <div className="os-card-body">
             {weekly.map((w,i)=><div className="os-list-item" key={i}><span className="os-list-marker">—</span><input className="os-list-input" type="text" value={w} placeholder={["Deep work block","Weekly team sync","Friday shutdown review","Strategic conversation"][i]||`Item ${i+1}`} onChange={e=>updListItem(weekly,setWeekly,i,e.target.value)}/>{weekly.length>1&&<button className="os-list-del" onClick={()=>remListItem(weekly,setWeekly,i)}>×</button>}</div>)}
-            {weekly.length<6&&<button className="os-add-btn" onClick={()=>addListItem(weekly,setWeekly)}>+ Add item</button>}
+            {weekly.length<limit(6)?<button className="os-add-btn" onClick={()=>addListItem(weekly,setWeekly)}>+ Add item</button>:!isPro&&<button className="os-add-btn" onClick={()=>showUpsell("weekly rituals")} style={{borderColor:"var(--gold)",color:"var(--gold)"}}>+ Add item · Pro unlocks unlimited</button>}
           </div>
         </div>
 
@@ -1824,7 +1845,7 @@ function OnePageOS(){
           <div className="os-card-header"><div className="os-card-title"><span className="os-card-num">03</span>Daily Defaults</div></div>
           <div className="os-card-body">
             {daily.map((d,i)=><div className="os-list-item" key={i}><span className="os-list-marker">·</span><input className="os-list-input" type="text" value={d} placeholder={["First 90 min: deep work","Set daily intention","End-of-day: plan tomorrow","No meetings before 10am"][i]||`Default ${i+1}`} onChange={e=>updListItem(daily,setDaily,i,e.target.value)}/>{daily.length>1&&<button className="os-list-del" onClick={()=>remListItem(daily,setDaily,i)}>×</button>}</div>)}
-            {daily.length<6&&<button className="os-add-btn" onClick={()=>addListItem(daily,setDaily)}>+ Add item</button>}
+            {daily.length<limit(6)?<button className="os-add-btn" onClick={()=>addListItem(daily,setDaily)}>+ Add item</button>:!isPro&&<button className="os-add-btn" onClick={()=>showUpsell("daily defaults")} style={{borderColor:"var(--gold)",color:"var(--gold)"}}>+ Add item · Pro unlocks unlimited</button>}
           </div>
         </div>
 
@@ -1835,7 +1856,7 @@ function OnePageOS(){
             <div className="os-rules-grid">
               {rules.map((r,i)=><div className="os-rule" key={i}><div className={`os-rule-type ${r.type}`}><span className="os-rule-dot"/>{r.type==="yes"?"Say Yes when":"Say No when"}</div><textarea className="os-rule-textarea" rows={2} value={r.text} placeholder={r.type==="yes"?YES_PH[rules.filter(x=>x.type==="yes").indexOf(r)%YES_PH.length]:NO_PH[rules.filter(x=>x.type==="no").indexOf(r)%NO_PH.length]} onChange={e=>updRule(i,e.target.value)}/><button className="os-rule-del" onClick={()=>remRule(i)}>×</button></div>)}
             </div>
-            <div className="os-rules-actions">{rules.filter(r=>r.type==="yes").length<4&&<button className="os-add-btn" style={{flex:1}} onClick={()=>addRule("yes")}>+ Yes rule</button>}{rules.filter(r=>r.type==="no").length<4&&<button className="os-add-btn" style={{flex:1}} onClick={()=>addRule("no")}>+ No rule</button>}</div>
+            <div className="os-rules-actions">{rules.filter(r=>r.type==="yes").length<limit(5)&&<button className="os-add-btn" style={{flex:1}} onClick={()=>addRule("yes")}>+ Yes rule</button>}{rules.filter(r=>r.type==="no").length<limit(5)&&<button className="os-add-btn" style={{flex:1}} onClick={()=>addRule("no")}>+ No rule</button>}{!isPro&&(rules.filter(r=>r.type==="yes").length>=FREE_LIMIT||rules.filter(r=>r.type==="no").length>=FREE_LIMIT)&&<button className="os-add-btn" style={{flex:1,borderColor:"var(--gold)",color:"var(--gold)"}} onClick={()=>showUpsell("decision rules")}>Pro unlocks unlimited</button>}</div>
           </div>
         </div>
 
@@ -1856,7 +1877,7 @@ function OnePageOS(){
               <input className={`os-goal-input${g.done?" done-text":""}`} type="text" value={g.text} placeholder={["Launch MVP","Hire key role","Hit revenue target"][i]||`Goal ${i+1}`} onChange={e=>updGoal(i,e.target.value)}/>
               {goals.length>1&&<button className="os-list-del" onClick={()=>remGoal(i)}>×</button>}
             </div>)}
-            {goals.length<8&&<button className="os-add-btn" onClick={addGoal}>+ Add goal</button>}
+            {goals.length<limit(8)?<button className="os-add-btn" onClick={addGoal}>+ Add goal</button>:!isPro&&<button className="os-add-btn" onClick={()=>showUpsell("goals")} style={{borderColor:"var(--gold)",color:"var(--gold)"}}>+ Add goal · Pro unlocks unlimited</button>}
           </div>
         </div>
 
