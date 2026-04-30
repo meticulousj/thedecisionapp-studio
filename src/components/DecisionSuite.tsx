@@ -1,24 +1,9 @@
 import { useState, useEffect } from "react";
 import DevilsAdvocate from "./DevilsAdvocate";
 import ExportMenu from "./ExportMenu";
+import AccountButton from "./AccountButton";
 import type { ExportPayload } from "@/lib/export";
-
-// Storage helpers using localStorage instead of window.storage
-const storage = {
-  get: (key: string) => {
-    try {
-      const value = localStorage.getItem(key);
-      return value ? { value } : null;
-    } catch {
-      return null;
-    }
-  },
-  set: (key: string, value: string) => {
-    try {
-      localStorage.setItem(key, value);
-    } catch {}
-  },
-};
+import { storage } from "@/lib/syncedStorage";
 
 // ─────────────────────────────────────────
 // SHELL CSS
@@ -2541,9 +2526,16 @@ const NAV_ITEMS = [
 export default function DecisionSuiteApp() {
   const [active, setActive] = useState("home");
   const [ledgerEntries, setLedgerEntries] = useState<CLEntry[]>([]);
+  const [syncTick, setSyncTick] = useState(0);
   const [theme, setTheme] = useState<"dark"|"light">(() => {
     try { return (localStorage.getItem("ds-theme") as "dark"|"light") || "dark"; } catch { return "dark"; }
   });
+
+  useEffect(() => {
+    const handler = () => setSyncTick(t => t + 1);
+    window.addEventListener("sync:reloaded", handler);
+    return () => window.removeEventListener("sync:reloaded", handler);
+  }, []);
   const toggleTheme = () => {
     const next = theme === "dark" ? "light" : "dark";
     setTheme(next);
@@ -2604,14 +2596,15 @@ export default function DecisionSuiteApp() {
               <span className="path-sep">/</span>
               <span className="path-active">{currentLabel}</span>
             </div>
-            <div className="topbar-right" style={{display:"flex",alignItems:"center",gap:16}}>
+            <div className="topbar-right" style={{display:"flex",alignItems:"center",gap:12}}>
               {intPct !== null ? <span>{`Integrity: ${intPct}%`}</span> : null}
               <button onClick={toggleTheme} style={{background:"var(--bg3)",border:"1px solid var(--border2)",borderRadius:6,width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:16,color:"var(--text)",transition:"all .15s"}} title={`Switch to ${theme==="dark"?"light":"dark"} mode`}>
                 {theme==="dark"?"☀️":"🌙"}
               </button>
+              <AccountButton />
             </div>
           </div>
-          <div className="tool-frame">
+          <div className="tool-frame" key={syncTick}>
             {active==="home"      && <HomeDashboard onNavigate={setActive} ledgerStats={ledgerStats}/>}
             {active==="decision"  && <DecisionClarity/>}
             {active==="assumption"&& <AssumptionAudit/>}
