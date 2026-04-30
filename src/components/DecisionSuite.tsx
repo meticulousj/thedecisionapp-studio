@@ -1483,9 +1483,13 @@ function CommitmentLedger(){
                 {heading:"All commitments",type:"table",columns:["Commitment","Category","Deadline","Stakes","Status"],rows:entries.map(e=>[e.text,e.cat||"—",e.deadline||"—",String(e.stakes??"—"),e.status])},
               ],
             } as ExportPayload)}/>
-            <button className="cl-btn cl-btn-sm" onClick={()=>setShowForm(!showForm)}>{showForm?"— Cancel":"+ Enter Commitment"}</button>
+            <button className="cl-btn cl-btn-sm" onClick={()=>{ if(atCap){ toast({title:"Free plan limit reached",description:`Upgrade to Pro for unlimited commitments (Free is capped at ${FREE_LIMIT}).`}); return; } setShowForm(!showForm); }}>{showForm?"— Cancel":"+ Enter Commitment"}</button>
           </div>
         </div>
+        {atCap&&<div style={{margin:"0 0 14px",padding:"10px 14px",background:"var(--gold-d)",border:"1px solid var(--gold)",borderRadius:8,fontSize:12,color:"var(--text)",display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,fontFamily:"'DM Sans',sans-serif"}}>
+          <span><strong style={{color:"var(--gold)"}}>Free limit reached ({FREE_LIMIT}/{FREE_LIMIT}).</strong> Upgrade to Pro for unlimited commitments + cloud sync across devices.</span>
+          <button onClick={startCheckout} style={{background:"var(--gold)",color:"#1a1408",border:"none",borderRadius:6,padding:"6px 12px",fontSize:11,fontWeight:700,cursor:"pointer",letterSpacing:".06em",textTransform:"uppercase",fontFamily:"'Azeret Mono',monospace"}}>Upgrade</button>
+        </div>}
         {showForm&&<div className="cl-form"><div className="cl-ft">New Ledger Entry</div>
           <div className="cl-form-row"><label className="cl-fl">Commitment</label><textarea className="cl-ta" rows={2} placeholder='State it precisely. "I will finish the investor memo by Friday"' value={text} onChange={e=>setText(e.target.value)}/></div>
           <div className="cl-form-grid"><div><label className="cl-fl">Deadline</label><input className="cl-in" type="date" value={deadline} min={clToday()} onChange={e=>setDeadline(e.target.value)}/></div><div><label className="cl-fl">Made with</label><input className="cl-in" type="text" placeholder="Myself, team, client…" value={madeWith} onChange={e=>setMadeWith(e.target.value)}/></div></div>
