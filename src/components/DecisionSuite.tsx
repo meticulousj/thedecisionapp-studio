@@ -4,6 +4,10 @@ import ExportMenu from "./ExportMenu";
 import AccountButton from "./AccountButton";
 import type { ExportPayload } from "@/lib/export";
 import { storage } from "@/lib/syncedStorage";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "@/hooks/use-toast";
+
+const FREE_LIMIT = 5;
 
 // ─────────────────────────────────────────
 // SHELL CSS
