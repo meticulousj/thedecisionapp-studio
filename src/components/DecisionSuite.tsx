@@ -1353,6 +1353,8 @@ function CommitmentLedger(){
   const [entries,setEntries]=useState<CLEntry[]>([]);
   const [loading,setLoading]=useState(true);
   const [showForm,setShowForm]=useState(false);
+  const { sub, startCheckout } = useAuth();
+  const isPro = sub.subscribed;
   const [barW,setBarW]=useState<Record<string,number>>({});
   const [text,setText]=useState("");
   const [cat,setCat]=useState("Work");
