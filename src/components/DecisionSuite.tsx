@@ -1836,7 +1836,7 @@ function OnePageOS(){
           <div className="os-card-header"><div className="os-card-title"><span className="os-card-num">02</span>Weekly Non-Negotiables</div></div>
           <div className="os-card-body">
             {weekly.map((w,i)=><div className="os-list-item" key={i}><span className="os-list-marker">—</span><input className="os-list-input" type="text" value={w} placeholder={["Deep work block","Weekly team sync","Friday shutdown review","Strategic conversation"][i]||`Item ${i+1}`} onChange={e=>updListItem(weekly,setWeekly,i,e.target.value)}/>{weekly.length>1&&<button className="os-list-del" onClick={()=>remListItem(weekly,setWeekly,i)}>×</button>}</div>)}
-            {weekly.length<6&&<button className="os-add-btn" onClick={()=>addListItem(weekly,setWeekly)}>+ Add item</button>}
+            {weekly.length<limit(6)?<button className="os-add-btn" onClick={()=>addListItem(weekly,setWeekly)}>+ Add item</button>:!isPro&&<button className="os-add-btn" onClick={()=>showUpsell("weekly rituals")} style={{borderColor:"var(--gold)",color:"var(--gold)"}}>+ Add item · Pro unlocks unlimited</button>}
           </div>
         </div>
 
@@ -1845,7 +1845,7 @@ function OnePageOS(){
           <div className="os-card-header"><div className="os-card-title"><span className="os-card-num">03</span>Daily Defaults</div></div>
           <div className="os-card-body">
             {daily.map((d,i)=><div className="os-list-item" key={i}><span className="os-list-marker">·</span><input className="os-list-input" type="text" value={d} placeholder={["First 90 min: deep work","Set daily intention","End-of-day: plan tomorrow","No meetings before 10am"][i]||`Default ${i+1}`} onChange={e=>updListItem(daily,setDaily,i,e.target.value)}/>{daily.length>1&&<button className="os-list-del" onClick={()=>remListItem(daily,setDaily,i)}>×</button>}</div>)}
-            {daily.length<6&&<button className="os-add-btn" onClick={()=>addListItem(daily,setDaily)}>+ Add item</button>}
+            {daily.length<limit(6)?<button className="os-add-btn" onClick={()=>addListItem(daily,setDaily)}>+ Add item</button>:!isPro&&<button className="os-add-btn" onClick={()=>showUpsell("daily defaults")} style={{borderColor:"var(--gold)",color:"var(--gold)"}}>+ Add item · Pro unlocks unlimited</button>}
           </div>
         </div>
 
@@ -1856,7 +1856,7 @@ function OnePageOS(){
             <div className="os-rules-grid">
               {rules.map((r,i)=><div className="os-rule" key={i}><div className={`os-rule-type ${r.type}`}><span className="os-rule-dot"/>{r.type==="yes"?"Say Yes when":"Say No when"}</div><textarea className="os-rule-textarea" rows={2} value={r.text} placeholder={r.type==="yes"?YES_PH[rules.filter(x=>x.type==="yes").indexOf(r)%YES_PH.length]:NO_PH[rules.filter(x=>x.type==="no").indexOf(r)%NO_PH.length]} onChange={e=>updRule(i,e.target.value)}/><button className="os-rule-del" onClick={()=>remRule(i)}>×</button></div>)}
             </div>
-            <div className="os-rules-actions">{rules.filter(r=>r.type==="yes").length<4&&<button className="os-add-btn" style={{flex:1}} onClick={()=>addRule("yes")}>+ Yes rule</button>}{rules.filter(r=>r.type==="no").length<4&&<button className="os-add-btn" style={{flex:1}} onClick={()=>addRule("no")}>+ No rule</button>}</div>
+            <div className="os-rules-actions">{rules.filter(r=>r.type==="yes").length<limit(5)&&<button className="os-add-btn" style={{flex:1}} onClick={()=>addRule("yes")}>+ Yes rule</button>}{rules.filter(r=>r.type==="no").length<limit(5)&&<button className="os-add-btn" style={{flex:1}} onClick={()=>addRule("no")}>+ No rule</button>}{!isPro&&(rules.filter(r=>r.type==="yes").length>=FREE_LIMIT||rules.filter(r=>r.type==="no").length>=FREE_LIMIT)&&<button className="os-add-btn" style={{flex:1,borderColor:"var(--gold)",color:"var(--gold)"}} onClick={()=>showUpsell("decision rules")}>Pro unlocks unlimited</button>}</div>
           </div>
         </div>
 
@@ -1877,7 +1877,7 @@ function OnePageOS(){
               <input className={`os-goal-input${g.done?" done-text":""}`} type="text" value={g.text} placeholder={["Launch MVP","Hire key role","Hit revenue target"][i]||`Goal ${i+1}`} onChange={e=>updGoal(i,e.target.value)}/>
               {goals.length>1&&<button className="os-list-del" onClick={()=>remGoal(i)}>×</button>}
             </div>)}
-            {goals.length<8&&<button className="os-add-btn" onClick={addGoal}>+ Add goal</button>}
+            {goals.length<limit(8)?<button className="os-add-btn" onClick={addGoal}>+ Add goal</button>:!isPro&&<button className="os-add-btn" onClick={()=>showUpsell("goals")} style={{borderColor:"var(--gold)",color:"var(--gold)"}}>+ Add goal · Pro unlocks unlimited</button>}
           </div>
         </div>
 
