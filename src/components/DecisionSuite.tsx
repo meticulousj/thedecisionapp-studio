@@ -1,24 +1,9 @@
 import { useState, useEffect } from "react";
 import DevilsAdvocate from "./DevilsAdvocate";
 import ExportMenu from "./ExportMenu";
+import AccountButton from "./AccountButton";
 import type { ExportPayload } from "@/lib/export";
-
-// Storage helpers using localStorage instead of window.storage
-const storage = {
-  get: (key: string) => {
-    try {
-      const value = localStorage.getItem(key);
-      return value ? { value } : null;
-    } catch {
-      return null;
-    }
-  },
-  set: (key: string, value: string) => {
-    try {
-      localStorage.setItem(key, value);
-    } catch {}
-  },
-};
+import { storage } from "@/lib/syncedStorage";
 
 // ─────────────────────────────────────────
 // SHELL CSS
