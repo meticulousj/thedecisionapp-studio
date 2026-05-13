@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState, ReactNode } fro
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { setSyncContext, pullFromCloud, pushAllToCloud } from "@/lib/syncedStorage";
+import { lovable } from "@/integrations/lovable";
 
 type Sub = { subscribed: boolean; tier: string | null; end: string | null };
 
@@ -101,10 +102,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signInGoogle = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: window.location.origin },
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
     });
+    if (result.error) {
+      alert("Google sign-in failed: " + (result.error.message || "unknown error"));
+    }
   };
 
   const signOut = async () => {
