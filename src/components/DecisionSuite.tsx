@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import DevilsAdvocate from "./DevilsAdvocate";
+import AssumptionExtractor from "./AssumptionExtractor";
 import ExportMenu from "./ExportMenu";
 import AccountButton from "./AccountButton";
 import type { ExportPayload } from "@/lib/export";
@@ -2109,6 +2110,7 @@ function HomeDashboard({onNavigate, ledgerStats}:{onNavigate:(id:string)=>void;l
     { id:"os",         icon:"📐", title:"One-Page OS",       role:"Always-on system",  seq:"05", badge:"badge-always",badgeLabel:"Always",  desc:"Your complete operating model on one page. Priority, weekly non-negotiables, daily defaults, decision rules, cadence. Builds and persists." },
     { id:"templates",  icon:"📋", title:"Templates Library", role:"Decision frameworks",seq:"06", badge:"badge-always",badgeLabel:"Library", desc:"Pre-built frameworks like RICE, Eisenhower, SWOT, Six Hats, and more. Pick a template, fill in the blanks, get structured clarity." },
     { id:"devils",     icon:"😈", title:"Devil's Advocate", role:"Stress-test your thinking",seq:"07", badge:"badge-during",badgeLabel:"AI", desc:"Paste a decision. AI generates the strongest counter-arguments, hidden assumptions, and questions you must answer before proceeding." },
+    { id:"extractor",  icon:"🪞", title:"Assumption Extractor", role:"Surface what's unsaid",seq:"08", badge:"badge-before",badgeLabel:"AI", desc:"Paste a memo, doc, or Slack thread. AI surfaces the load-bearing assumptions hidden inside and tells you what breaks if they're wrong." },
   ];
 
   return (
@@ -2174,6 +2176,7 @@ const NAV_ITEMS = [
   { id:"os",         icon:"📐", label:"One-Page OS",        sub:"Always-on" },
   { id:"templates",  icon:"📋", label:"Templates Library", sub:"Frameworks" },
   { id:"devils",     icon:"😈", label:"Devil's Advocate",  sub:"AI · Counter-arguments" },
+  { id:"extractor",  icon:"🪞", label:"Assumption Extractor", sub:"AI · Hidden beliefs" },
 ];
 
 export default function DecisionSuiteApp() {
@@ -2266,6 +2269,7 @@ export default function DecisionSuiteApp() {
             {active==="os"        && <OnePageOS/>}
             {active==="templates" && <TemplatesLibrary/>}
             {active==="devils"    && <DevilsAdvocate/>}
+            {active==="extractor" && <AssumptionExtractor/>}
           </div>
         </div>
       </div>
