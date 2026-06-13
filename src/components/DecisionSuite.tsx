@@ -1026,6 +1026,25 @@ function PreMortemStudio(){
   const [failures,setFailures]=useState<PMFailure[]>([]);
   const [shields,setShields]=useState<Record<string,{mitigation:string;signal:string}>>({});
   const [barW,setBarW]=useState<Record<string,number>>({});
+  const [aiLoading,setAiLoading]=useState(false);
+
+  const aiAutofill=async()=>{
+    if(mission.trim().length<5){toast({title:"Mission too short",description:"Add a mission first (stage 1)."});return;}
+    setAiLoading(true);
+    try{
+      const{data,error}=await supabase.functions.invoke("premortem-failures",{body:{mission:mission.trim(),timeframe,obituary:obituary.trim()||undefined}});
+      if(error)throw error;
+      if((data as any)?.error)throw new Error((data as any).error);
+      const generated=((data as any)?.failures||[]) as Array<{text:string;cat:string;prob:number;impact:number}>;
+      if(generated.length===0){toast({title:"No failure modes returned",description:"Try again or refine your mission."});return;}
+      const ts=Date.now();
+      const next:PMFailure[]=generated.map((g,i)=>({id:`ai-${ts}-${i}`,text:g.text,cat:g.cat,prob:g.prob,impact:g.impact}));
+      setFailures(prev=>[...prev,...next]);
+      toast({title:`Added ${next.length} AI failure modes`,description:"Review, edit, or rate them in the next step."});
+    }catch(e:any){
+      toast({title:"AI auto-fill failed",description:e?.message||"Try again."});
+    }finally{setAiLoading(false);}
+  };
 
   const addF=()=>{const v=fInp.trim();if(!v)return;const id=Date.now().toString();setFailures([...failures,{id,text:v,cat:selCat,prob:3,impact:3}]);setFInp("");};
   const remF=(id:string)=>setFailures(failures.filter(f=>f.id!==id));
