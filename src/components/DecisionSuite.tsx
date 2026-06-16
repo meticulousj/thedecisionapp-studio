@@ -1018,6 +1018,7 @@ interface PMFailure {
 }
 
 function PreMortemStudio(){
+  const { user, sub, startCheckout } = useAuth();
   const STAGES=["Mission","Obituary","Failures","Rating","Shield","Brief"];
   const [stage,setStage]=useState(0);
   const [mission,setMission]=useState("");
@@ -1029,24 +1030,34 @@ function PreMortemStudio(){
   const [shields,setShields]=useState<Record<string,{mitigation:string;signal:string}>>({});
   const [barW,setBarW]=useState<Record<string,number>>({});
   const [aiLoading,setAiLoading]=useState(false);
+  const [aiUsage,setAiUsage]=useState<{count:number;limit:number;isPro:boolean}|null>(null);
 
   const aiAutofill=async()=>{
+    if(!user){toast({title:"Sign in to use AI",description:"AI auto-fill requires an account."});return;}
     if(mission.trim().length<5){toast({title:"Mission too short",description:"Add a mission first (stage 1)."});return;}
     setAiLoading(true);
     try{
-      const{data,error}=await supabase.functions.invoke("premortem-failures",{body:{mission:mission.trim(),timeframe,obituary:obituary.trim()||undefined}});
-      if(error)throw error;
-      if((data as any)?.error)throw new Error((data as any).error);
-      const generated=((data as any)?.failures||[]) as Array<{text:string;cat:string;prob:number;impact:number}>;
+      const{data,error}=await invokeAi<{failures:Array<{text:string;cat:string;prob:number;impact:number}>}>("premortem-failures",{mission:mission.trim(),timeframe,obituary:obituary.trim()||undefined});
+      if(error){
+        if(error.code==="free_limit_reached"){
+          toast({title:"Free AI runs used up",description:`You've used your ${error.limit||3} free AI runs this month. Upgrade to Pro for unlimited.`});
+          return;
+        }
+        throw new Error(error.message);
+      }
+      const generated=data?.failures||[];
       if(generated.length===0){toast({title:"No failure modes returned",description:"Try again or refine your mission."});return;}
+      if(data?.usage)setAiUsage(data.usage);
       const ts=Date.now();
       const next:PMFailure[]=generated.map((g,i)=>({id:`ai-${ts}-${i}`,text:g.text,cat:g.cat,prob:g.prob,impact:g.impact}));
       setFailures(prev=>[...prev,...next]);
-      toast({title:`Added ${next.length} AI failure modes`,description:"Review, edit, or rate them in the next step."});
+      const remaining=data?.usage && !data.usage.isPro ? ` (${Math.max(0,data.usage.limit-data.usage.count)} free runs left this month)` : "";
+      toast({title:`Added ${next.length} AI failure modes`,description:`Review, edit, or rate them in the next step.${remaining}`});
     }catch(e:any){
       toast({title:"AI auto-fill failed",description:e?.message||"Try again."});
     }finally{setAiLoading(false);}
   };
+
 
   const addF=()=>{const v=fInp.trim();if(!v)return;const id=Date.now().toString();setFailures([...failures,{id,text:v,cat:selCat,prob:3,impact:3}]);setFInp("");};
   const remF=(id:string)=>setFailures(failures.filter(f=>f.id!==id));
