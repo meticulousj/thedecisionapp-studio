@@ -111,7 +111,7 @@ Return 5-10 assumptions. Also include a short overall "summary" (1-2 sentences) 
       test: String(a.test || "").trim(),
     })).filter((a: any) => a.assumption.length > 0);
 
-    return new Response(JSON.stringify({ summary: String(parsed.summary || "").trim(), assumptions }), {
+    return new Response(JSON.stringify({ summary: String(parsed.summary || "").trim(), assumptions, usage: { count: gate.newCount, limit: gate.monthlyLimit, isPro: gate.isPro } }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
