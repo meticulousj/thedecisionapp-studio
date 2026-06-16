@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.consume_ai_run(uuid, boolean, int) FROM PUBLIC, authenticated;

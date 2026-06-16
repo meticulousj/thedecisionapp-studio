@@ -7,7 +7,7 @@ import type { ExportPayload } from "@/lib/export";
 import { storage } from "@/lib/syncedStorage";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { invokeAi } from "@/lib/aiInvoke";
 import { TEMPLATES, TEMPLATE_CATS, TPL_CSS } from "@/lib/templates/data";
 import { FrameworkWorkspace } from "@/lib/templates/Workspace";
 
@@ -1017,6 +1017,7 @@ interface PMFailure {
 }
 
 function PreMortemStudio(){
+  const { user, sub, startCheckout } = useAuth();
   const STAGES=["Mission","Obituary","Failures","Rating","Shield","Brief"];
   const [stage,setStage]=useState(0);
   const [mission,setMission]=useState("");
@@ -1028,24 +1029,34 @@ function PreMortemStudio(){
   const [shields,setShields]=useState<Record<string,{mitigation:string;signal:string}>>({});
   const [barW,setBarW]=useState<Record<string,number>>({});
   const [aiLoading,setAiLoading]=useState(false);
+  const [aiUsage,setAiUsage]=useState<{count:number;limit:number;isPro:boolean}|null>(null);
 
   const aiAutofill=async()=>{
+    if(!user){toast({title:"Sign in to use AI",description:"AI auto-fill requires an account."});return;}
     if(mission.trim().length<5){toast({title:"Mission too short",description:"Add a mission first (stage 1)."});return;}
     setAiLoading(true);
     try{
-      const{data,error}=await supabase.functions.invoke("premortem-failures",{body:{mission:mission.trim(),timeframe,obituary:obituary.trim()||undefined}});
-      if(error)throw error;
-      if((data as any)?.error)throw new Error((data as any).error);
-      const generated=((data as any)?.failures||[]) as Array<{text:string;cat:string;prob:number;impact:number}>;
+      const{data,error}=await invokeAi<{failures:Array<{text:string;cat:string;prob:number;impact:number}>}>("premortem-failures",{mission:mission.trim(),timeframe,obituary:obituary.trim()||undefined});
+      if(error){
+        if(error.code==="free_limit_reached"){
+          toast({title:"Free AI runs used up",description:`You've used your ${error.limit||3} free AI runs this month. Upgrade to Pro for unlimited.`});
+          return;
+        }
+        throw new Error(error.message);
+      }
+      const generated=data?.failures||[];
       if(generated.length===0){toast({title:"No failure modes returned",description:"Try again or refine your mission."});return;}
+      if(data?.usage)setAiUsage(data.usage);
       const ts=Date.now();
       const next:PMFailure[]=generated.map((g,i)=>({id:`ai-${ts}-${i}`,text:g.text,cat:g.cat,prob:g.prob,impact:g.impact}));
       setFailures(prev=>[...prev,...next]);
-      toast({title:`Added ${next.length} AI failure modes`,description:"Review, edit, or rate them in the next step."});
+      const remaining=data?.usage && !data.usage.isPro ? ` (${Math.max(0,data.usage.limit-data.usage.count)} free runs left this month)` : "";
+      toast({title:`Added ${next.length} AI failure modes`,description:`Review, edit, or rate them in the next step.${remaining}`});
     }catch(e:any){
       toast({title:"AI auto-fill failed",description:e?.message||"Try again."});
     }finally{setAiLoading(false);}
   };
+
 
   const addF=()=>{const v=fInp.trim();if(!v)return;const id=Date.now().toString();setFailures([...failures,{id,text:v,cat:selCat,prob:3,impact:3}]);setFInp("");};
   const remF=(id:string)=>setFailures(failures.filter(f=>f.id!==id));
@@ -1120,9 +1131,16 @@ function PreMortemStudio(){
       <div className="pm-add-row"><input className="pm-in" type="text" placeholder="Describe a specific failure mode…" value={fInp} onChange={e=>setFInp(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addF()}/><button className="pm-btn" onClick={addF}>Add</button></div>
       <div style={{marginTop:10,display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
         <button className="pm-btn" onClick={aiAutofill} disabled={aiLoading} style={{background:"var(--gold)",color:"#1a1408"}}>{aiLoading?"✨ Generating…":"✨ AI auto-fill failure modes"}</button>
-        <span className="pm-hint" style={{margin:0}}>Uses your mission{obituary.trim()?" + obituary":""} to suggest 6–10 likely failures · ~10s</span>
+        <span className="pm-hint" style={{margin:0}}>
+          {sub.subscribed
+            ? <>Pro · unlimited AI runs · ~10s</>
+            : aiUsage
+              ? <>{Math.max(0,aiUsage.limit-aiUsage.count)} of {aiUsage.limit} free AI runs left this month · <button onClick={startCheckout} style={{background:"none",border:"none",color:"var(--gold)",cursor:"pointer",padding:0,font:"inherit",textDecoration:"underline"}}>Upgrade to Pro</button></>
+              : <>Free: 3 AI runs/month · <button onClick={startCheckout} style={{background:"none",border:"none",color:"var(--gold)",cursor:"pointer",padding:0,font:"inherit",textDecoration:"underline"}}>Upgrade to Pro</button> for unlimited</>}
+        </span>
       </div>
       <div className="pm-hint">Categorize each failure · Press Enter to add</div>
+
       <div style={{marginTop:18}}>{failures.map(f=><div className={`pm-fcard cat-${f.cat}`} key={f.id}><div className="pm-fh"><div className="pm-ft">{f.text}</div><span className={`pm-cbadge cb-${f.cat}`}>{PM_CATS.find(c=>c.id===f.cat)?.l}</span><button className="pm-del" onClick={()=>remF(f.id)}>×</button></div></div>)}</div>
     </div>)}
 

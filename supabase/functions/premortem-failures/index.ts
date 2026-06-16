@@ -1,7 +1,4 @@
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { corsHeaders, gateAiRun } from "../_shared/ai-gate.ts";
 
 const CATS = ["execution", "market", "resource", "people", "timing", "external"];
 
@@ -9,6 +6,9 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
+    const gate = await gateAiRun(req);
+    if (!gate.ok) return gate.response;
+
     const { mission, timeframe, obituary } = await req.json();
     if (!mission || typeof mission !== "string" || mission.trim().length < 5) {
       return new Response(JSON.stringify({ error: "Please provide a mission (at least 5 characters)." }), {
@@ -106,7 +106,7 @@ Generate the failure modes now.`;
       impact: Math.min(5, Math.max(1, Number(f.impact) || 3)),
     })).filter((f: any) => f.text.length > 0);
 
-    return new Response(JSON.stringify({ failures }), {
+    return new Response(JSON.stringify({ failures, usage: { count: gate.newCount, limit: gate.monthlyLimit, isPro: gate.isPro } }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

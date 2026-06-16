@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { invokeAi } from "@/lib/aiInvoke";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import ExportMenu from "./ExportMenu";
 
@@ -57,22 +58,32 @@ We're going to repurpose the growth team to chase 5 logos in financial services 
 If we land 3 of 5 we hit plan. Worst case we land 1 and use the learnings to refine ICP for Q4. Either way, growth team isn't going to drive material SMB revenue this quarter so the opportunity cost is low.`;
 
 export default function AssumptionExtractor() {
+  const { user, sub, startCheckout } = useAuth();
   const [source, setSource] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
+  const [aiUsage, setAiUsage] = useState<{count:number;limit:number;isPro:boolean}|null>(null);
 
   const extract = async () => {
+    if (!user) {
+      toast({ title: "Sign in to use AI", description: "The Assumption Extractor requires an account." });
+      return;
+    }
     if (source.trim().length < 20) {
       toast({ title: "Content too short", description: "Paste at least 20 characters." });
       return;
     }
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("extract-assumptions", {
-        body: { source: source.trim() },
-      });
-      if (error) throw error;
-      if ((data as any)?.error) throw new Error((data as any).error);
+      const { data, error } = await invokeAi<Result>("extract-assumptions", { source: source.trim() });
+      if (error) {
+        if (error.code === "free_limit_reached") {
+          toast({ title: "Free AI runs used up", description: `You've used your ${error.limit || 3} free AI runs this month. Upgrade to Pro for unlimited.` });
+          return;
+        }
+        throw new Error(error.message);
+      }
+      if (data?.usage) setAiUsage(data.usage);
       setResult(data as Result);
     } catch (e: any) {
       toast({ title: "Could not extract assumptions", description: e?.message || "Try again." });
@@ -82,6 +93,7 @@ export default function AssumptionExtractor() {
   };
 
   const reset = () => { setResult(null); setSource(""); };
+
 
   return (
     <>
@@ -112,8 +124,13 @@ export default function AssumptionExtractor() {
                 Try sample
               </button>
               <span style={{ fontFamily: "'Azeret Mono',monospace", fontSize: 11, color: "var(--text2)", letterSpacing: ".1em" }}>
-                Powered by AI · ~10s
+                {sub.subscribed
+                  ? "Pro · unlimited AI runs · ~10s"
+                  : aiUsage
+                    ? <>{Math.max(0, aiUsage.limit - aiUsage.count)} of {aiUsage.limit} free AI runs left · <button onClick={startCheckout} style={{background:"none",border:"none",color:"var(--gold)",cursor:"pointer",padding:0,font:"inherit",textDecoration:"underline"}}>Upgrade</button></>
+                    : <>Free: 3 AI runs/month · <button onClick={startCheckout} style={{background:"none",border:"none",color:"var(--gold)",cursor:"pointer",padding:0,font:"inherit",textDecoration:"underline"}}>Upgrade to Pro</button></>}
               </span>
+
             </div>
           </div>
         )}

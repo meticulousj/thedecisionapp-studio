@@ -1,7 +1,4 @@
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { corsHeaders, gateAiRun } from "../_shared/ai-gate.ts";
 
 const CONFIDENCE = ["low", "medium", "high"];
 const RISK = ["low", "medium", "high"];
@@ -10,6 +7,9 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
+    const gate = await gateAiRun(req);
+    if (!gate.ok) return gate.response;
+
     const { source } = await req.json();
     if (!source || typeof source !== "string" || source.trim().length < 20) {
       return new Response(JSON.stringify({ error: "Paste at least 20 characters of content." }), {
@@ -111,7 +111,7 @@ Return 5-10 assumptions. Also include a short overall "summary" (1-2 sentences) 
       test: String(a.test || "").trim(),
     })).filter((a: any) => a.assumption.length > 0);
 
-    return new Response(JSON.stringify({ summary: String(parsed.summary || "").trim(), assumptions }), {
+    return new Response(JSON.stringify({ summary: String(parsed.summary || "").trim(), assumptions, usage: { count: gate.newCount, limit: gate.monthlyLimit, isPro: gate.isPro } }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

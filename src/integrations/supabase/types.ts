@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_usage: {
+        Row: {
+          count: number
+          created_at: string
+          id: string
+          period_month: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          count?: number
+          created_at?: string
+          id?: string
+          period_month: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          count?: number
+          created_at?: string
+          id?: string
+          period_month?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -106,7 +133,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      consume_ai_run: {
+        Args: { _is_pro: boolean; _limit?: number; _user_id: string }
+        Returns: {
+          is_pro: boolean
+          monthly_limit: number
+          new_count: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

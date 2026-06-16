@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { invokeAi } from "@/lib/aiInvoke";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import ExportMenu from "./ExportMenu";
 
@@ -48,23 +49,33 @@ const css = `
 `;
 
 export default function DevilsAdvocate() {
+  const { user, sub, startCheckout } = useAuth();
   const [decision, setDecision] = useState("");
   const [context, setContext] = useState("");
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
+  const [aiUsage, setAiUsage] = useState<{count:number;limit:number;isPro:boolean}|null>(null);
 
   const generate = async () => {
+    if (!user) {
+      toast({ title: "Sign in to use AI", description: "Devil's Advocate requires an account." });
+      return;
+    }
     if (decision.trim().length < 10) {
       toast({ title: "Decision too short", description: "Describe the decision in at least 10 characters." });
       return;
     }
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("devils-advocate", {
-        body: { decision: decision.trim(), context: context.trim() || undefined },
-      });
-      if (error) throw error;
-      if ((data as any)?.error) throw new Error((data as any).error);
+      const { data, error } = await invokeAi<Analysis>("devils-advocate", { decision: decision.trim(), context: context.trim() || undefined });
+      if (error) {
+        if (error.code === "free_limit_reached") {
+          toast({ title: "Free AI runs used up", description: `You've used your ${error.limit || 3} free AI runs this month. Upgrade to Pro for unlimited.` });
+          return;
+        }
+        throw new Error(error.message);
+      }
+      if (data?.usage) setAiUsage(data.usage);
       setAnalysis(data as Analysis);
     } catch (e: any) {
       toast({ title: "Could not generate analysis", description: e?.message || "Try again." });
@@ -74,6 +85,7 @@ export default function DevilsAdvocate() {
   };
 
   const reset = () => { setAnalysis(null); setDecision(""); setContext(""); };
+
 
   return (
     <>
@@ -108,8 +120,13 @@ export default function DevilsAdvocate() {
                 {loading ? <><span className="da-loading" /> Generating…</> : "Generate counter-arguments"}
               </button>
               <span style={{ fontFamily: "'Azeret Mono',monospace", fontSize: 11, color: "var(--text2)", letterSpacing: ".1em" }}>
-                Powered by AI · Takes ~10s
+                {sub.subscribed
+                  ? "Pro · unlimited AI runs · ~10s"
+                  : aiUsage
+                    ? <>{Math.max(0, aiUsage.limit - aiUsage.count)} of {aiUsage.limit} free AI runs left · <button onClick={startCheckout} style={{background:"none",border:"none",color:"var(--gold)",cursor:"pointer",padding:0,font:"inherit",textDecoration:"underline"}}>Upgrade</button></>
+                    : <>Free: 3 AI runs/month · <button onClick={startCheckout} style={{background:"none",border:"none",color:"var(--gold)",cursor:"pointer",padding:0,font:"inherit",textDecoration:"underline"}}>Upgrade to Pro</button></>}
               </span>
+
             </div>
           </div>
         )}
