@@ -1132,9 +1132,16 @@ function PreMortemStudio(){
       <div className="pm-add-row"><input className="pm-in" type="text" placeholder="Describe a specific failure mode…" value={fInp} onChange={e=>setFInp(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addF()}/><button className="pm-btn" onClick={addF}>Add</button></div>
       <div style={{marginTop:10,display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
         <button className="pm-btn" onClick={aiAutofill} disabled={aiLoading} style={{background:"var(--gold)",color:"#1a1408"}}>{aiLoading?"✨ Generating…":"✨ AI auto-fill failure modes"}</button>
-        <span className="pm-hint" style={{margin:0}}>Uses your mission{obituary.trim()?" + obituary":""} to suggest 6–10 likely failures · ~10s</span>
+        <span className="pm-hint" style={{margin:0}}>
+          {sub.subscribed
+            ? <>Pro · unlimited AI runs · ~10s</>
+            : aiUsage
+              ? <>{Math.max(0,aiUsage.limit-aiUsage.count)} of {aiUsage.limit} free AI runs left this month · <button onClick={startCheckout} style={{background:"none",border:"none",color:"var(--gold)",cursor:"pointer",padding:0,font:"inherit",textDecoration:"underline"}}>Upgrade to Pro</button></>
+              : <>Free: 3 AI runs/month · <button onClick={startCheckout} style={{background:"none",border:"none",color:"var(--gold)",cursor:"pointer",padding:0,font:"inherit",textDecoration:"underline"}}>Upgrade to Pro</button> for unlimited</>}
+        </span>
       </div>
       <div className="pm-hint">Categorize each failure · Press Enter to add</div>
+
       <div style={{marginTop:18}}>{failures.map(f=><div className={`pm-fcard cat-${f.cat}`} key={f.id}><div className="pm-fh"><div className="pm-ft">{f.text}</div><span className={`pm-cbadge cb-${f.cat}`}>{PM_CATS.find(c=>c.id===f.cat)?.l}</span><button className="pm-del" onClick={()=>remF(f.id)}>×</button></div></div>)}</div>
     </div>)}
 
