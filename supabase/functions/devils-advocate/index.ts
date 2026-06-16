@@ -1,12 +1,13 @@
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { corsHeaders, gateAiRun } from "../_shared/ai-gate.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
+    const gate = await gateAiRun(req);
+    if (!gate.ok) return gate.response;
+
+
     const { decision, context } = await req.json();
     if (!decision || typeof decision !== "string" || decision.trim().length < 10) {
       return new Response(
