@@ -119,7 +119,7 @@ Generate:
       });
     }
     const analysis = JSON.parse(toolCall.function.arguments);
-    return new Response(JSON.stringify(analysis), {
+    return new Response(JSON.stringify({ ...analysis, usage: { count: gate.newCount, limit: gate.monthlyLimit, isPro: gate.isPro } }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
