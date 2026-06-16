@@ -124,8 +124,13 @@ export default function AssumptionExtractor() {
                 Try sample
               </button>
               <span style={{ fontFamily: "'Azeret Mono',monospace", fontSize: 11, color: "var(--text2)", letterSpacing: ".1em" }}>
-                Powered by AI · ~10s
+                {sub.subscribed
+                  ? "Pro · unlimited AI runs · ~10s"
+                  : aiUsage
+                    ? <>{Math.max(0, aiUsage.limit - aiUsage.count)} of {aiUsage.limit} free AI runs left · <button onClick={startCheckout} style={{background:"none",border:"none",color:"var(--gold)",cursor:"pointer",padding:0,font:"inherit",textDecoration:"underline"}}>Upgrade</button></>
+                    : <>Free: 3 AI runs/month · <button onClick={startCheckout} style={{background:"none",border:"none",color:"var(--gold)",cursor:"pointer",padding:0,font:"inherit",textDecoration:"underline"}}>Upgrade to Pro</button></>}
               </span>
+
             </div>
           </div>
         )}
