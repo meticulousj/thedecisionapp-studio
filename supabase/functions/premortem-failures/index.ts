@@ -106,7 +106,7 @@ Generate the failure modes now.`;
       impact: Math.min(5, Math.max(1, Number(f.impact) || 3)),
     })).filter((f: any) => f.text.length > 0);
 
-    return new Response(JSON.stringify({ failures }), {
+    return new Response(JSON.stringify({ failures, usage: { count: gate.newCount, limit: gate.monthlyLimit, isPro: gate.isPro } }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
