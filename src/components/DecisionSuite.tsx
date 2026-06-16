@@ -8,6 +8,7 @@ import { storage } from "@/lib/syncedStorage";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { invokeAi } from "@/lib/aiInvoke";
 import { TEMPLATES, TEMPLATE_CATS, TPL_CSS } from "@/lib/templates/data";
 import { FrameworkWorkspace } from "@/lib/templates/Workspace";
 
