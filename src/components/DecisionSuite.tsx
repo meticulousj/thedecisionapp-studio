@@ -10,6 +10,7 @@ import { toast } from "@/hooks/use-toast";
 import { invokeAi } from "@/lib/aiInvoke";
 import { TEMPLATES, TEMPLATE_CATS, TPL_CSS } from "@/lib/templates/data";
 import { FrameworkWorkspace } from "@/lib/templates/Workspace";
+import logoAsset from "@/assets/logo.png.asset.json";
 
 const FREE_LIMIT = 5;
 
@@ -52,6 +53,9 @@ const SHELL_CSS = `
 .sidebar-logo{
   padding:28px 24px 20px;
   border-bottom:1px solid var(--border);
+}
+.sidebar-logo img{
+  width:140px;height:auto;display:block;
 }
 .logo-mark{
   font-family:'Syne',sans-serif;font-size:15px;font-weight:800;
@@ -2243,8 +2247,7 @@ export default function DecisionSuiteApp() {
       <div className={`suite-shell theme-${theme}`}>
         <div className="sidebar">
           <div className="sidebar-logo">
-            <div className="logo-mark">Decision<span>.</span></div>
-            <div className="logo-sub">Suite · All Tools</div>
+            <img src={logoAsset.url} alt="Decision Suite Studio" />
           </div>
           <div className="sidebar-nav">
             <div className="nav-section-label">Navigation</div>
