@@ -274,7 +274,8 @@ const SHELL_CSS = `
 @media(max-width:700px){
   .sidebar{width:60px;}
   .nav-label,.logo-sub,.suite-tag,.nav-section-label,.logo-mark{display:none;}
-  .sidebar-logo{padding:16px;display:flex;justify-content:center;}
+  .sidebar-logo{padding:12px 8px;display:flex;justify-content:center;}
+  .sidebar-logo img{width:44px;height:auto;}
   .nav-item{padding:12px;justify-content:center;}
   .stats-row{grid-template-columns:1fr 1fr;}
   .tools-grid{grid-template-columns:1fr;}
