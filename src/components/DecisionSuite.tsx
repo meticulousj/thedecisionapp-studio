@@ -2172,7 +2172,103 @@ function TemplatesLibrary() {
   );
 }
 
-function HomeDashboard({onNavigate, ledgerStats}:{onNavigate:(id:string)=>void;ledgerStats:LedgerStats}) {
+const GOAL_MAP: Record<string,{label:string;icon:string;desc:string;primary:string;prompt:string}> = {
+  decide_faster:  { label:"Decide faster",     icon:"⚖️", desc:"Cut through analysis paralysis", primary:"decision",   prompt:"What decision have you been circling for more than 48 hours?" },
+  follow_through: { label:"Follow through",    icon:"📒", desc:"Turn intentions into evidence",  primary:"ledger",     prompt:"Name one thing you promised yourself last week. Did you do it?" },
+  stress_test:    { label:"Stress-test ideas", icon:"😈", desc:"Find flaws before reality does",  primary:"devils",     prompt:"What belief would be most costly if it turned out to be wrong?" },
+  build_system:   { label:"Build a system",    icon:"📐", desc:"One page. Always-on.",           primary:"os",         prompt:"If you had to run your life from a single page, what stays on it?" },
+};
+
+function Onboarding({onDone}:{onDone:(data:{name:string;goal:string})=>void}) {
+  const [step, setStep] = useState(0);
+  const [name, setName] = useState("");
+  const [goal, setGoal] = useState<string>("");
+
+  const finish = () => onDone({ name: name.trim(), goal: goal || "decide_faster" });
+
+  return (
+    <div className="onb-overlay">
+      <div className="onb-modal">
+        {step===0 && (<>
+          <div className="onb-step">Welcome · Step 1 of 3</div>
+          <div className="onb-title">Think <em>sharper.</em><br/>Decide with evidence.</div>
+          <div className="onb-sub">Decision Suite is eight tools for the messy middle of thinking — before you decide, while you decide, and after. Two minutes to set up.</div>
+          <div className="onb-actions">
+            <button className="onb-skip" onClick={finish}>Skip</button>
+            <button className="onb-next" onClick={()=>setStep(1)}>Begin →</button>
+          </div>
+        </>)}
+        {step===1 && (<>
+          <div className="onb-step">Step 2 of 3 · Your goal</div>
+          <div className="onb-title">What brought you <em>here?</em></div>
+          <div className="onb-sub">We'll tailor your home view around this. You can change it later.</div>
+          <div className="onb-goals">
+            {Object.entries(GOAL_MAP).map(([k,v]) => (
+              <button key={k} className={`onb-goal ${goal===k?"sel":""}`} onClick={()=>setGoal(k)}>
+                <div className="onb-goal-icon">{v.icon}</div>
+                <div className="onb-goal-title">{v.label}</div>
+                <div className="onb-goal-desc">{v.desc}</div>
+              </button>
+            ))}
+          </div>
+          <div className="onb-actions">
+            <button className="onb-skip" onClick={()=>setStep(0)}>← Back</button>
+            <button className="onb-next" disabled={!goal} onClick={()=>setStep(2)}>Continue →</button>
+          </div>
+        </>)}
+        {step===2 && (<>
+          <div className="onb-step">Step 3 of 3 · One last thing</div>
+          <div className="onb-title">What should we <em>call you?</em></div>
+          <div className="onb-sub">Optional. Used only to greet you on your dashboard.</div>
+          <input className="onb-input" placeholder="Your first name" value={name} onChange={e=>setName(e.target.value)} autoFocus />
+          <div className="onb-actions">
+            <button className="onb-skip" onClick={()=>setStep(1)}>← Back</button>
+            <button className="onb-next" onClick={finish}>Enter the Suite →</button>
+          </div>
+        </>)}
+        <div className="onb-dots">
+          {[0,1,2].map(i => <div key={i} className={`onb-dot ${i===step?"active":""}`}/>)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PersonalizedFor({userName, goal, lastTool, onNavigate}:{userName:string;goal:string;lastTool:string|null;onNavigate:(id:string)=>void}) {
+  const g = GOAL_MAP[goal] || GOAL_MAP.decide_faster;
+  const hour = new Date().getHours();
+  const timeGreet = hour<5?"Still up":hour<12?"Good morning":hour<18?"Good afternoon":"Good evening";
+  const who = userName ? `, ${userName}` : "";
+  const lastLabel = lastTool ? (NAV_ITEMS.find(n=>n.id===lastTool)?.label || null) : null;
+  return (
+    <div className="foryou">
+      <div className="foryou-eyebrow">For you</div>
+      <div className="foryou-greet">{timeGreet}<em>{who}</em>. Here's where to pick up.</div>
+      <div className="foryou-row">
+        <div className="foryou-card" onClick={()=>onNavigate(g.primary)}>
+          <div className="foryou-clbl">Next best tool</div>
+          <div className="foryou-ctitle">{NAV_ITEMS.find(n=>n.id===g.primary)?.label}</div>
+          <div className="foryou-cdesc">Matches your goal: <strong>{g.label.toLowerCase()}</strong>.</div>
+        </div>
+        {lastLabel && lastLabel !== NAV_ITEMS.find(n=>n.id===g.primary)?.label && (
+          <div className="foryou-card" onClick={()=>onNavigate(lastTool!)}>
+            <div className="foryou-clbl">Resume</div>
+            <div className="foryou-ctitle">{lastLabel}</div>
+            <div className="foryou-cdesc">Continue where you left off.</div>
+          </div>
+        )}
+        <div className="foryou-card" onClick={()=>onNavigate("templates")}>
+          <div className="foryou-clbl">Explore</div>
+          <div className="foryou-ctitle">Templates Library</div>
+          <div className="foryou-cdesc">Six frameworks. Pick one, fill the blanks.</div>
+        </div>
+      </div>
+      <div className="foryou-prompt">"{g.prompt}"</div>
+    </div>
+  );
+}
+
+function HomeDashboard({onNavigate, ledgerStats, userName, goal, lastTool}:{onNavigate:(id:string)=>void;ledgerStats:LedgerStats;userName:string;goal:string;lastTool:string|null}) {
   const TOOLS = [
     { id:"assumption", icon:"🔍", title:"Assumption Audit", role:"Before you decide", seq:"01", badge:"badge-before", badgeLabel:"Before", desc:"Surface the hidden beliefs holding up your strategy. Rate each on evidence quality and load-bearing weight. Find blind spots before they find you." },
     { id:"decision",   icon:"⚖️", title:"Decision.Clarity", role:"Make the call",    seq:"02", badge:"badge-during", badgeLabel:"During", desc:"Weighted decision matrix grounded in decision science. Define options, set criteria, score each. Receive a ranked recommendation with score breakdown." },
@@ -2186,11 +2282,13 @@ function HomeDashboard({onNavigate, ledgerStats}:{onNavigate:(id:string)=>void;l
 
   return (
     <div className="home">
+      <PersonalizedFor userName={userName} goal={goal} lastTool={lastTool} onNavigate={onNavigate}/>
       <div className="home-header">
-        <div className="home-eyebrow">Complete Decision Suite · Five Tools · One System</div>
+        <div className="home-eyebrow">Complete Decision Suite · Eight Tools · One System</div>
         <div className="home-title">The Decision<br/><em>Suite</em></div>
         <div className="home-sub">From belief to decision to execution — every phase of high-stakes thinking, in one place. Built for operators who demand intellectual honesty.</div>
       </div>
+
 
       <div className="stats-row">
         <div className="stat-card gold"><div className="stat-num">{ledgerStats.total}</div><div className="stat-label">Commitments logged</div></div>
