@@ -2486,6 +2486,8 @@ export default function DecisionSuiteApp() {
           </div>
         </div>
       </div>
+      {!onboarded && <Onboarding onDone={finishOnboarding}/>}
     </>
+
   );
 }
