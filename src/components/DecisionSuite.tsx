@@ -2466,7 +2466,7 @@ export default function DecisionSuiteApp() {
             </div>
           </div>
           <div className="tool-frame" key={syncTick}>
-            {active==="home"      && <HomeDashboard onNavigate={setActive} ledgerStats={ledgerStats}/>}
+            {active==="home"      && <HomeDashboard onNavigate={setActive} ledgerStats={ledgerStats} userName={userName} goal={goal} lastTool={lastTool}/>}
             {active==="decision"  && <DecisionClarity/>}
             {active==="assumption"&& <AssumptionAudit/>}
             {active==="premortem" && <PreMortemStudio/>}
