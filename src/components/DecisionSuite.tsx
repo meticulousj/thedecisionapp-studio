@@ -156,7 +156,50 @@ const SHELL_CSS = `
   line-height:1.7;font-weight:300;
 }
 
-/* Stats row */
+/* ── PERSONALIZED "FOR YOU" ── */
+.foryou{border:1px solid var(--gold);border-radius:16px;padding:24px;margin-bottom:32px;
+  background:linear-gradient(135deg,var(--gold-d),transparent);}
+.foryou-eyebrow{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;
+  text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.foryou-greet{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--text);margin-bottom:16px;letter-spacing:-.5px;}
+.foryou-greet em{font-family:'Newsreader',serif;font-style:italic;font-weight:400;color:var(--gold);}
+.foryou-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
+.foryou-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .15s;}
+.foryou-card:hover{border-color:var(--gold);transform:translateY(-2px);}
+.foryou-clbl{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.foryou-ctitle{font-family:'Syne',sans-serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.foryou-cdesc{font-size:12px;color:var(--text2);line-height:1.5;}
+.foryou-prompt{margin-top:16px;padding:12px 14px;border-left:2px solid var(--gold);background:var(--bg2);border-radius:4px;
+  font-family:'Newsreader',serif;font-style:italic;font-size:14px;color:var(--text2);line-height:1.6;}
+
+/* ── ONBOARDING MODAL ── */
+.onb-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:9999;
+  display:flex;align-items:center;justify-content:center;padding:20px;}
+.onb-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;max-width:520px;width:100%;
+  padding:40px;box-shadow:0 30px 80px rgba(0,0,0,.5);}
+.onb-step{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.onb-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;letter-spacing:-.8px;color:var(--text);margin-bottom:12px;line-height:1.1;}
+.onb-title em{font-family:'Newsreader',serif;font-style:italic;font-weight:400;color:var(--gold);}
+.onb-sub{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:24px;}
+.onb-input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;margin-bottom:20px;}
+.onb-input:focus{outline:none;border-color:var(--gold);}
+.onb-goals{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
+.onb-goal{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;text-align:left;transition:all .15s;color:var(--text);font-family:inherit;}
+.onb-goal:hover{border-color:var(--gold);}
+.onb-goal.sel{border-color:var(--gold);background:var(--gold-d);}
+.onb-goal-icon{font-size:20px;margin-bottom:6px;}
+.onb-goal-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:2px;}
+.onb-goal-desc{font-size:11px;color:var(--text2);line-height:1.4;}
+.onb-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.onb-skip{background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;font-family:inherit;}
+.onb-skip:hover{color:var(--text);}
+.onb-next{background:var(--gold);color:#0d1116;border:none;border-radius:8px;padding:12px 24px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:.5px;cursor:pointer;transition:all .15s;}
+.onb-next:hover{transform:translateY(-1px);}
+.onb-next:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.onb-dots{display:flex;gap:6px;justify-content:center;margin-top:20px;}
+.onb-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);}
+.onb-dot.active{background:var(--gold);width:20px;border-radius:3px;transition:all .2s;}
+
 .stats-row{
   display:grid;grid-template-columns:repeat(4,1fr);
   gap:8px;margin-bottom:40px;
@@ -2129,7 +2172,103 @@ function TemplatesLibrary() {
   );
 }
 
-function HomeDashboard({onNavigate, ledgerStats}:{onNavigate:(id:string)=>void;ledgerStats:LedgerStats}) {
+const GOAL_MAP: Record<string,{label:string;icon:string;desc:string;primary:string;prompt:string}> = {
+  decide_faster:  { label:"Decide faster",     icon:"⚖️", desc:"Cut through analysis paralysis", primary:"decision",   prompt:"What decision have you been circling for more than 48 hours?" },
+  follow_through: { label:"Follow through",    icon:"📒", desc:"Turn intentions into evidence",  primary:"ledger",     prompt:"Name one thing you promised yourself last week. Did you do it?" },
+  stress_test:    { label:"Stress-test ideas", icon:"😈", desc:"Find flaws before reality does",  primary:"devils",     prompt:"What belief would be most costly if it turned out to be wrong?" },
+  build_system:   { label:"Build a system",    icon:"📐", desc:"One page. Always-on.",           primary:"os",         prompt:"If you had to run your life from a single page, what stays on it?" },
+};
+
+function Onboarding({onDone}:{onDone:(data:{name:string;goal:string})=>void}) {
+  const [step, setStep] = useState(0);
+  const [name, setName] = useState("");
+  const [goal, setGoal] = useState<string>("");
+
+  const finish = () => onDone({ name: name.trim(), goal: goal || "decide_faster" });
+
+  return (
+    <div className="onb-overlay">
+      <div className="onb-modal">
+        {step===0 && (<>
+          <div className="onb-step">Welcome · Step 1 of 3</div>
+          <div className="onb-title">Think <em>sharper.</em><br/>Decide with evidence.</div>
+          <div className="onb-sub">Decision Suite is eight tools for the messy middle of thinking — before you decide, while you decide, and after. Two minutes to set up.</div>
+          <div className="onb-actions">
+            <button className="onb-skip" onClick={finish}>Skip</button>
+            <button className="onb-next" onClick={()=>setStep(1)}>Begin →</button>
+          </div>
+        </>)}
+        {step===1 && (<>
+          <div className="onb-step">Step 2 of 3 · Your goal</div>
+          <div className="onb-title">What brought you <em>here?</em></div>
+          <div className="onb-sub">We'll tailor your home view around this. You can change it later.</div>
+          <div className="onb-goals">
+            {Object.entries(GOAL_MAP).map(([k,v]) => (
+              <button key={k} className={`onb-goal ${goal===k?"sel":""}`} onClick={()=>setGoal(k)}>
+                <div className="onb-goal-icon">{v.icon}</div>
+                <div className="onb-goal-title">{v.label}</div>
+                <div className="onb-goal-desc">{v.desc}</div>
+              </button>
+            ))}
+          </div>
+          <div className="onb-actions">
+            <button className="onb-skip" onClick={()=>setStep(0)}>← Back</button>
+            <button className="onb-next" disabled={!goal} onClick={()=>setStep(2)}>Continue →</button>
+          </div>
+        </>)}
+        {step===2 && (<>
+          <div className="onb-step">Step 3 of 3 · One last thing</div>
+          <div className="onb-title">What should we <em>call you?</em></div>
+          <div className="onb-sub">Optional. Used only to greet you on your dashboard.</div>
+          <input className="onb-input" placeholder="Your first name" value={name} onChange={e=>setName(e.target.value)} autoFocus />
+          <div className="onb-actions">
+            <button className="onb-skip" onClick={()=>setStep(1)}>← Back</button>
+            <button className="onb-next" onClick={finish}>Enter the Suite →</button>
+          </div>
+        </>)}
+        <div className="onb-dots">
+          {[0,1,2].map(i => <div key={i} className={`onb-dot ${i===step?"active":""}`}/>)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PersonalizedFor({userName, goal, lastTool, onNavigate}:{userName:string;goal:string;lastTool:string|null;onNavigate:(id:string)=>void}) {
+  const g = GOAL_MAP[goal] || GOAL_MAP.decide_faster;
+  const hour = new Date().getHours();
+  const timeGreet = hour<5?"Still up":hour<12?"Good morning":hour<18?"Good afternoon":"Good evening";
+  const who = userName ? `, ${userName}` : "";
+  const lastLabel = lastTool ? (NAV_ITEMS.find(n=>n.id===lastTool)?.label || null) : null;
+  return (
+    <div className="foryou">
+      <div className="foryou-eyebrow">For you</div>
+      <div className="foryou-greet">{timeGreet}<em>{who}</em>. Here's where to pick up.</div>
+      <div className="foryou-row">
+        <div className="foryou-card" onClick={()=>onNavigate(g.primary)}>
+          <div className="foryou-clbl">Next best tool</div>
+          <div className="foryou-ctitle">{NAV_ITEMS.find(n=>n.id===g.primary)?.label}</div>
+          <div className="foryou-cdesc">Matches your goal: <strong>{g.label.toLowerCase()}</strong>.</div>
+        </div>
+        {lastLabel && lastLabel !== NAV_ITEMS.find(n=>n.id===g.primary)?.label && (
+          <div className="foryou-card" onClick={()=>onNavigate(lastTool!)}>
+            <div className="foryou-clbl">Resume</div>
+            <div className="foryou-ctitle">{lastLabel}</div>
+            <div className="foryou-cdesc">Continue where you left off.</div>
+          </div>
+        )}
+        <div className="foryou-card" onClick={()=>onNavigate("templates")}>
+          <div className="foryou-clbl">Explore</div>
+          <div className="foryou-ctitle">Templates Library</div>
+          <div className="foryou-cdesc">Six frameworks. Pick one, fill the blanks.</div>
+        </div>
+      </div>
+      <div className="foryou-prompt">"{g.prompt}"</div>
+    </div>
+  );
+}
+
+function HomeDashboard({onNavigate, ledgerStats, userName, goal, lastTool}:{onNavigate:(id:string)=>void;ledgerStats:LedgerStats;userName:string;goal:string;lastTool:string|null}) {
   const TOOLS = [
     { id:"assumption", icon:"🔍", title:"Assumption Audit", role:"Before you decide", seq:"01", badge:"badge-before", badgeLabel:"Before", desc:"Surface the hidden beliefs holding up your strategy. Rate each on evidence quality and load-bearing weight. Find blind spots before they find you." },
     { id:"decision",   icon:"⚖️", title:"Decision.Clarity", role:"Make the call",    seq:"02", badge:"badge-during", badgeLabel:"During", desc:"Weighted decision matrix grounded in decision science. Define options, set criteria, score each. Receive a ranked recommendation with score breakdown." },
@@ -2143,11 +2282,13 @@ function HomeDashboard({onNavigate, ledgerStats}:{onNavigate:(id:string)=>void;l
 
   return (
     <div className="home">
+      <PersonalizedFor userName={userName} goal={goal} lastTool={lastTool} onNavigate={onNavigate}/>
       <div className="home-header">
-        <div className="home-eyebrow">Complete Decision Suite · Five Tools · One System</div>
+        <div className="home-eyebrow">Complete Decision Suite · Eight Tools · One System</div>
         <div className="home-title">The Decision<br/><em>Suite</em></div>
         <div className="home-sub">From belief to decision to execution — every phase of high-stakes thinking, in one place. Built for operators who demand intellectual honesty.</div>
       </div>
+
 
       <div className="stats-row">
         <div className="stat-card gold"><div className="stat-num">{ledgerStats.total}</div><div className="stat-label">Commitments logged</div></div>
@@ -2208,15 +2349,60 @@ const NAV_ITEMS = [
 ];
 
 export default function DecisionSuiteApp() {
-  const [active, setActive] = useState("home");
+  const [active, _setActive] = useState("home");
   const [ledgerEntries, setLedgerEntries] = useState<CLEntry[]>([]);
   const [syncTick, setSyncTick] = useState(0);
   const [theme, setTheme] = useState<"dark"|"light">(() => {
     try { return (localStorage.getItem("ds-theme") as "dark"|"light") || "dark"; } catch { return "dark"; }
   });
 
+  // Onboarding + personalization state
+  const [onboarded, setOnboarded] = useState<boolean>(() => {
+    try { return storage.get("ds-onboarded")?.value === "1"; } catch { return false; }
+  });
+  const [userName, setUserName] = useState<string>(() => {
+    try { return storage.get("ds-user-name")?.value || ""; } catch { return ""; }
+  });
+  const [goal, setGoal] = useState<string>(() => {
+    try { return storage.get("ds-user-goal")?.value || "decide_faster"; } catch { return "decide_faster"; }
+  });
+  const [lastTool, setLastTool] = useState<string | null>(() => {
+    try { return storage.get("ds-last-tool")?.value || null; } catch { return null; }
+  });
+
+  const setActive = (id: string) => {
+    _setActive(id);
+    if (id !== "home") {
+      setLastTool(id);
+      try { storage.set("ds-last-tool", id); } catch {}
+    }
+  };
+
+  const finishOnboarding = (data: {name: string; goal: string}) => {
+    setUserName(data.name);
+    setGoal(data.goal);
+    setOnboarded(true);
+    try {
+      storage.set("ds-onboarded", "1");
+      storage.set("ds-user-name", data.name);
+      storage.set("ds-user-goal", data.goal);
+    } catch {}
+    // send them straight to the recommended tool
+    const primary = GOAL_MAP[data.goal]?.primary;
+    if (primary) setActive(primary);
+  };
+
+
   useEffect(() => {
-    const handler = () => setSyncTick(t => t + 1);
+    const handler = () => {
+      setSyncTick(t => t + 1);
+      try {
+        setOnboarded(storage.get("ds-onboarded")?.value === "1");
+        setUserName(storage.get("ds-user-name")?.value || "");
+        setGoal(storage.get("ds-user-goal")?.value || "decide_faster");
+        setLastTool(storage.get("ds-last-tool")?.value || null);
+      } catch {}
+    };
     window.addEventListener("sync:reloaded", handler);
     return () => window.removeEventListener("sync:reloaded", handler);
   }, []);
@@ -2288,7 +2474,7 @@ export default function DecisionSuiteApp() {
             </div>
           </div>
           <div className="tool-frame" key={syncTick}>
-            {active==="home"      && <HomeDashboard onNavigate={setActive} ledgerStats={ledgerStats}/>}
+            {active==="home"      && <HomeDashboard onNavigate={setActive} ledgerStats={ledgerStats} userName={userName} goal={goal} lastTool={lastTool}/>}
             {active==="decision"  && <DecisionClarity/>}
             {active==="assumption"&& <AssumptionAudit/>}
             {active==="premortem" && <PreMortemStudio/>}
@@ -2300,6 +2486,8 @@ export default function DecisionSuiteApp() {
           </div>
         </div>
       </div>
+      {!onboarded && <Onboarding onDone={finishOnboarding}/>}
     </>
+
   );
 }

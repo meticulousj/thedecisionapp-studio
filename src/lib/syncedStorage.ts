@@ -1,13 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
 
-// Keys that cloud-sync for Pro users (Commitment Ledger + One-Page OS)
+// Keys that cloud-sync for Pro users (Commitment Ledger + One-Page OS + onboarding/personalization)
 export const SYNCED_KEYS = [
   "commitment-ledger-entries",
   "opos-name", "opos-timeframe", "opos-priority", "opos-weekly", "opos-daily",
   "opos-rules", "opos-cadence", "opos-review-date", "opos-version", "opos-goals", "opos-energy",
+  "ds-onboarded", "ds-user-name", "ds-user-goal", "ds-last-tool",
 ];
 
-const isSynced = (k: string) => SYNCED_KEYS.includes(k) || k.startsWith("opos-");
+const isSynced = (k: string) => SYNCED_KEYS.includes(k) || k.startsWith("opos-") || k.startsWith("ds-");
 
 let syncEnabled = false;
 let userId: string | null = null;
