@@ -2394,7 +2394,15 @@ export default function DecisionSuiteApp() {
 
 
   useEffect(() => {
-    const handler = () => setSyncTick(t => t + 1);
+    const handler = () => {
+      setSyncTick(t => t + 1);
+      try {
+        setOnboarded(storage.get("ds-onboarded")?.value === "1");
+        setUserName(storage.get("ds-user-name")?.value || "");
+        setGoal(storage.get("ds-user-goal")?.value || "decide_faster");
+        setLastTool(storage.get("ds-last-tool")?.value || null);
+      } catch {}
+    };
     window.addEventListener("sync:reloaded", handler);
     return () => window.removeEventListener("sync:reloaded", handler);
   }, []);
