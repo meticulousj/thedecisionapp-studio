@@ -156,7 +156,50 @@ const SHELL_CSS = `
   line-height:1.7;font-weight:300;
 }
 
-/* Stats row */
+/* ── PERSONALIZED "FOR YOU" ── */
+.foryou{border:1px solid var(--gold);border-radius:16px;padding:24px;margin-bottom:32px;
+  background:linear-gradient(135deg,var(--gold-d),transparent);}
+.foryou-eyebrow{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;
+  text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.foryou-greet{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--text);margin-bottom:16px;letter-spacing:-.5px;}
+.foryou-greet em{font-family:'Newsreader',serif;font-style:italic;font-weight:400;color:var(--gold);}
+.foryou-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
+.foryou-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .15s;}
+.foryou-card:hover{border-color:var(--gold);transform:translateY(-2px);}
+.foryou-clbl{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.foryou-ctitle{font-family:'Syne',sans-serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.foryou-cdesc{font-size:12px;color:var(--text2);line-height:1.5;}
+.foryou-prompt{margin-top:16px;padding:12px 14px;border-left:2px solid var(--gold);background:var(--bg2);border-radius:4px;
+  font-family:'Newsreader',serif;font-style:italic;font-size:14px;color:var(--text2);line-height:1.6;}
+
+/* ── ONBOARDING MODAL ── */
+.onb-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:9999;
+  display:flex;align-items:center;justify-content:center;padding:20px;}
+.onb-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;max-width:520px;width:100%;
+  padding:40px;box-shadow:0 30px 80px rgba(0,0,0,.5);}
+.onb-step{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.onb-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;letter-spacing:-.8px;color:var(--text);margin-bottom:12px;line-height:1.1;}
+.onb-title em{font-family:'Newsreader',serif;font-style:italic;font-weight:400;color:var(--gold);}
+.onb-sub{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:24px;}
+.onb-input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;margin-bottom:20px;}
+.onb-input:focus{outline:none;border-color:var(--gold);}
+.onb-goals{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
+.onb-goal{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;text-align:left;transition:all .15s;color:var(--text);font-family:inherit;}
+.onb-goal:hover{border-color:var(--gold);}
+.onb-goal.sel{border-color:var(--gold);background:var(--gold-d);}
+.onb-goal-icon{font-size:20px;margin-bottom:6px;}
+.onb-goal-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:2px;}
+.onb-goal-desc{font-size:11px;color:var(--text2);line-height:1.4;}
+.onb-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.onb-skip{background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;font-family:inherit;}
+.onb-skip:hover{color:var(--text);}
+.onb-next{background:var(--gold);color:#0d1116;border:none;border-radius:8px;padding:12px 24px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:.5px;cursor:pointer;transition:all .15s;}
+.onb-next:hover{transform:translateY(-1px);}
+.onb-next:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.onb-dots{display:flex;gap:6px;justify-content:center;margin-top:20px;}
+.onb-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);}
+.onb-dot.active{background:var(--gold);width:20px;border-radius:3px;transition:all .2s;}
+
 .stats-row{
   display:grid;grid-template-columns:repeat(4,1fr);
   gap:8px;margin-bottom:40px;
