@@ -2349,12 +2349,49 @@ const NAV_ITEMS = [
 ];
 
 export default function DecisionSuiteApp() {
-  const [active, setActive] = useState("home");
+  const [active, _setActive] = useState("home");
   const [ledgerEntries, setLedgerEntries] = useState<CLEntry[]>([]);
   const [syncTick, setSyncTick] = useState(0);
   const [theme, setTheme] = useState<"dark"|"light">(() => {
     try { return (localStorage.getItem("ds-theme") as "dark"|"light") || "dark"; } catch { return "dark"; }
   });
+
+  // Onboarding + personalization state
+  const [onboarded, setOnboarded] = useState<boolean>(() => {
+    try { return storage.get("ds-onboarded")?.value === "1"; } catch { return false; }
+  });
+  const [userName, setUserName] = useState<string>(() => {
+    try { return storage.get("ds-user-name")?.value || ""; } catch { return ""; }
+  });
+  const [goal, setGoal] = useState<string>(() => {
+    try { return storage.get("ds-user-goal")?.value || "decide_faster"; } catch { return "decide_faster"; }
+  });
+  const [lastTool, setLastTool] = useState<string | null>(() => {
+    try { return storage.get("ds-last-tool")?.value || null; } catch { return null; }
+  });
+
+  const setActive = (id: string) => {
+    _setActive(id);
+    if (id !== "home") {
+      setLastTool(id);
+      try { storage.set("ds-last-tool", id); } catch {}
+    }
+  };
+
+  const finishOnboarding = (data: {name: string; goal: string}) => {
+    setUserName(data.name);
+    setGoal(data.goal);
+    setOnboarded(true);
+    try {
+      storage.set("ds-onboarded", "1");
+      storage.set("ds-user-name", data.name);
+      storage.set("ds-user-goal", data.goal);
+    } catch {}
+    // send them straight to the recommended tool
+    const primary = GOAL_MAP[data.goal]?.primary;
+    if (primary) setActive(primary);
+  };
+
 
   useEffect(() => {
     const handler = () => setSyncTick(t => t + 1);
