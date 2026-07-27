@@ -358,7 +358,9 @@ const SHELL_CSS = `
 
 /* view transition */
 @keyframes ds-fade-up{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
-.tool-frame{animation:ds-fade-up .28s ease-out both;}
+.tool-frame{animation:ds-fade-up .28s ease-out both;display:flex;flex-direction:column;}
+.tool-frame > *{flex:1 0 auto;}
+
 
 /* nav active marker glow */
 .nav-item.active::after{
