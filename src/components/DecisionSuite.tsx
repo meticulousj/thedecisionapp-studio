@@ -641,7 +641,7 @@ const AA_CSS = `
 
 /* Flag badge */
 .aa-flag{font-family:'Azeret Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:20px;}
-.flag-blind{background:var(--aa-accent-dim);color:var(--aa-accent);border:1px solid rgba(230,57,70,.25);}
+.flag-blind{background:var(--aa-accent-dim);color:var(--aa-accent);border:1px solid var(--aa-accent-dim);}
 .flag-caution{background:var(--aa-orange-dim);color:var(--aa-orange);border:1px solid rgba(244,162,97,.25);}
 .flag-solid{background:var(--aa-green-dim);color:var(--aa-green);border:1px solid rgba(82,183,136,.25);}
 .flag-untested{background:var(--aa-blue-dim);color:var(--aa-blue);border:1px solid rgba(96,165,250,.2);}
