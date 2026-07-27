@@ -279,7 +279,7 @@ const SHELL_CSS = `
 }
 .badge-before{background:var(--blue-d);color:var(--blue);border:1px solid rgba(96,165,250,.2);}
 .badge-during{background:var(--gold-d);color:var(--gold);border:1px solid rgba(201,168,76,.25);}
-.badge-after{background:var(--red-d);color:var(--red);border:1px solid rgba(230,57,70,.2);}
+.badge-after{background:var(--red-d);color:var(--red);border:1px solid var(--aa-accent-dim);}
 .badge-exec{background:var(--green-d);color:var(--green);border:1px solid rgba(82,183,136,.2);}
 .badge-always{background:var(--bg3);color:var(--text3);border:1px solid var(--border2);}
 
@@ -574,7 +574,7 @@ const AA_CSS = `
 /* Header */
 .aa-hero{width:100%;max-width:720px;margin-bottom:44px;display:flex;flex-direction:column;gap:16px;}
 .aa-hero-top{display:flex;align-items:center;gap:12px;}
-.aa-badge{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--aa-accent);background:var(--aa-accent-dim);border:1px solid rgba(230,57,70,.2);padding:5px 12px;border-radius:2px;}
+.aa-badge{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--aa-accent);background:var(--aa-accent-dim);border:1px solid var(--aa-accent-dim);padding:5px 12px;border-radius:2px;}
 .aa-suite-tag{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--aa-muted2);}
 .aa-hero-title{font-family:'Syne',sans-serif;font-size:clamp(36px,6vw,58px);font-weight:800;line-height:.92;letter-spacing:-2px;}
 .aa-hero-title em{font-style:normal;color:var(--aa-accent);}
