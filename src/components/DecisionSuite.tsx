@@ -566,10 +566,10 @@ function DecisionClarity() {
 // ─────────────────────────────────────────
 const AA_CSS = `
 .aa-app{min-height:100%;font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;align-items:center;padding:48px 20px 100px;position:relative;}
-.theme-light .aa-app{background:var(--aa-bg,#fafafa);color:var(--aa-fg,#1a1a2e);}
-.theme-dark .aa-app,.aa-app{background:var(--aa-bg,#0a0a0f);color:var(--aa-fg,#f0f0f0);}
-:root,.theme-dark{--aa-bg:#0a0a0f;--aa-fg:#f0f0f0;--aa-card:#111118;--aa-card2:#0d0d14;--aa-border:#1e1e2e;--aa-border2:#2a2a3a;--aa-muted:#666;--aa-muted2:#444;--aa-accent:#e63946;--aa-accent-dim:rgba(230,57,70,.1);--aa-blue:#60a5fa;--aa-orange:#f4a261;--aa-green:#52b788;--aa-blue-dim:rgba(96,165,250,.1);--aa-orange-dim:rgba(244,162,97,.1);--aa-green-dim:rgba(82,183,136,.1);}
-.theme-light{--aa-bg:#fafafa;--aa-fg:#1a1a2e;--aa-card:#ffffff;--aa-card2:#f5f5f8;--aa-border:#e2e2ea;--aa-border2:#d0d0da;--aa-muted:#777;--aa-muted2:#999;--aa-accent:#d62839;--aa-accent-dim:rgba(214,40,57,.08);--aa-blue:#3b82f6;--aa-orange:#e8913a;--aa-green:#3a9d6e;--aa-blue-dim:rgba(59,130,246,.08);--aa-orange-dim:rgba(232,145,58,.08);--aa-green-dim:rgba(58,157,110,.08);}
+.theme-light .aa-app{background:var(--aa-bg,#f5f2ea);color:var(--aa-fg,#161a20);}
+.theme-dark .aa-app,.aa-app{background:var(--aa-bg,#0d1116);color:var(--aa-fg,#f2ece0);}
+:root,.theme-dark{--aa-bg:#0d1116;--aa-fg:#f2ece0;--aa-card:#141a22;--aa-card2:#11161d;--aa-border:#242c37;--aa-border2:#33404f;--aa-muted:#8a9099;--aa-muted2:#4a5261;--aa-accent:#d4b45a;--aa-accent-dim:rgba(212,180,90,.12);--aa-blue:#60a5fa;--aa-orange:#f4a261;--aa-green:#52b788;--aa-blue-dim:rgba(96,165,250,.1);--aa-orange-dim:rgba(244,162,97,.1);--aa-green-dim:rgba(82,183,136,.1);}
+.theme-light{--aa-bg:#f5f2ea;--aa-fg:#161a20;--aa-card:#ffffff;--aa-card2:#ebe6db;--aa-border:#d8d1c2;--aa-border2:#c2baa7;--aa-muted:#555;--aa-muted2:#999;--aa-accent:#a07c2e;--aa-accent-dim:rgba(160,124,46,.1);--aa-blue:#2980b9;--aa-orange:#d4870e;--aa-green:#27ae60;--aa-blue-dim:rgba(41,128,185,.08);--aa-orange-dim:rgba(212,135,14,.08);--aa-green-dim:rgba(39,174,96,.08);}
 
 /* Header */
 .aa-hero{width:100%;max-width:720px;margin-bottom:44px;display:flex;flex-direction:column;gap:16px;}
