@@ -330,7 +330,56 @@ const SHELL_CSS = `
   .home{padding:24px 20px 60px;}
   .topbar{padding:0 16px;}
 }
+
+/* ── GLOBAL POLISH ───────────────────────── */
+.suite-shell ::selection{background:var(--gold-d);color:var(--text);}
+.suite-shell img{-webkit-user-drag:none;}
+.suite-shell button,.suite-shell a,.suite-shell .nav-item,.suite-shell .tool-card,.suite-shell .flow-node{
+  -webkit-tap-highlight-color:transparent;
+}
+.suite-shell button{transition:background .15s,border-color .15s,color .15s,transform .12s,box-shadow .15s;}
+.suite-shell button:not(:disabled):active{transform:translateY(1px);}
+.suite-shell button:disabled{opacity:.5;cursor:not-allowed;}
+.suite-shell :focus{outline:none;}
+.suite-shell :focus-visible{
+  outline:2px solid var(--gold);outline-offset:2px;border-radius:4px;
+}
+.suite-shell input::placeholder,.suite-shell textarea::placeholder{color:var(--text3);}
+
+/* scrollbars */
+.suite-shell *{scrollbar-width:thin;scrollbar-color:var(--border2) transparent;}
+.suite-shell *::-webkit-scrollbar{width:10px;height:10px;}
+.suite-shell *::-webkit-scrollbar-track{background:transparent;}
+.suite-shell *::-webkit-scrollbar-thumb{
+  background:var(--border2);border-radius:8px;
+  border:3px solid transparent;background-clip:content-box;
+}
+.suite-shell *::-webkit-scrollbar-thumb:hover{background:var(--gold);background-clip:content-box;}
+
+/* view transition */
+@keyframes ds-fade-up{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.tool-frame{animation:ds-fade-up .28s ease-out both;display:flex;flex-direction:column;}
+.tool-frame > *{flex:1 0 auto;}
+
+
+/* nav active marker glow */
+.nav-item.active::after{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:var(--gold);box-shadow:0 0 12px var(--gold);
+}
+
+/* card lift */
+.tool-card{transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;}
+.tool-card:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(0,0,0,.28);}
+.flow-node{border-radius:8px;}
+
+@media(prefers-reduced-motion:reduce){
+  .suite-shell *,.suite-shell *::before,.suite-shell *::after{
+    animation-duration:.001ms !important;transition-duration:.001ms !important;
+  }
+}
 `;
+
 
 // ─────────────────────────────────────────
 // TOOL: DECISION CLARITY
