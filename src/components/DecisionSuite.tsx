@@ -894,19 +894,19 @@ function AssumptionAudit(){
 // ─────────────────────────────────────────
 const PM_CSS=`
 :root,.theme-dark{
-  --pm-bg:#0f1117;--pm-card:#181c27;--pm-card2:#1e2333;--pm-border:#2a3050;--pm-border2:#353d5a;
-  --pm-text:#e8eaf0;--pm-muted:#8a9ab8;--pm-muted2:#4a5a78;
-  --pm-accent:#f59e0b;--pm-accent-dim:rgba(245,158,11,.1);
-  --pm-red:#ef4444;--pm-red-dim:rgba(239,68,68,.1);
-  --pm-orange:#fb923c;--pm-orange-dim:rgba(251,146,60,.1);
-  --pm-green:#10b981;--pm-green-dim:rgba(16,185,129,.1);
+  --pm-bg:#0d1116;--pm-card:#141a22;--pm-card2:#1c232d;--pm-border:#242c37;--pm-border2:#33404f;
+  --pm-text:#f2ece0;--pm-muted:#8a9099;--pm-muted2:#4a5261;
+  --pm-accent:#d4b45a;--pm-accent-dim:rgba(212,180,90,.12);
+  --pm-red:#e63946;--pm-red-dim:rgba(230,57,70,.1);
+  --pm-orange:#f4a261;--pm-orange-dim:rgba(244,162,97,.1);
+  --pm-green:#52b788;--pm-green-dim:rgba(82,183,136,.1);
   --pm-blue:#60a5fa;--pm-blue-dim:rgba(96,165,250,.1);
   --pm-purple:#a78bfa;--pm-purple-dim:rgba(167,139,250,.1);
 }
 .theme-light{
-  --pm-bg:#f4f2ee;--pm-card:#ffffff;--pm-card2:#f8f6f2;--pm-border:#ddd8ce;--pm-border2:#c8c2b6;
-  --pm-text:#1a1a2e;--pm-muted:#5a6070;--pm-muted2:#8a8e9a;
-  --pm-accent:#d4870e;--pm-accent-dim:rgba(212,135,14,.08);
+  --pm-bg:#f5f2ea;--pm-card:#ffffff;--pm-card2:#ebe6db;--pm-border:#d8d1c2;--pm-border2:#c2baa7;
+  --pm-text:#161a20;--pm-muted:#555;--pm-muted2:#999;
+  --pm-accent:#a07c2e;--pm-accent-dim:rgba(160,124,46,.1);
   --pm-red:#c0392b;--pm-red-dim:rgba(192,57,43,.08);
   --pm-orange:#d4730e;--pm-orange-dim:rgba(212,115,14,.08);
   --pm-green:#27ae60;--pm-green-dim:rgba(39,174,96,.08);
