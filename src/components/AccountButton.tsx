@@ -80,7 +80,7 @@ export default function AccountButton() {
               ) : (
                 <button onClick={openPortal}>Manage subscription</button>
               )}
-              <button onClick={refreshSubscription}>Refresh status</button>
+              <button onClick={() => refreshSubscription(true)}>Refresh status</button>
               <button onClick={async () => { await signOut(); setOpen(false); }}>Sign out</button>
             </div>
           </div>
