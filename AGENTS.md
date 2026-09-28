@@ -1,0 +1,1 @@
+Keep framework metadata and public discovery files aligned with the public framework routes and shared template data; this prevents broken search links and inaccurate AI citations.
