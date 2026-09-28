@@ -1,0 +1,15 @@
+# Decision Suite
+
+Decision Suite is a browser-based collection of tools for thinking through decisions, testing assumptions, planning for failure, and tracking commitments. Its public decision frameworks are interactive and available without signing in.
+
+## Public framework guides
+- [Framework library](https://thedecisionapp-studio.lovable.app/frameworks): Browse six decision frameworks.
+- [RICE](https://thedecisionapp-studio.lovable.app/frameworks/rice): Prioritize initiatives with Reach, Impact, Confidence, and Effort; includes a worked example and calculator.
+- [Eisenhower Matrix](https://thedecisionapp-studio.lovable.app/frameworks/eisenhower-matrix): Sort tasks by urgency and importance.
+- [SWOT analysis](https://thedecisionapp-studio.lovable.app/frameworks/swot-analysis): Examine strengths, weaknesses, opportunities, and threats.
+- [Six Thinking Hats](https://thedecisionapp-studio.lovable.app/frameworks/six-thinking-hats): Explore facts, feelings, risks, benefits, alternatives, and process.
+- [ICE Score](https://thedecisionapp-studio.lovable.app/frameworks/ice-score): Rank ideas by Impact, Confidence, and Ease.
+- [PDCA cycle](https://thedecisionapp-studio.lovable.app/frameworks/pdca-cycle): Plan, Do, Check, and Act in an improvement loop.
+
+## App
+- [Decision Suite](https://thedecisionapp-studio.lovable.app/): Assumption Audit, Decision Clarity, Pre-Mortem Studio, Commitment Ledger, One-Page OS, Templates Library, Devil's Advocate, and Assumption Extractor.
