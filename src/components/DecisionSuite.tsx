@@ -7,6 +7,7 @@ import type { ExportPayload } from "@/lib/export";
 import { storage } from "@/lib/syncedStorage";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
+import { toast as notify } from "sonner";
 import { invokeAi } from "@/lib/aiInvoke";
 import { TEMPLATES, TEMPLATE_CATS, TPL_CSS } from "@/lib/templates/data";
 import { FrameworkWorkspace } from "@/lib/templates/Workspace";
@@ -1528,6 +1529,7 @@ function CommitmentLedger(){
     const hasStake=stakeMode.social?.enabled||stakeMode.financial?.enabled||stakeMode.reputation?.enabled;
     setEntries([{id:Date.now().toString(),text:text.trim(),cat,deadline,stakes,madeWith:madeWith.trim()||"Myself",status:"pending",createdAt:clToday(),stakeMode:hasStake?stakeMode:undefined},...entries]);
     setText("");setDeadline("");setStakes(3);setCat("Work");setMadeWith("Myself");setStakeMode({});setShowStakes(false);setShowForm(false);
+    notify.success("Commitment added", { description: "Saved to your ledger on this device." });
   };
   const updStatus=(id:string,status:string)=>setEntries(entries.map(e=>e.id===id?{...e,status,resolvedAt:clToday()}:e));
   const delEntry=(id:string)=>setEntries(entries.filter(e=>e.id!==id));
@@ -1920,7 +1922,7 @@ function OnePageOS(){
       </div>
       <div className="os-topbar-right">
         <button className={`os-mode-btn${mode==="edit"?" active":""}`} onClick={()=>setMode("edit")}>Edit</button>
-        <button className={`os-mode-btn${mode==="view"?" active":""}`} onClick={()=>setMode("view")}>View</button>
+        <button className={`os-mode-btn${mode==="view"?" active":""}`} onClick={()=>{ if(mode!=="view"){setMode("view");notify.success("One-Page OS saved",{description:"Your changes are saved on this device."});} }}>View</button>
         <ExportMenu disabled={!priority.trim()} getPayload={()=>({
           kind:"opos",
           toolLabel:"Decision Suite · One-Page OS",
@@ -2046,7 +2048,7 @@ function OnePageOS(){
         </div>
       </div>
 
-      <div className="os-action-row"><button className="os-action-btn" onClick={()=>setMode("view")}>View My OS →</button></div>
+      <div className="os-action-row"><button className="os-action-btn" onClick={()=>{setMode("view");notify.success("One-Page OS saved",{description:"Your changes are saved on this device."});}}>View My OS →</button></div>
     </>)}
 
     {mode==="view"&&(<>
@@ -2439,6 +2441,7 @@ export default function DecisionSuiteApp() {
     // send them straight to the recommended tool
     const primary = GOAL_MAP[data.goal]?.primary;
     if (primary) setActive(primary);
+    notify.success("You're all set", { description: "Your personal space is ready." });
   };
 
 

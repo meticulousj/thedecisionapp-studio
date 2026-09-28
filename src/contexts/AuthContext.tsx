@@ -3,6 +3,7 @@ import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { setSyncContext, pullFromCloud, pushAllToCloud } from "@/lib/syncedStorage";
 import { lovable } from "@/integrations/lovable";
+import { toast } from "sonner";
 
 type Sub = { subscribed: boolean; tier: string | null; end: string | null };
 
@@ -15,7 +16,7 @@ type AuthCtx = {
   signUpEmail: (email: string, password: string) => Promise<{ error?: string }>;
   signInGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
-  refreshSubscription: () => Promise<void>;
+  refreshSubscription: (showFeedback?: boolean) => Promise<void>;
   startCheckout: () => Promise<void>;
   openPortal: () => Promise<void>;
 };
@@ -43,12 +44,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  const refreshSubscription = async () => {
+  const refreshSubscription = async (showFeedback = false) => {
     if (!session) {
       setSub({ subscribed: false, tier: null, end: null });
       setSyncContext({ enabled: false, userId: null });
       return;
     }
+    let syncing = false;
     try {
       const { data, error } = await supabase.functions.invoke("check-subscription");
       if (error) throw error;
@@ -60,13 +62,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSub(next);
       setSyncContext({ enabled: next.subscribed, userId: user?.id ?? null });
       if (next.subscribed && user?.id) {
+        syncing = true;
         // first sync on login: pull from cloud, then push any local-only data
         const changed = await pullFromCloud(user.id);
         await pushAllToCloud(user.id);
         if (changed) window.dispatchEvent(new Event("sync:reloaded"));
+        if (changed || showFeedback) toast.success("Cloud sync complete", { description: "Your latest saved work is available across devices." });
+      } else if (showFeedback) {
+        toast("Status updated", { description: "Free accounts save on this device only." });
       }
     } catch (e) {
       console.warn("[auth] refresh sub failed", e);
+      if (syncing || showFeedback) toast.error(syncing ? "Cloud sync failed" : "Could not refresh status", { description: "Your work on this device is still here. Try again shortly." });
     }
   };
 

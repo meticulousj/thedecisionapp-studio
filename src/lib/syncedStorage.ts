@@ -57,7 +57,6 @@ export const storage = {
 
 // Pull all synced state from cloud → localStorage. Returns true if any change.
 export async function pullFromCloud(uid: string): Promise<boolean> {
-  try {
     const { data, error } = await supabase
       .from("user_state")
       .select("key,value")
@@ -73,10 +72,6 @@ export async function pullFromCloud(uid: string): Promise<boolean> {
       }
     }
     return changed;
-  } catch (e) {
-    console.warn("[sync] pull failed", e);
-    return false;
-  }
 }
 
 // Push everything currently in localStorage up to the cloud (used right after upgrade/login).
@@ -90,9 +85,6 @@ export async function pushAllToCloud(uid: string): Promise<void> {
     rows.push({ user_id: uid, key: k, value: parsed });
   }
   if (rows.length === 0) return;
-  try {
-    await supabase.from("user_state").upsert(rows, { onConflict: "user_id,key" });
-  } catch (e) {
-    console.warn("[sync] push failed", e);
-  }
+  const { error } = await supabase.from("user_state").upsert(rows, { onConflict: "user_id,key" });
+  if (error) throw error;
 }
