@@ -32,7 +32,20 @@ export interface TplItem { id: string; items: string[] }
 export interface RiceItem { name: string; reach: number; impact: number; confidence: number; effort: number }
 
 export const TPL_CSS = `
-.tpl-app{min-height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);padding:40px 32px 80px;}
+/* Theme tokens duplicated from DecisionSuite SHELL_CSS so public pages
+   (landing, pricing, about, frameworks) render correctly without the app shell. */
+:root, .theme-dark{
+  --bg:#0d1116; --bg2:#141a22; --bg3:#1c232d;
+  --border:#242c37; --border2:#33404f;
+  --text:#f2ece0; --text2:#8a9099; --text3:#4a5261;
+  --gold:#d4b45a; --gold-d:rgba(212,180,90,0.15);
+  --red:#e63946; --red-d:rgba(230,57,70,0.12);
+  --green:#52b788; --green-d:rgba(82,183,136,0.12);
+  --blue:#60a5fa; --blue-d:rgba(96,165,250,0.10);
+  --amber:#f4a261;
+  --grid:rgba(212,180,90,0.035);
+}
+.tpl-app{min-height:100vh;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);padding:40px 32px 80px;}
 .tpl-wrap{max-width:960px;margin:0 auto;}
 .tpl-hdr{margin-bottom:36px;}
 .tpl-ey{font-family:'Azeret Mono',monospace;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
