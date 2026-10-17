@@ -2,6 +2,11 @@
 
 Decision Suite is a browser-based collection of tools for thinking through decisions, testing assumptions, planning for failure, and tracking commitments. Its public decision frameworks are interactive and available without signing in.
 
+## Public pages
+- [Home](https://thedecisionapp-studio.lovable.app/landing): Overview of the decision toolkit and free frameworks.
+- [Pricing](https://thedecisionapp-studio.lovable.app/pricing): Free tier and Pro ($9/month) with unlimited entries, AI tools, cloud sync, and export.
+- [About](https://thedecisionapp-studio.lovable.app/about): Why Decision Suite exists and what it believes about decision-making.
+
 ## Public framework guides
 - [Framework library](https://thedecisionapp-studio.lovable.app/frameworks): Browse six decision frameworks.
 - [RICE](https://thedecisionapp-studio.lovable.app/frameworks/rice): Prioritize initiatives with Reach, Impact, Confidence, and Effort; includes a worked example and calculator.

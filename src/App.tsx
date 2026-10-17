@@ -9,6 +9,9 @@ import Auth from "./pages/Auth.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import FrameworksIndex from "./pages/FrameworksIndex.tsx";
 import FrameworkDetail from "./pages/FrameworkDetail.tsx";
+import Landing from "./pages/Landing.tsx";
+import Pricing from "./pages/Pricing.tsx";
+import About from "./pages/About.tsx";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +27,9 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/frameworks" element={<FrameworksIndex />} />
             <Route path="/frameworks/:slug" element={<FrameworkDetail />} />
+            <Route path="/landing" element={<Landing />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/about" element={<About />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
