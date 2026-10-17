@@ -48,6 +48,12 @@ export default function FrameworksIndex() {
             Open the full Decision Suite →
           </Link>
         </div>
+
+        <footer style={{ marginTop: 32, paddingTop: 24, borderTop: "1px solid var(--border)", display: "flex", justifyContent: "center", gap: 20 }}>
+          {[["Home","/landing"],["Pricing","/pricing"],["About","/about"]].map(([label,to]) => (
+            <Link key={to} to={to} style={{ fontFamily: "'Azeret Mono',monospace", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", color: "var(--text3)", textDecoration: "none" }}>{label}</Link>
+          ))}
+        </footer>
       </div>
     </div>
   );

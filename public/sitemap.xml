@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://thedecisionapp-studio.lovable.app/</loc></url>
+  <url><loc>https://thedecisionapp-studio.lovable.app/landing</loc></url>
+  <url><loc>https://thedecisionapp-studio.lovable.app/pricing</loc></url>
+  <url><loc>https://thedecisionapp-studio.lovable.app/about</loc></url>
   <url><loc>https://thedecisionapp-studio.lovable.app/frameworks</loc></url>
   <url><loc>https://thedecisionapp-studio.lovable.app/frameworks/rice</loc></url>
   <url><loc>https://thedecisionapp-studio.lovable.app/frameworks/eisenhower-matrix</loc></url>

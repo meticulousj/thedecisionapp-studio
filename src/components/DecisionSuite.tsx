@@ -2380,6 +2380,11 @@ function HomeDashboard({onNavigate, ledgerStats, userName, goal, lastTool}:{onNa
           </div>
         </div>
       </div>
+      <footer style={{marginTop:48,paddingTop:24,borderTop:"1px solid var(--border)",display:"flex",justifyContent:"center",gap:20,flexWrap:"wrap"}}>
+        {[["Home","/landing"],["Frameworks","/frameworks"],["Pricing","/pricing"],["About","/about"]].map(([label,to]) => (
+          <a key={to} href={to} style={{fontFamily:"'Azeret Mono',monospace",fontSize:9,letterSpacing:2,textTransform:"uppercase",color:"var(--text3)",textDecoration:"none"}}>{label}</a>
+        ))}
+      </footer>
     </div>
   );
 }
