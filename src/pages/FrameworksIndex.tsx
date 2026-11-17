@@ -1,21 +1,17 @@
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
+import { usePageMeta } from "@/components/PageMeta";
 import { TEMPLATES, TEMPLATE_CATS, TPL_CSS } from "@/lib/templates/data";
 
 export default function FrameworksIndex() {
-  useEffect(() => {
-    document.title = "Decision Frameworks Library — RICE, SWOT, Eisenhower & More";
-    const meta = document.querySelector('meta[name="description"]') || (() => {
-      const m = document.createElement("meta"); m.setAttribute("name", "description"); document.head.appendChild(m); return m;
-    })();
-    meta.setAttribute("content", "Free interactive library of decision frameworks: RICE, ICE, SWOT, Eisenhower Matrix, Six Thinking Hats, PDCA. Score, sort, and decide in your browser.");
-    let canon = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-    if (!canon) { canon = document.createElement("link"); canon.rel = "canonical"; document.head.appendChild(canon); }
-    canon.href = `${window.location.origin}/frameworks`;
-  }, []);
+  const pageMeta = usePageMeta(
+    "Decision Frameworks Library — RICE, SWOT, Eisenhower & More",
+    "Free interactive library of decision frameworks: RICE, ICE, SWOT, Eisenhower Matrix, Six Thinking Hats, PDCA. Score, sort, and decide in your browser.",
+    "/frameworks"
+  );
 
   return (
     <div className="tpl-app theme-dark">
+      {pageMeta}
       <style>{TPL_CSS}</style>
       <div className="tpl-wrap">
         <header className="tpl-hdr">

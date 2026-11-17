@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { PublicLayout, usePageMeta } from "@/components/PublicLayout";
 
 export default function About() {
-  usePageMeta(
+  const pageMeta = usePageMeta(
     "About — Decision Suite",
     "Decision Suite is a collection of interactive tools that help individuals and teams make clearer, more defensible decisions.",
     "/about"
@@ -10,6 +10,7 @@ export default function About() {
 
   return (
     <PublicLayout>
+      {pageMeta}
       <article className="tpl-active" style={{ maxWidth: 720 }}>
         <div className="tpl-ey">About</div>
         <h1 className="tpl-a-name" style={{ fontSize: 32 }}>Why Decision Suite exists</h1>

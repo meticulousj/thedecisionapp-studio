@@ -12,10 +12,12 @@ import FrameworkDetail from "./pages/FrameworkDetail.tsx";
 import Landing from "./pages/Landing.tsx";
 import Pricing from "./pages/Pricing.tsx";
 import About from "./pages/About.tsx";
+import { HelmetProvider } from "react-helmet-async";
 
 const queryClient = new QueryClient();
 
 const App = () => (
+  <HelmetProvider>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -37,6 +39,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
+  </HelmetProvider>
 );
 
 export default App;

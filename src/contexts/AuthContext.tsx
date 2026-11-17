@@ -1,27 +1,12 @@
-import { createContext, useContext, useEffect, useRef, useState, ReactNode } from "react";
+import { useEffect, useRef, useState, ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { setSyncContext, pullFromCloud, pushAllToCloud } from "@/lib/syncedStorage";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 
-type Sub = { subscribed: boolean; tier: string | null; end: string | null };
-
-type AuthCtx = {
-  user: User | null;
-  session: Session | null;
-  loading: boolean;
-  sub: Sub;
-  signInEmail: (email: string, password: string) => Promise<{ error?: string }>;
-  signUpEmail: (email: string, password: string) => Promise<{ error?: string }>;
-  signInGoogle: () => Promise<void>;
-  signOut: () => Promise<void>;
-  refreshSubscription: (showFeedback?: boolean) => Promise<void>;
-  startCheckout: () => Promise<void>;
-  openPortal: () => Promise<void>;
-};
-
-const Ctx = createContext<AuthCtx | null>(null);
+import { AuthContext, type Sub } from "./auth-context";
+export { useAuth } from "./auth-context";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -141,14 +126,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <Ctx.Provider value={{ user, session, loading, sub, signInEmail, signUpEmail, signInGoogle, signOut, refreshSubscription, startCheckout, openPortal }}>
+    <AuthContext.Provider value={{ user, session, loading, sub, signInEmail, signUpEmail, signInGoogle, signOut, refreshSubscription, startCheckout, openPortal }}>
       {children}
-    </Ctx.Provider>
+    </AuthContext.Provider>
   );
 }
 
-export function useAuth() {
-  const c = useContext(Ctx);
-  if (!c) throw new Error("useAuth outside AuthProvider");
-  return c;
-}

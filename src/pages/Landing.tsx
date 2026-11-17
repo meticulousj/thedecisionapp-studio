@@ -12,7 +12,7 @@ const TOOLS = [
 ];
 
 export default function Landing() {
-  usePageMeta(
+  const pageMeta = usePageMeta(
     "Decision Suite — Think Better, Decide Faster",
     "Free interactive decision tools: RICE, SWOT, Eisenhower, pre-mortems, assumption audits, and commitment tracking. No signup to start.",
     "/landing"
@@ -20,6 +20,7 @@ export default function Landing() {
 
   return (
     <PublicLayout>
+      {pageMeta}
       <section style={{ textAlign: "center", padding: "40px 0 56px" }}>
         <div className="tpl-ey">Decision Suite Studio</div>
         <h1 className="tpl-title" style={{ maxWidth: 640, margin: "0 auto 12px" }}>
