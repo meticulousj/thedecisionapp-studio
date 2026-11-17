@@ -1,22 +1,11 @@
 // Shared shell for public, indexable pages (landing, pricing, about, frameworks).
 // Provides consistent nav + footer with internal links so crawlers can
 // discover every public route.
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { TPL_CSS } from "@/lib/templates/data";
 
-export function usePageMeta(title: string, description: string, path: string) {
-  useEffect(() => {
-    document.title = title;
-    const meta = document.querySelector('meta[name="description"]') || (() => {
-      const m = document.createElement("meta"); m.setAttribute("name", "description"); document.head.appendChild(m); return m;
-    })();
-    meta.setAttribute("content", description);
-    let canon = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-    if (!canon) { canon = document.createElement("link"); canon.rel = "canonical"; document.head.appendChild(canon); }
-    canon.href = `${window.location.origin}${path}`;
-  }, [title, description, path]);
-}
+export { usePageMeta } from "./PageMeta";
 
 const NAV_LINKS = [
   { to: "/landing", label: "Home" },

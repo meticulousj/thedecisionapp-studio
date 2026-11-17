@@ -1,1 +1,2 @@
 Keep framework metadata and public discovery files aligned with the public framework routes and shared template data; this prevents broken search links and inaccurate AI citations.
+Use the shared PageMeta helper under HelmetProvider for public route metadata, with the published origin and a self-referencing path; this prevents stale or preview-host canonical and sharing tags after navigation.

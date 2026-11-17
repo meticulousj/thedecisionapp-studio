@@ -17,7 +17,7 @@ const PRO = [
 ];
 
 export default function Pricing() {
-  usePageMeta(
+  const pageMeta = usePageMeta(
     "Pricing — Decision Suite",
     "Decision Suite is free to start. Pro unlocks unlimited entries, unlimited AI decision tools, cloud sync, and export for $9/month.",
     "/pricing"
@@ -44,6 +44,7 @@ export default function Pricing() {
 
   return (
     <PublicLayout>
+      {pageMeta}
       <div style={{ textAlign: "center", marginBottom: 40 }}>
         <div className="tpl-ey">Pricing</div>
         <h1 className="tpl-title">Simple, honest<span>.</span> Pricing</h1>

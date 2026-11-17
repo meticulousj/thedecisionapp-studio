@@ -2,23 +2,21 @@ import { useEffect } from "react";
 import { Link, useParams, Navigate } from "react-router-dom";
 import { TEMPLATES, TPL_CSS, getTemplateBySlug } from "@/lib/templates/data";
 import { FrameworkWorkspace } from "@/lib/templates/Workspace";
+import { SITE_URL, usePageMeta } from "@/components/PageMeta";
 
 export default function FrameworkDetail() {
   const { slug = "" } = useParams();
   const tpl = getTemplateBySlug(slug);
+  const pageMeta = usePageMeta(
+    tpl?.seo?.title || `${tpl?.name || "Frameworks"} — ${tpl?.fullName || "Decision tools"} | Decision Suite`,
+    tpl?.seo?.metaDescription || tpl?.desc || "Explore free decision frameworks.",
+    tpl ? `/frameworks/${tpl.slug}` : "/frameworks"
+  );
 
   useEffect(() => {
     if (!tpl) return;
     const seo = tpl.seo || {};
-    document.title = seo.title || `${tpl.name} — ${tpl.fullName} | Decision Suite`;
     const desc = seo.metaDescription || tpl.desc;
-    const meta = document.querySelector('meta[name="description"]') || (() => {
-      const m = document.createElement("meta"); m.setAttribute("name", "description"); document.head.appendChild(m); return m;
-    })();
-    meta.setAttribute("content", desc.slice(0, 160));
-    let canon = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-    if (!canon) { canon = document.createElement("link"); canon.rel = "canonical"; document.head.appendChild(canon); }
-    canon.href = `${window.location.origin}/frameworks/${tpl.slug}`;
 
     // JSON-LD
     const ldId = "framework-jsonld";
@@ -27,6 +25,15 @@ export default function FrameworkDetail() {
     script.type = "application/ld+json";
     script.id = ldId;
     const blocks: object[] = [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Decision Suite", item: `${SITE_URL}/landing` },
+          { "@type": "ListItem", position: 2, name: "Frameworks", item: `${SITE_URL}/frameworks` },
+          { "@type": "ListItem", position: 3, name: tpl.name, item: `${SITE_URL}/frameworks/${tpl.slug}` },
+        ],
+      },
       {
         "@context": "https://schema.org",
         "@type": "HowTo",
@@ -61,6 +68,7 @@ export default function FrameworkDetail() {
 
   return (
     <div className="tpl-app theme-dark">
+      {pageMeta}
       <style>{TPL_CSS}</style>
       <div className="tpl-wrap">
         <nav style={{ marginBottom: 16, fontFamily: "'Azeret Mono',monospace", fontSize: 10, letterSpacing: 2, textTransform: "uppercase" }}>
