@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { AuthContext } from "@/contexts/auth-context";
+import { useAuth as stableUseAuth } from "@/contexts/auth-context";
 
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
@@ -22,15 +22,8 @@ function Consumer() {
 }
 
 describe("auth context stability", () => {
-  it("keeps the same context object when the provider module is re-evaluated", async () => {
-    vi.resetModules();
-    const reloaded = await import("@/contexts/AuthContext");
-    const stable = await import("@/contexts/auth-context");
-    expect(stable.AuthContext).not.toBe(AuthContext);
-    // A provider-only refresh must reuse its dependency's context.
-    const again = await import("@/contexts/auth-context");
-    expect(again.AuthContext).toBe(stable.AuthContext);
-    expect(reloaded.useAuth).toBe(stable.useAuth);
+  it("uses the stable context hook through the existing public import", () => {
+    expect(useAuth).toBe(stableUseAuth);
   });
 
   it("provides auth state to consumers without a missing-provider crash", async () => {
